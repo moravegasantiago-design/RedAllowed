@@ -1,11 +1,11 @@
 import { Link } from "react-router-dom";
 import { useFormUser } from "../Auth/tsx/useFromUser";
 import { useEffect } from "react";
-import { UseValidation } from "../Auth/tsx/formValidation";
+import { useValidation } from "../Auth/tsx/formValidation";
 
 const Login = () => {
   const { formUser, handleChange } = useFormUser();
-  const { validation, handleState } = UseValidation();
+  const { validation, handleState } = useValidation();
   useEffect(() => {
     console.log(formUser);
   }, [formUser]);

@@ -1,11 +1,11 @@
 import { Link } from "react-router-dom";
 import useFormUser from "../Auth/tsx/useFromUser";
-import { UseValidation } from "../Auth/tsx/formValidation";
+import { useValidation } from "../Auth/tsx/formValidation";
 
 // Register.tsx
 const Register = () => {
   const { formUser, handleChange } = useFormUser();
-  const { validation, handleState } = UseValidation();
+  const { validation, handleState } = useValidation();
   return (
     <div className="min-h-screen bg-gradient-to-br from-zinc-950 via-zinc-900 to-zinc-950 flex items-center justify-center p-4">
       {/* Efecto de fondo sutil */}

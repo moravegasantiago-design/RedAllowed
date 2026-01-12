@@ -1,7 +1,7 @@
 import { useState } from "react";
 import type { userProps } from "./useFromUser";
 
-export const UseValidation = () => {
+export const useValidation = () => {
   const [validation, setValidation] = useState<{
     isError: boolean;
     message: string;
