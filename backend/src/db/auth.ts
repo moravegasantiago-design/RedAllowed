@@ -1,13 +1,7 @@
 import { pool } from ".";
+import { userProps } from "../models/authProps";
 
-type userProps = {
-  id?: number;
-  name?: string;
-  username?: string;
-  email: string;
-  password?: string;
-};
-export const registerUser = async (props: userProps): Promise<boolean> => {
+export const registerBd = async (props: userProps): Promise<boolean> => {
   try {
     const { name, username, email, password } = props;
     const query =
@@ -20,9 +14,7 @@ export const registerUser = async (props: userProps): Promise<boolean> => {
   }
 };
 
-export const loginUser = async (
-  props: userProps
-): Promise<userProps | null> => {
+export const loginBd = async (props: userProps): Promise<userProps | null> => {
   try {
     const { email } = props;
     const query =
