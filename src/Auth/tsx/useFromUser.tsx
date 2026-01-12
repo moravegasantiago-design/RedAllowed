@@ -7,6 +7,7 @@ export type userProps = {
   email?: string;
   password: string;
   conditions?: boolean;
+  passwordConfirm?: string;
 };
 type nameKeys = keyof userProps;
 export const useFormUser = () => {
@@ -16,6 +17,7 @@ export const useFormUser = () => {
     email: "",
     password: "",
     conditions: false,
+    passwordConfirm: "",
   });
   const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
     const { value, name, type, checked } = event.target;

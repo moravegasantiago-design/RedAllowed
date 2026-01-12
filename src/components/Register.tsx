@@ -1,11 +1,21 @@
 import { Link } from "react-router-dom";
 import useFormUser from "../Auth/tsx/useFromUser";
 import { useValidation } from "../Auth/tsx/formValidation";
+import { useFetchAuth } from "../Auth/tsx/useFetchAuth";
+import { useComparePassword } from "../Auth/tsx/comparePassword";
+import { AlertCircle } from "lucide-react";
+import { useEffect, useState } from "react";
 
 // Register.tsx
 const Register = () => {
+  const [seePassword, setSeePassword] = useState<boolean>(false);
   const { formUser, handleChange } = useFormUser();
   const { validation, handleState } = useValidation();
+  const { data, error, loading, handleRequest } = useFetchAuth();
+  const { isPassword, comparePassword } = useComparePassword();
+  useEffect(() => {
+    console.log(data?.success);
+  }, [data]);
   return (
     <div className="min-h-screen bg-gradient-to-br from-zinc-950 via-zinc-900 to-zinc-950 flex items-center justify-center p-4">
       {/* Efecto de fondo sutil */}
@@ -35,7 +45,26 @@ const Register = () => {
 
         {/* Card del formulario */}
         <div className="bg-zinc-900/80 backdrop-blur-xl border border-zinc-800 rounded-2xl p-8 shadow-2xl">
-          <form className="space-y-5">
+          <form
+            className="space-y-5"
+            onSubmit={async (e) => {
+              e.preventDefault();
+              if (
+                handleState(formUser) ||
+                comparePassword({
+                  pass: formUser.password,
+                  confirmPass: formUser.passwordConfirm || "",
+                })
+              )
+                return;
+              await handleRequest({
+                href: "register",
+                method: "POST",
+                isCredentials: false,
+                formUser: formUser,
+              });
+            }}
+          >
             <div
               className="space-y-2"
               onSubmit={() => {
@@ -159,7 +188,7 @@ const Register = () => {
                   </svg>
                 </div>
                 <input
-                  type="password"
+                  type={seePassword ? "text" : "password"}
                   name="password"
                   value={formUser.password}
                   placeholder="Mínimo 8 caracteres"
@@ -169,6 +198,7 @@ const Register = () => {
                 <button
                   type="button"
                   className="absolute inset-y-0 right-0 pr-4 flex items-center"
+                  onClick={() => setSeePassword((prev) => !prev)}
                 >
                   <svg
                     className="w-5 h-5 text-zinc-500 hover:text-zinc-300 transition-colors"
@@ -188,6 +218,19 @@ const Register = () => {
                       strokeWidth={1.5}
                       d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
                     />
+                    {seePassword ? (
+                      ""
+                    ) : (
+                      <line
+                        x1="3"
+                        y1="3"
+                        x2="21"
+                        y2="21"
+                        stroke="currentColor"
+                        strokeWidth={1.5}
+                        strokeLinecap="round"
+                      />
+                    )}
                   </svg>
                 </button>
               </div>
@@ -224,7 +267,9 @@ const Register = () => {
                 </div>
                 <input
                   type="password"
-                  name="name"
+                  name="passwordConfirm"
+                  value={formUser.passwordConfirm}
+                  onChange={handleChange}
                   placeholder="Repite tu contraseña"
                   className="w-full bg-zinc-800/50 border border-zinc-700 text-white placeholder-zinc-500 rounded-xl py-3.5 pl-12 pr-4 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500 transition-all duration-200"
                 />
@@ -235,8 +280,8 @@ const Register = () => {
             <label className="flex items-start gap-3 cursor-pointer group">
               <input
                 type="checkbox"
-                name="name"
-                value={formUser.name}
+                name="conditions"
+                checked={formUser.conditions}
                 className="w-4 h-4 mt-0.5 bg-zinc-800 border-zinc-600 rounded text-emerald-500 focus:ring-emerald-500/50 focus:ring-offset-0 cursor-pointer"
                 onChange={handleChange}
               />
@@ -258,17 +303,21 @@ const Register = () => {
                 </button>
               </span>
             </label>
-            {validation.isError && (
+            {(validation.isError || error?.error || isPassword) && (
               <span className="flex items-center gap-1.5 text-sm text-red-600 font-medium">
-                {validation.message}
+                <AlertCircle className="w-4 h-4" />
+                {validation.message ||
+                  error?.error ||
+                  (isPassword && "Las contraseñas no coinciden")}
               </span>
             )}
             {/* Submit Button */}
             <button
               type="submit"
               className="w-full bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white font-semibold py-3.5 rounded-xl transition-all duration-200 shadow-lg shadow-emerald-500/25 hover:shadow-emerald-500/40 active:scale-[0.98]"
+              disabled={loading}
             >
-              Crear cuenta
+              {loading ? "Cargando..." : "Crear cuenta"}
             </button>
           </form>
 

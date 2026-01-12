@@ -1,7 +1,7 @@
 import express from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
-import authRouter from "../src/router/auth.route";
+import authRouter from "./router/auth.route";
 const app = express();
 app.use(
   cors({
@@ -18,7 +18,7 @@ app.use(
 app.use(cookieParser());
 app.use(express.json());
 
-app.use("api/auth", authRouter);
+app.use("/api/auth", authRouter);
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log("Iniciando puerto");

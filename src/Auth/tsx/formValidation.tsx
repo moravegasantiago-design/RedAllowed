@@ -6,6 +6,7 @@ export const useValidation = () => {
     isError: boolean;
     message: string;
   }>({ isError: false, message: "" });
+
   const handleState = (props: userProps) => {
     const { type } = props;
     if (type === "login") {
@@ -16,19 +17,24 @@ export const useValidation = () => {
         )
         .flatMap((a) => a[1]);
       const validateEmpty = arrayLogin.includes("");
-      if (!validateEmpty) return false;
+      if (!validateEmpty) {
+        setValidation({ isError: false, message: "" });
+        return false;
+      }
       setValidation((prev) => ({
         ...prev,
         isError: true,
-        message: "",
+        message: "Faltan credenciales",
       }));
       return true;
     }
-
     const arrayIsKey = Object.values(props);
     const validateEmpty = arrayIsKey.includes("");
     const validateConditions = arrayIsKey.includes(false);
-    if (!validateEmpty && !validateConditions) return false;
+    if (!validateEmpty && !validateConditions) {
+      setValidation({ isError: false, message: "" });
+      return false;
+    }
     setValidation((prev) => ({
       ...prev,
       isError: true,
