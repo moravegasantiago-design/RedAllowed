@@ -57,7 +57,7 @@ export const loginUser = async (req: Request, res: Response) => {
 
 export const verifyMe = async (req: Request, res: Response) => {
   try {
-    const token = req.cookies.token;
+    const token = req.cookies.authToken;
     const isLogin = convertToken(token);
     if (!isLogin)
       return res
