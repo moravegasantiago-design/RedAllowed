@@ -29,13 +29,12 @@ export const useFetchAuth = () => {
         }
       );
       const res = await req.json();
-      if (!res.body.data && res.success)
+      if (!res.body?.data && res?.success)
         return setData({ success: true, data: null });
-      if (!res.body.error) return setError(res.body.error);
+      if (!res.body?.success) return setError(res.body?.error);
       setData(res.body.data);
-    } catch (err) {
-      console.error(err);
-      setError({ error: JSON.stringify(err) });
+      
+   
     } finally {
       setLoading(false);
     }

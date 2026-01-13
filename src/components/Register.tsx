@@ -15,7 +15,8 @@ const Register = () => {
   const { isPassword, comparePassword } = useComparePassword();
   useEffect(() => {
     console.log(data?.success);
-  }, [data]);
+    console.log(error);
+  }, [data, error]);
   return (
     <div className="min-h-screen bg-gradient-to-br from-zinc-950 via-zinc-900 to-zinc-950 flex items-center justify-center p-4">
       {/* Efecto de fondo sutil */}

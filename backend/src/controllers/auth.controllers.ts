@@ -1,17 +1,21 @@
 import { Request, Response } from "express";
 import { loginBd, registerBd } from "../db/auth";
-import { comparePassword } from "./encryptPassword";
+import { comparePassword, encryptPassword } from "./encryptPassword";
 import { convertToken, createToken } from "./tokenAuth";
 export const registerUser = async (req: Request, res: Response) => {
   try {
     const { name, username, email, password } = req.body;
+    const passEncrypt = await encryptPassword(password);
     const isRegister = await registerBd({
       name: name,
       username: username,
       email: email,
-      password: password,
+      password: passEncrypt,
     });
-    res.status(isRegister ? 201 : 401).json({ success: isRegister });
+    res.status(isRegister ? 201 : 401).json({
+      success: isRegister,
+      ...(!isRegister && { error: "El usuario o email ya existen" }),
+    });
   } catch (error) {
     console.error(error);
     res.status(401).json({ success: false, error: error });
