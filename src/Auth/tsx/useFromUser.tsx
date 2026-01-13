@@ -21,9 +21,21 @@ export const useFormUser = () => {
   });
   const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
     const { value, name, type, checked } = event.target;
+    const removeSpace =
+      name === "name"
+        ? value
+        : value
+            .split("")
+            .filter((p) => p !== " ")
+            .join("");
     setFormUser((prev) => ({
       ...prev,
-      [name]: type === "checkbox" ? checked : value,
+      [name]:
+        type === "checkbox"
+          ? checked
+          : name !== "password" && name !== "passwordConfirm"
+          ? removeSpace.toLowerCase()
+          : removeSpace,
     }));
   };
   return { formUser, handleChange };

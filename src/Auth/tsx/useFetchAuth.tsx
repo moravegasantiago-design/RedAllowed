@@ -17,6 +17,7 @@ export const useFetchAuth = () => {
   }) => {
     setLoading(true);
     setError(null);
+    setData(null);
     try {
       const { href, method, isCredentials, formUser } = props;
       const req = await fetch(
@@ -29,12 +30,10 @@ export const useFetchAuth = () => {
         }
       );
       const res = await req.json();
-      if (!res.body?.data && res?.success)
+      if (!res.data && res?.success)
         return setData({ success: true, data: null });
-      if (!res.body?.success) return setError(res.body?.error);
-      setData(res.body.data);
-      
-   
+      if (!res.success) return setError({ error: res.error });
+      setData(res.data);
     } finally {
       setLoading(false);
     }
