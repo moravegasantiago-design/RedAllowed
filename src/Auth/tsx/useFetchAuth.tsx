@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import type { userProps } from "./useFromUser";
 
 export const useFetchAuth = () => {
@@ -9,40 +9,49 @@ export const useFetchAuth = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<{ error: string } | null>(null);
 
-  const handleRequest = async (props: {
-    href: string;
-    method: string;
-    isCredentials: boolean;
-    formUser?: userProps;
-  }) => {
-    setLoading(true);
-    setError(null);
-    setData(null);
-    try {
-      const { href, method, isCredentials, formUser } = props;
-      const req = await fetch(
-        `https://redallowed.onrender.com/api/auth/${href}`,
-        {
-          method: method,
-          headers: { "Content-Type": "application/json" },
-          ...(formUser && {
-            body: JSON.stringify({
-              email: formUser.email,
-              password: formUser.password,
+  const handleRequest = useCallback(
+    async (props: {
+      href: string;
+      method: string;
+      isCredentials: boolean;
+      formUser?: userProps;
+    }) => {
+      setLoading(true);
+      setError(null);
+      setData(null);
+      try {
+        const { href, method, isCredentials, formUser } = props;
+        const req = await fetch(
+          `https://redallowed.onrender.com/api/auth/${href}`,
+          {
+            method: method,
+            headers: { "Content-Type": "application/json" },
+            ...(formUser && {
+              body: JSON.stringify({
+                email: formUser.email,
+                password: formUser.password,
+              }),
             }),
-          }),
-          credentials: isCredentials ? "include" : "omit",
+            credentials: isCredentials ? "include" : "omit",
+          }
+        );
+        const res = await req.json();
+        if (!res.data && res?.success) {
+          setData({ success: true, data: null });
+          return true;
         }
-      );
-      const res = await req.json();
-      if (!res.data && res?.success)
-        return setData({ success: true, data: null });
-      if (!res.success) return setError({ error: res.error });
-      setData(res.data);
-    } finally {
-      setLoading(false);
-    }
-  };
+        if (!res.success) {
+          setError({ error: res.error });
+          return null;
+        }
+        setData(res.data);
+        return true;
+      } finally {
+        setLoading(false);
+      }
+    },
+    []
+  );
 
   return { data, loading, error, handleRequest };
 };

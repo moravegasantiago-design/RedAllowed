@@ -1,30 +1,27 @@
-import { Navigate, Outlet, useNavigate } from "react-router-dom";
+import { Outlet, useNavigate } from "react-router-dom";
 import { useFetchAuth } from "./useFetchAuth";
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 
 export const RouterProtection = () => {
-  const navigate = useNavigate();
   const [isLogin, setIsLogin] = useState<boolean>(false);
-  const { data, handleRequest } = useFetchAuth();
-
-  const memoHandleRequest = useCallback(
-    async (props: { href: string; method: string; isCredentials: boolean }) => {
-      await handleRequest(props);
-    },
-    [handleRequest]
-  );
+  const { handleRequest } = useFetchAuth();
+  const navigate = useNavigate();
 
   useEffect(() => {
     (async () => {
-      await memoHandleRequest({
+      const req = await handleRequest({
         method: "GET",
         isCredentials: true,
         href: "me",
       });
-      if (data?.success) setIsLogin(true);
+      console.log("ssd");
+      if (!req) setIsLogin(true);
     })();
-  }, [memoHandleRequest, data, navigate]);
+  }, [handleRequest, navigate]);
 
-  if (!isLogin) return <Navigate to="/Login" />;
+  useEffect(() => {
+    if (!isLogin) return;
+    navigate("/login");
+  }, [isLogin, navigate]);
   return <Outlet />;
 };
