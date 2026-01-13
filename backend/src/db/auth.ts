@@ -18,7 +18,7 @@ export const loginBd = async (props: userProps): Promise<userProps | null> => {
   try {
     const { email } = props;
     const query =
-      "SELECT id, name, username, email, password created_at FROM users WHERE email=$1";
+      "SELECT id, name, username, email, password, created_at FROM users WHERE email=$1";
     const req = await pool.query(query, [email]);
     return req.rows[0];
   } catch (error) {

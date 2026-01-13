@@ -25,7 +25,12 @@ export const useFetchAuth = () => {
         {
           method: method,
           headers: { "Content-Type": "application/json" },
-          ...(formUser && { body: JSON.stringify(formUser) }),
+          ...(formUser && {
+            body: JSON.stringify({
+              email: formUser.email,
+              password: formUser.password,
+            }),
+          }),
           credentials: isCredentials ? "include" : "omit",
         }
       );

@@ -1,14 +1,20 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useFormUser } from "../Auth/tsx/useFromUser";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useValidation } from "../Auth/tsx/formValidation";
+import { useFetchAuth } from "../Auth/tsx/useFetchAuth";
+import { AlertCircle } from "lucide-react";
 
 const Login = () => {
   const { formUser, handleChange } = useFormUser();
   const { validation, handleState } = useValidation();
+  const { data, error, loading, handleRequest } = useFetchAuth();
+  const [seePassword, setSeePassword] = useState<boolean>(false);
+  const navegate = useNavigate();
   useEffect(() => {
-    console.log(formUser);
-  }, [formUser]);
+    if (!data?.success) return;
+    navegate("/");
+  }, [data, navegate]);
   return (
     <div className="min-h-screen bg-gradient-to-br from-zinc-950 via-zinc-900 to-zinc-950 flex items-center justify-center p-4">
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-zinc-800/20 via-transparent to-transparent"></div>
@@ -38,10 +44,16 @@ const Login = () => {
         <div className="bg-zinc-900/80 backdrop-blur-xl border border-zinc-800 rounded-2xl p-8 shadow-2xl">
           <form
             className="space-y-5"
-            onSubmit={() => {
-              const verify = handleState(formUser);
-              if (!verify) return console.log("Error");
-              console.log("Paso");
+            onSubmit={(e) => {
+              e.preventDefault();
+              if (handleState({ type: "login", ...formUser }) || loading)
+                return;
+              handleRequest({
+                href: "login",
+                method: "POST",
+                isCredentials: true,
+                formUser: formUser,
+              });
             }}
           >
             {/* Email */}
@@ -98,7 +110,7 @@ const Login = () => {
                   </svg>
                 </div>
                 <input
-                  type="password"
+                  type={seePassword ? "text" : "password"}
                   name="password"
                   placeholder="••••••••"
                   value={formUser.password}
@@ -108,6 +120,7 @@ const Login = () => {
                 <button
                   type="button"
                   className="absolute inset-y-0 right-0 pr-4 flex items-center"
+                  onClick={() => setSeePassword((prev) => !prev)}
                 >
                   <svg
                     className="w-5 h-5 text-zinc-500 hover:text-zinc-300 transition-colors"
@@ -127,6 +140,19 @@ const Login = () => {
                       strokeWidth={1.5}
                       d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
                     />
+                    {seePassword ? (
+                      ""
+                    ) : (
+                      <line
+                        x1="3"
+                        y1="3"
+                        x2="21"
+                        y2="21"
+                        stroke="currentColor"
+                        strokeWidth={1.5}
+                        strokeLinecap="round"
+                      />
+                    )}
                   </svg>
                 </button>
               </div>
@@ -138,6 +164,7 @@ const Login = () => {
                 <input
                   type="checkbox"
                   name="conditions"
+                  checked={formUser.conditions}
                   className="w-4 h-4 bg-zinc-800 border-zinc-600 rounded text-emerald-500 focus:ring-emerald-500/50 focus:ring-offset-0 cursor-pointer"
                   onChange={handleChange}
                 />
@@ -153,9 +180,11 @@ const Login = () => {
                 ¿Olvidaste tu contraseña?
               </button>
             </div>
-            {validation.isError && (
+            {(validation.isError || error?.error) && (
               <span className="flex items-center gap-1.5 text-sm text-red-600 font-medium">
-                {validation.message}
+                <AlertCircle className="w-4 h-4" />
+                {(validation.isError && validation.message) ||
+                  (error?.error && error.error)}
               </span>
             )}
             {/* Submit Button */}
@@ -163,7 +192,7 @@ const Login = () => {
               type="submit"
               className="w-full bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white font-semibold py-3.5 rounded-xl transition-all duration-200 shadow-lg shadow-emerald-500/25 hover:shadow-emerald-500/40 active:scale-[0.98]"
             >
-              Iniciar sesión
+              {loading ? "Cargando.." : "Inicia sesion"}
             </button>
           </form>
         </div>

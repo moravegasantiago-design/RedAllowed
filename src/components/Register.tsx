@@ -27,9 +27,6 @@ const Register = () => {
     if (!data?.success) return;
     navegate("/login");
   }, [data, navegate]);
-  useEffect(() => {
-    console.log(formUser);
-  }, [formUser]);
   return (
     <div className="min-h-screen bg-gradient-to-br from-zinc-950 via-zinc-900 to-zinc-950 flex items-center justify-center p-4">
       {/* Efecto de fondo sutil */}
@@ -69,7 +66,8 @@ const Register = () => {
                   pass: formUser.password,
                   confirmPass: formUser.passwordConfirm || "",
                 }) ||
-                !updateIndicator(formUser.password)
+                !updateIndicator(formUser.password) ||
+                loading
               )
                 return;
               await handleRequest({
@@ -350,7 +348,8 @@ const Register = () => {
             {(validation.isError ||
               error?.error ||
               isPassword ||
-              indicator?.colorInput !== "bg-emerald-500") && (
+              (indicator?.colorInput !== "bg-emerald-500" &&
+                !Object.values(formUser).filter((p) => !p).length)) && (
               <span className="flex items-center gap-1.5 text-sm text-red-600 font-medium">
                 <AlertCircle className="w-4 h-4" />
                 {validation.message ||
@@ -366,7 +365,7 @@ const Register = () => {
               className="w-full bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white font-semibold py-3.5 rounded-xl transition-all duration-200 shadow-lg shadow-emerald-500/25 hover:shadow-emerald-500/40 active:scale-[0.98]"
               disabled={loading}
             >
-              {loading ? "Cargando..." : "Crear cuenta"}
+              {loading ? "Cargando.." : "Crear cuenta"}
             </button>
           </form>
         </div>
