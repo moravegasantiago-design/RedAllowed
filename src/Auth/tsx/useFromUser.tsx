@@ -8,6 +8,7 @@ export type userProps = {
   password: string;
   conditions?: boolean;
   passwordConfirm?: string;
+  created_at?: string;
 };
 type nameKeys = keyof userProps;
 export const useFormUser = () => {

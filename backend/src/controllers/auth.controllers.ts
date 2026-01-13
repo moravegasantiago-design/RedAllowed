@@ -27,7 +27,9 @@ export const loginUser = async (req: Request, res: Response) => {
   try {
     const userCredentials = await loginBd({ email: email });
     if (!userCredentials || !userCredentials.password)
-      return res.json({ success: false, error: "Cuenta no encontrada" });
+      return res
+        .status(401)
+        .json({ success: false, error: "Cuenta no encontrada" });
     const isPassword = await comparePassword({
       encryptPassword: userCredentials.password,
       password: password,

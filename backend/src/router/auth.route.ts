@@ -9,5 +9,5 @@ const router = Router();
 
 router.post("/login", loginUser);
 router.post("/register", registerUser);
-router.post("/me", verifyMe);
+router.get("/me", verifyMe);
 export default router;
