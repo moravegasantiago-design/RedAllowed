@@ -6,19 +6,22 @@ import Login from "./components/Login";
 import Profile from "./components/Profile";
 import Register from "./components/Register";
 import { RouterProtection } from "./Auth/tsx/ProtectionLayout";
+import EmptyScreen from "./components/EmptyScreen";
 
-function App() {
+const App = () => {
   return (
     <Routes>
       <Route path="/Login" element={<Login />} />
       <Route path="/Register" element={<Register />} />
       <Route element={<RouterProtection />}>
-        <Route path="/Home" element={<Home />}></Route>
-        <Route path="/Home/Chat" element={<ChatView />} />
+        <Route path="/" element={<Home />}>
+          <Route path="Chat" element={<ChatView />} />
+          <Route index element={<EmptyScreen />} />
+        </Route>
         <Route path="/Profile" element={<Profile />} />
       </Route>
     </Routes>
   );
-}
+};
 
 export default App;

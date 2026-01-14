@@ -14,7 +14,6 @@ export const RouterProtection = () => {
         isCredentials: true,
         href: "me",
       });
-      console.log("ssd");
       if (!req) setIsLogin(true);
     })();
   }, [handleRequest, navigate]);
