@@ -1,12 +1,12 @@
 import { Route, Routes } from "react-router-dom";
 import "./App.css";
-import ChatView from "./components/ChatView";
-import Home from "./components/Home";
-import Login from "./components/Login";
-import Profile from "./components/Profile";
-import Register from "./components/Register";
+import ChatView from "./components/home/ChatView";
+import Home from "./components/home/Home";
+import Profile from "./components/auth/profile/Profile";
 import { RouterProtection } from "./Auth/tsx/ProtectionLayout";
-import EmptyScreen from "./components/EmptyScreen";
+import EmptyScreen from "./components/home/EmptyScreen";
+import Login from "./components/auth/Login";
+import Register from "./components/auth/Register";
 
 const App = () => {
   return (

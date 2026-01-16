@@ -1,9 +1,11 @@
 import { useEffect, useRef, useState } from "react";
 import { io, Socket } from "socket.io-client";
-import Typing from "./ChatComponents/Typing";
-import useSeen from "../socket/hook/useSeen";
-import useChat from "../socket/hook/useChat";
+import Typing from "../message/Typing";
+import useSeen from "../../socket/hook/useSeen";
+import useChat from "../../socket/hook/useChat";
+import { useNavigate } from "react-router-dom";
 const ChatView = () => {
+  const navegate = useNavigate();
   const [mensaje, setMensaje] = useState<{ mensaje: string }>({ mensaje: "" });
   const typingTimeOut = useRef<number | null>(null);
   const socket = useRef<Socket | null>(null);
@@ -27,7 +29,11 @@ const ChatView = () => {
     <div className="flex-1 flex flex-col bg-zinc-950">
       {/* Chat Header */}
       <div className="bg-zinc-900 border-b border-zinc-800 p-4 flex items-center gap-4 animate-[fadeIn_0.3s_ease-out]">
-        <button className="md:hidden p-2 text-zinc-400 hover:text-white hover:bg-zinc-800 rounded-xl transition-all">
+        <button
+          className="md:hidden p-2 text-zinc-400 
+        hover:text-white hover:bg-zinc-800 rounded-xl transition-all"
+          onClick={() => navegate("/")}
+        >
           <svg
             className="w-5 h-5"
             fill="none"

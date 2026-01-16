@@ -1,9 +1,9 @@
 import { Link, useNavigate } from "react-router-dom";
-import { useFormUser } from "../Auth/tsx/useFromUser";
 import { useEffect, useState } from "react";
-import { useValidation } from "../Auth/tsx/formValidation";
-import { useFetchAuth } from "../Auth/tsx/useFetchAuth";
 import { AlertCircle } from "lucide-react";
+import useFormUser from "../../Auth/hook/useFromUser";
+import { useValidation } from "../../Auth/hook/useValidation";
+import { useFetchAuth } from "../../Auth/hook/useFetchAuth";
 
 const Login = () => {
   const { formUser, handleChange } = useFormUser();

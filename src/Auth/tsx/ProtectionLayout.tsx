@@ -1,5 +1,5 @@
 import { Outlet, useNavigate } from "react-router-dom";
-import { useFetchAuth } from "./useFetchAuth";
+import { useFetchAuth } from "../hook/useFetchAuth";
 import { useEffect, useState } from "react";
 
 export const RouterProtection = () => {

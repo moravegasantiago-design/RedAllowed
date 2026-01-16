@@ -1,12 +1,11 @@
 import { Link, useNavigate } from "react-router-dom";
-import useFormUser from "../Auth/tsx/useFromUser";
-import { useValidation } from "../Auth/tsx/formValidation";
-import { useFetchAuth } from "../Auth/tsx/useFetchAuth";
-import { useComparePassword } from "../Auth/tsx/comparePassword";
 import { AlertCircle } from "lucide-react";
 import { useEffect, useState } from "react";
-import { useIndicator } from "../Auth/tsx/useIndicator";
-
+import useFormUser from "../../Auth/hook/useFromUser";
+import { useValidation } from "../../Auth/hook/useValidation";
+import { useFetchAuth } from "../../Auth/hook/useFetchAuth";
+import { useComparePassword } from "../../Auth/tsx/comparePassword";
+import { useIndicator } from "../../Auth/hook/useIndicator";
 // Register.tsx
 const Register = () => {
   const navegate = useNavigate();

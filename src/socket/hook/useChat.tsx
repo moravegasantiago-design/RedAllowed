@@ -28,7 +28,7 @@ const useChat = (socket: RefObject<Socket | null>) => {
               date: data.date,
               user: data.user,
               isMe: data.user === current?.id,
-              status: data.user === current?.id ? "seen" : "delivered",
+              status: data.user === current?.id ? "sent" : "delivered",
               idMessage: data.idMessage,
             },
           ]
