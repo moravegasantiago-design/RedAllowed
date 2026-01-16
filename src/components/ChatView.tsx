@@ -1,34 +1,28 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { io, Socket } from "socket.io-client";
-let socket: Socket;
+import Typing from "./ChatComponents/Typing";
+import useSeen from "../socket/hook/useSeen";
+import useChat from "../socket/hook/useChat";
 const ChatView = () => {
-  const [chat, setChat] = useState<
-    { text: string; date: string; user: string; isMe: boolean }[]
-  >([]);
   const [mensaje, setMensaje] = useState<{ mensaje: string }>({ mensaje: "" });
+  const typingTimeOut = useRef<number | null>(null);
+  const socket = useRef<Socket | null>(null);
+  useEffect(() => {
+    socket.current = io("http://192.168.101.15:4000", {
+      withCredentials: true,
+    });
+    return () => {
+      socket.current?.disconnect();
+    };
+  }, []);
+  const { chat, isWriting } = useChat(socket);
+  const { isSeen } = useSeen(socket);
   useEffect(() => {
     const container = document.getElementById("chat-messages");
     if (container) {
       container.scrollTop = container.scrollHeight;
     }
   }, [chat]);
-  useEffect(() => {
-    socket = io("http://localhost:3000");
-    socket.on("mensaje", (data) => {
-      setChat((prev) => [
-        ...prev,
-        {
-          text: data.text,
-          date: data.date,
-          user: data.id,
-          isMe: data.id === socket.id,
-        },
-      ]);
-    });
-    return () => {
-      socket.disconnect();
-    };
-  }, []);
   return (
     <div className="flex-1 flex flex-col bg-zinc-950">
       {/* Chat Header */}
@@ -60,7 +54,9 @@ const ChatView = () => {
 
         <div className="flex-1">
           <h2 className="text-white font-semibold">María García</h2>
-          <p className="text-emerald-500 text-sm">Escribiendo...</p>
+          <p className="text-emerald-500 text-sm">
+            {isWriting ? "Escribiendo..." : "Linea"}
+          </p>
         </div>
 
         <div className="flex items-center gap-2">
@@ -130,6 +126,11 @@ const ChatView = () => {
         {chat.map((m, i) => (
           <div
             key={i}
+            ref={(el) => {
+              if (!el || m.isMe || m.status !== "delivered") return;
+              isSeen.current?.observe(el);
+            }}
+            id={m.idMessage}
             className={`flex ${
               m.isMe ? "justify-end" : "justify-start"
             } animate-[slideIn_0.1s_ease-out_0.2s_both]`}
@@ -140,7 +141,9 @@ const ChatView = () => {
                   m.isMe ? "bg-emerald-600" : "bg-zinc-800"
                 } text-white px-4 py-2.5 rounded-2xl ${
                   m.isMe ? "rounded-br-md" : "rounded-bl-md"
-                } w-fit ${m.isMe ?"ml-auto" : "mr-auto"} max-w-[250px] break-words`}
+                } w-fit ${
+                  m.isMe ? "ml-auto" : "mr-auto"
+                } max-w-[250px] break-words`}
               >
                 <p>{m.text}</p>
               </div>
@@ -151,17 +154,43 @@ const ChatView = () => {
                     minute: "2-digit",
                   })}
                 </span>
-                <svg
-                  className="w-4 h-4 text-blue-400"
-                  fill="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z" />
-                </svg>
+                {m.isMe && (
+                  <>
+                    {m.status === "sent" && (
+                      <svg
+                        className="w-4 h-4 text-zinc-500"
+                        fill="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z" />
+                      </svg>
+                    )}
+                    {m.status === "delivered" && (
+                      <svg
+                        className="w-4 h-4 text-zinc-500"
+                        fill="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path d="M18 7l-1.41-1.41-6.34 6.34 1.41 1.41L18 7zm4.24-1.41L11.66 16.17 7.48 12l-1.41 1.41L11.66 19l12-12-1.42-1.41zM.41 13.41L6 19l1.41-1.41L1.83 12 .41 13.41z" />
+                      </svg>
+                    )}
+                    {m.status === "seen" && (
+                      <svg
+                        className="w-4 h-4 text-blue-400"
+                        fill="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path d="M18 7l-1.41-1.41-6.34 6.34 1.41 1.41L18 7zm4.24-1.41L11.66 16.17 7.48 12l-1.41 1.41L11.66 19l12-12-1.42-1.41zM.41 13.41L6 19l1.41-1.41L1.83 12 .41 13.41z" />
+                      </svg>
+                    )}
+                  </>
+                )}
               </div>
             </div>
           </div>
         ))}
+
+        {isWriting && <Typing />}
       </div>
 
       {/* Message Input */}
@@ -207,7 +236,8 @@ const ChatView = () => {
               onSubmit={(e) => {
                 e.preventDefault();
                 if (!mensaje.mensaje) return;
-                socket.emit("mensaje", { text: mensaje.mensaje });
+                socket.current?.emit("typing", false);
+                socket.current?.emit("message", mensaje.mensaje);
                 setMensaje({ mensaje: "" });
               }}
             >
@@ -216,7 +246,15 @@ const ChatView = () => {
                 placeholder="Escribe un mensaje..."
                 className="w-full bg-zinc-800 border border-zinc-700 text-white placeholder-zinc-500 rounded-xl py-3 px-4 pr-12 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500 transition-all duration-200"
                 maxLength={1000}
-                onChange={(e) => setMensaje({ mensaje: e.target.value })}
+                onChange={(e) => {
+                  setMensaje({ mensaje: e.target.value });
+                  socket.current?.emit("typing", true);
+                  if (typingTimeOut.current)
+                    clearTimeout(typingTimeOut.current);
+                  typingTimeOut.current = setTimeout(() => {
+                    socket.current?.emit("typing", false);
+                  }, 1000);
+                }}
                 value={mensaje.mensaje}
               />
               <button

@@ -1,0 +1,28 @@
+import express from "express";
+import cors from "cors";
+import cookieParser from "cookie-parser";
+import authRouter from "./router/auth.route";
+const app = express();
+app.use(
+  cors({
+    origin: (origin, callback) => {
+      if (
+        !origin ||
+        [
+          "http://localhost:5173",
+          "http://192.168.101.15:5173",
+          "http://127.0.0.1:5173",
+        ].includes(origin)
+      ) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
+    credentials: true,
+  })
+);
+app.use(cookieParser());
+app.use(express.json());
+app.use("/api/auth", authRouter);
+export default app;

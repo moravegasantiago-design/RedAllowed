@@ -21,20 +21,17 @@ export const useFetchAuth = () => {
       setData(null);
       try {
         const { href, method, isCredentials, formUser } = props;
-        const req = await fetch(
-          `https://redallowed.onrender.com/api/auth/${href}`,
-          {
-            method: method,
-            headers: { "Content-Type": "application/json" },
-            ...(formUser && {
-              body: JSON.stringify({
-                email: formUser.email,
-                password: formUser.password,
-              }),
+        const req = await fetch(`http://localhost:4000/api/auth/${href}`, {
+          method: method,
+          headers: { "Content-Type": "application/json" },
+          ...(formUser && {
+            body: JSON.stringify({
+              email: formUser.email,
+              password: formUser.password,
             }),
-            credentials: isCredentials ? "include" : "omit",
-          }
-        );
+          }),
+          credentials: isCredentials ? "include" : "omit",
+        });
         const res = await req.json();
         if (!res.data && res?.success) {
           setData({ success: true, data: null });

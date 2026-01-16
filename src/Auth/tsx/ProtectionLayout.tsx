@@ -7,16 +7,16 @@ export const RouterProtection = () => {
   const { handleRequest } = useFetchAuth();
   const navigate = useNavigate();
 
-  useEffect(() => {
-    (async () => {
-      const req = await handleRequest({
-        method: "GET",
-        isCredentials: true,
-        href: "me",
-      });
-      if (!req) setIsLogin(true);
-    })();
-  }, [handleRequest, navigate]);
+  // useEffect(() => {
+  //   (async () => {
+  //     const req = await handleRequest({
+  //       method: "GET",
+  //       isCredentials: true,
+  //       href: "me",
+  //     });
+  //     if (!req) setIsLogin(true);
+  //   })();
+  // }, [handleRequest, navigate]);
 
   useEffect(() => {
     if (!isLogin) return;
