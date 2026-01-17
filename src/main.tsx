@@ -5,12 +5,15 @@ import App from './App.tsx'
 import { BrowserRouter } from "react-router-dom";
 import ScrollToTop from "../src/Router/ScrollToTop.tsx";
 import SocketProvider from "./providers/SocketProvider.tsx";
+import MeProvider from "./providers/MeProvider.tsx";
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <BrowserRouter>
       <ScrollToTop />
       <SocketProvider>
-        <App />
+        <MeProvider>
+          <App />
+        </MeProvider>
       </SocketProvider>
     </BrowserRouter>
   </StrictMode>
