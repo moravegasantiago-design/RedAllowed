@@ -1,24 +1,17 @@
-import { useEffect, useRef, useState } from "react";
-import { io, Socket } from "socket.io-client";
+import { useContext, useEffect, useRef, useState } from "react";
 import Typing from "../message/Typing";
 import useSeen from "../../socket/hook/useSeen";
 import useChat from "../../socket/hook/useChat";
 import { useNavigate } from "react-router-dom";
+import { SocketContext } from "../../context/SocketContext";
+
 const ChatView = () => {
   const navegate = useNavigate();
+  const socketRef = useContext(SocketContext);
   const [mensaje, setMensaje] = useState<{ mensaje: string }>({ mensaje: "" });
   const typingTimeOut = useRef<number | null>(null);
-  const socket = useRef<Socket | null>(null);
-  useEffect(() => {
-    socket.current = io("http://192.168.101.15:4000", {
-      withCredentials: true,
-    });
-    return () => {
-      socket.current?.disconnect();
-    };
-  }, []);
-  const { chat, isWriting } = useChat(socket);
-  const { isSeen } = useSeen(socket);
+  const { chat, isWriting } = useChat(socketRef);
+  const { isSeen } = useSeen(socketRef);
   useEffect(() => {
     const container = document.getElementById("chat-messages");
     if (container) {
@@ -241,9 +234,9 @@ const ChatView = () => {
             <form
               onSubmit={(e) => {
                 e.preventDefault();
-                if (!mensaje.mensaje) return;
-                socket.current?.emit("typing", false);
-                socket.current?.emit("message", mensaje.mensaje);
+                if (!mensaje.mensaje || !socketRef?.current) return;
+                socketRef.current?.emit("typing", false);
+                socketRef.current?.emit("message", mensaje.mensaje);
                 setMensaje({ mensaje: "" });
               }}
             >
@@ -253,12 +246,13 @@ const ChatView = () => {
                 className="w-full bg-zinc-800 border border-zinc-700 text-white placeholder-zinc-500 rounded-xl py-3 px-4 pr-12 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500 transition-all duration-200"
                 maxLength={1000}
                 onChange={(e) => {
+                  if (!socketRef?.current) return;
                   setMensaje({ mensaje: e.target.value });
-                  socket.current?.emit("typing", true);
+                  socketRef.current?.emit("typing", true);
                   if (typingTimeOut.current)
                     clearTimeout(typingTimeOut.current);
                   typingTimeOut.current = setTimeout(() => {
-                    socket.current?.emit("typing", false);
+                    socketRef.current?.emit("typing", false);
                   }, 1000);
                 }}
                 value={mensaje.mensaje}

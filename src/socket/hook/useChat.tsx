@@ -9,7 +9,7 @@ type Message = {
   idMessage: string;
 };
 
-const useChat = (socket: RefObject<Socket | null>) => {
+const useChat = (socket: RefObject<Socket | null> | null) => {
   const [chat, setChat] = useState<Message[]>([]);
   const [isWriting, setIsWriting] = useState<boolean>(false);
   const handleStatusMessage = (status: "delivered" | "seen", idMsg: string) => {
@@ -37,6 +37,7 @@ const useChat = (socket: RefObject<Socket | null>) => {
     current.emit("delivered", data.idMessage);
   };
   useEffect(() => {
+    if (!socket?.current) return;
     const current = socket.current;
     if (!current) return;
     const onChat = (data: Message) => handleChat(data, current);

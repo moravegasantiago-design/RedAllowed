@@ -7,7 +7,6 @@ import { RouterProtection } from "./Auth/tsx/ProtectionLayout";
 import EmptyScreen from "./components/home/EmptyScreen";
 import Login from "./components/auth/Login";
 import Register from "./components/auth/Register";
-
 const App = () => {
   return (
     <Routes>
