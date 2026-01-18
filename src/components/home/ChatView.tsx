@@ -1,23 +1,23 @@
 import { useContext, useEffect, useRef, useState } from "react";
 import Typing from "../message/Typing";
 import useSeen from "../../socket/hook/useSeen";
-import useChat from "../../socket/hook/useChat";
+import useMessages from "../../socket/hook/useMessages";
 import { useNavigate } from "react-router-dom";
 import { SocketContext } from "../../context/SocketContext";
 
 const ChatView = () => {
   const navegate = useNavigate();
   const socketRef = useContext(SocketContext);
-  const [mensaje, setMensaje] = useState<{ mensaje: string }>({ mensaje: "" });
+  const [message, setMessage] = useState<{ message: string }>({ message: "" });
   const typingTimeOut = useRef<number | null>(null);
-  const { chat, isWriting } = useChat(socketRef);
+  const { messages, isWriting } = useMessages(socketRef);
   const { isSeen } = useSeen(socketRef);
   useEffect(() => {
     const container = document.getElementById("chat-messages");
     if (container) {
       container.scrollTop = container.scrollHeight;
     }
-  }, [chat]);
+  }, [messages]);
   return (
     <div className="flex-1 flex flex-col bg-zinc-950">
       {/* Chat Header */}
@@ -122,7 +122,7 @@ const ChatView = () => {
             Hoy
           </span>
         </div>
-        {chat.map((m, i) => (
+        {messages.map((m, i) => (
           <div
             key={i}
             ref={(el) => {
@@ -234,20 +234,20 @@ const ChatView = () => {
             <form
               onSubmit={(e) => {
                 e.preventDefault();
-                if (!mensaje.mensaje || !socketRef?.current) return;
+                if (!message.message || !socketRef?.current) return;
                 socketRef.current?.emit("typing", false, "id");
-                socketRef.current?.emit("message", mensaje.mensaje, "id");
-                setMensaje({ mensaje: "" });
+                socketRef.current?.emit("message", message.message, "id");
+                setMessage({ message: "" });
               }}
             >
               <input
                 type="text"
-                placeholder="Escribe un mensaje..."
+                placeholder="Escribe un message..."
                 className="w-full bg-zinc-800 border border-zinc-700 text-white placeholder-zinc-500 rounded-xl py-3 px-4 pr-12 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500 transition-all duration-200"
                 maxLength={1000}
                 onChange={(e) => {
                   if (!socketRef?.current) return;
-                  setMensaje({ mensaje: e.target.value });
+                  setMessage({ message: e.target.value });
                   socketRef.current?.emit("typing", true, "id");
                   if (typingTimeOut.current)
                     clearTimeout(typingTimeOut.current);
@@ -255,7 +255,7 @@ const ChatView = () => {
                     socketRef.current?.emit("typing", false, "id");
                   }, 1000);
                 }}
-                value={mensaje.mensaje}
+                value={message.message}
               />
               <button
                 className="absolute right-3 top-1/2 -translate-y-1/2 
