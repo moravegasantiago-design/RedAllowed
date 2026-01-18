@@ -34,9 +34,10 @@ const useChat = (socket: RefObject<Socket | null> | null) => {
           ]
     );
     if (data.user === current?.id) return;
-    current.emit("delivered", data.idMessage);
+    current.emit("delivered", data.idMessage, "id");
   };
   useEffect(() => {
+    console.log(socket?.current);
     if (!socket?.current) return;
     const current = socket.current;
     if (!current) return;
@@ -45,13 +46,14 @@ const useChat = (socket: RefObject<Socket | null> | null) => {
     const onDelivered = (id: string) => handleStatusMessage("delivered", id);
     const onSeen = (idMsg: string) => handleStatusMessage("seen", idMsg);
 
+    current.emit("join_chat", "id");
     current.on("message", onChat);
     current.on("typing", onTyping);
     current.on("delivered", onDelivered);
     current.on("seen", onSeen);
 
     return () => {
-      current.off("mensaje", onChat);
+      current.off("message", onChat);
       current.off("typing", onTyping);
       current.off("delivered", onDelivered);
       current.off("seen", onSeen);

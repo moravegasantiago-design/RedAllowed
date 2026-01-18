@@ -235,8 +235,8 @@ const ChatView = () => {
               onSubmit={(e) => {
                 e.preventDefault();
                 if (!mensaje.mensaje || !socketRef?.current) return;
-                socketRef.current?.emit("typing", false);
-                socketRef.current?.emit("message", mensaje.mensaje);
+                socketRef.current?.emit("typing", false, "id");
+                socketRef.current?.emit("message", mensaje.mensaje, "id");
                 setMensaje({ mensaje: "" });
               }}
             >
@@ -248,11 +248,11 @@ const ChatView = () => {
                 onChange={(e) => {
                   if (!socketRef?.current) return;
                   setMensaje({ mensaje: e.target.value });
-                  socketRef.current?.emit("typing", true);
+                  socketRef.current?.emit("typing", true, "id");
                   if (typingTimeOut.current)
                     clearTimeout(typingTimeOut.current);
                   typingTimeOut.current = setTimeout(() => {
-                    socketRef.current?.emit("typing", false);
+                    socketRef.current?.emit("typing", false, "id");
                   }, 1000);
                 }}
                 value={mensaje.mensaje}
