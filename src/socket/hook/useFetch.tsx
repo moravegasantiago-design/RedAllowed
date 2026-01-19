@@ -1,10 +1,10 @@
 import { useState, useCallback } from "react";
 import type { userProps } from "../../Auth/hook/useFromUser";
 
-export const useFetch = () => {
+export const useFetch = <T = userProps,>() => {
   const [data, setData] = useState<{
     success: boolean;
-    data: userProps | null;
+    data: T | null;
   } | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<{ error: string } | null>(null);
