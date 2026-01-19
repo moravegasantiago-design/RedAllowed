@@ -3,12 +3,12 @@ import { useEffect, useState } from "react";
 import { AlertCircle } from "lucide-react";
 import useFormUser from "../../Auth/hook/useFromUser";
 import { useValidation } from "../../Auth/hook/useValidation";
-import { useFetchAuth } from "../../Auth/hook/useFetchAuth";
+import { useFetch } from "../../socket/hook/useFetch";
 
 const Login = () => {
   const { formUser, handleChange } = useFormUser();
   const { validation, handleState } = useValidation();
-  const { data, error, loading, handleRequest } = useFetchAuth();
+  const { data, error, loading, handleRequest } = useFetch();
   const [seePassword, setSeePassword] = useState<boolean>(false);
   const navegate = useNavigate();
   useEffect(() => {
@@ -49,10 +49,10 @@ const Login = () => {
               if (handleState({ type: "login", ...formUser }) || loading)
                 return;
               handleRequest({
-                href: "login",
+                href: "api/auth/login",
                 method: "POST",
                 isCredentials: true,
-                formUser: formUser,
+                user: formUser,
               });
             }}
           >

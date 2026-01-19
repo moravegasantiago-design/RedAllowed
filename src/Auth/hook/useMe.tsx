@@ -1,17 +1,17 @@
 import { useEffect } from "react";
-import { useFetchAuth } from "./useFetchAuth";
 import { useNavigate } from "react-router-dom";
+import { useFetch } from "../../socket/hook/useFetch";
 
 const useMe = () => {
   const navigate = useNavigate();
-  const { handleRequest, data } = useFetchAuth();
+  const { handleRequest, data } = useFetch();
   useEffect(() => {
     (async () => {
       try {
         await handleRequest({
           method: "GET",
           isCredentials: true,
-          href: "me",
+          href: "api/auth/me",
         });
       } catch (e) {
         console.error(e);

@@ -3,16 +3,16 @@ import { AlertCircle } from "lucide-react";
 import { useEffect, useState } from "react";
 import useFormUser from "../../Auth/hook/useFromUser";
 import { useValidation } from "../../Auth/hook/useValidation";
-import { useFetchAuth } from "../../Auth/hook/useFetchAuth";
 import { useComparePassword } from "../../Auth/tsx/comparePassword";
 import { useIndicator } from "../../Auth/hook/useIndicator";
+import { useFetch } from "../../socket/hook/useFetch";
 // Register.tsx
 const Register = () => {
   const navegate = useNavigate();
   const [seePassword, setSeePassword] = useState<boolean>(false);
   const { formUser, handleChange } = useFormUser();
   const { validation, handleState } = useValidation();
-  const { data, error, loading, handleRequest } = useFetchAuth();
+  const { data, error, loading, handleRequest } = useFetch();
   const { isPassword, comparePassword } = useComparePassword();
   const { indicator, updateIndicator } = useIndicator();
   const colorClasses = {
@@ -59,6 +59,7 @@ const Register = () => {
             className="space-y-5"
             onSubmit={async (e) => {
               e.preventDefault();
+              if (formUser.password === undefined) return;
               if (
                 handleState(formUser) ||
                 comparePassword({
@@ -70,10 +71,10 @@ const Register = () => {
               )
                 return;
               await handleRequest({
-                href: "register",
+                href: "api/register/register",
                 method: "POST",
                 isCredentials: false,
-                formUser: formUser,
+                user: formUser,
               });
             }}
           >

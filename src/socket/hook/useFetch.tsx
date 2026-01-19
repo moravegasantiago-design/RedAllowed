@@ -1,7 +1,7 @@
 import { useState, useCallback } from "react";
-import type { userProps } from "./useFromUser";
+import type { userProps } from "../../Auth/hook/useFromUser";
 
-export const useFetchAuth = () => {
+export const useFetch = () => {
   const [data, setData] = useState<{
     success: boolean;
     data: userProps | null;
@@ -14,20 +14,19 @@ export const useFetchAuth = () => {
       href: string;
       method: string;
       isCredentials: boolean;
-      formUser?: userProps;
+      user?: userProps;
     }) => {
       setLoading(true);
       setError(null);
       setData(null);
       try {
-        const { href, method, isCredentials, formUser } = props;
-        const req = await fetch(`http://localhost:4000/api/auth/${href}`, {
+        const { href, method, isCredentials, user } = props;
+        const req = await fetch(`http://localhost:4000/${href}`, {
           method: method,
           headers: { "Content-Type": "application/json" },
-          ...(formUser && {
+          ...(user && {
             body: JSON.stringify({
-              email: formUser.email,
-              password: formUser.password,
+              ...user,
             }),
           }),
           credentials: isCredentials ? "include" : "omit",

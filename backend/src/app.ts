@@ -2,6 +2,7 @@ import express from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 import authRouter from "./router/auth.route";
+import chatRouter from "./router/chats.route";
 const app = express();
 app.use(
   cors({
@@ -25,4 +26,5 @@ app.use(
 app.use(cookieParser());
 app.use(express.json());
 app.use("/api/auth", authRouter);
+app.use("/api/chat", chatRouter);
 export default app;
