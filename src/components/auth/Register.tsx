@@ -71,7 +71,7 @@ const Register = () => {
               )
                 return;
               await handleRequest({
-                href: "api/register/register",
+                href: "api/auth/register",
                 method: "POST",
                 isCredentials: false,
                 user: formUser,

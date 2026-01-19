@@ -7,6 +7,7 @@ import { RouterProtection } from "./Auth/tsx/ProtectionLayout";
 import EmptyScreen from "./components/home/EmptyScreen";
 import Login from "./components/auth/Login";
 import Register from "./components/auth/Register";
+import Search from "./components/search/search";
 const App = () => {
   return (
     <Routes>
@@ -17,6 +18,7 @@ const App = () => {
           <Route path="Chat" element={<ChatView />} />
           <Route index element={<EmptyScreen />} />
         </Route>
+        <Route path="/Search" element={<Search />} />
         <Route path="/Profile" element={<Profile />} />
       </Route>
     </Routes>

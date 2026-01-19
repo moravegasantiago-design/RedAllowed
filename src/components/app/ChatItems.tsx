@@ -1,23 +1,26 @@
+import { useContext } from "react";
 import { useNavigate } from "react-router-dom";
+import ChatsContext from "../../context/ChatsContext";
 
 const ChatItems = () => {
   const navegate = useNavigate();
-  return (
+  const chats = useContext(ChatsContext);
+  return chats.map((C) => (
     <div
       className="flex items-center gap-3 p-4 bg-zinc-800/50 border-l-2 border-emerald-500 cursor-pointer animate-[fadeIn_0.3s_ease-out]"
       onClick={() => navegate("/Chat")}
     >
       <div className="relative">
         <img
-          src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=100"
-          alt=""
+          src={C.friendPhoto}
+          alt={C.friend}
           className="w-12 h-12 rounded-full object-cover"
         />
         <div className="absolute bottom-0 right-0 w-3 h-3 bg-emerald-500 rounded-full border-2 border-zinc-900"></div>
       </div>
       <div className="flex-1 min-w-0">
         <div className="flex items-center justify-between">
-          <h3 className="text-white font-medium truncate">Juan Pérez</h3>
+          <h3 className="text-white font-medium truncate">{C.friend}</h3>
           <span className="text-xs text-emerald-500">12:45</span>
         </div>
         <div className="flex items-center justify-between">
@@ -30,7 +33,7 @@ const ChatItems = () => {
         </div>
       </div>
     </div>
-  );
+  ));
 };
 
 // offine : <div className="absolute bottom-0 right-0 w-3 h-3 bg-zinc-500 rounded-full border-2 border-zinc-900"></div>'
