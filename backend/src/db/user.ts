@@ -11,7 +11,7 @@ export const bringUsers = async (): Promise<
   u.username,
   up.photo,
   up.bio,
-  up.job,
+  up.job_title AS job,
   up.birthday,
   COUNT(DISTINCT f2.following_id) as friends,
   COUNT(DISTINCT f.follower_id) AS followers
