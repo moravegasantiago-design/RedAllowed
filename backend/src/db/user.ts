@@ -21,7 +21,7 @@ export const bringUsers = async (): Promise<
     LEFT JOIN followers f2 ON f2.follower_id = u.id 
     AND f2.following_id = f.follower_id
     GROUP BY 
-  u.id, u.name, u.username, up.photo, up.bio, up.job, up.birthday;
+  u.id, u.name, u.username, up.photo, up.bio, up.job_title, up.birthday;
 `;
     const req = await pool.query(query);
     return req.rows;
