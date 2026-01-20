@@ -1,113 +1,16 @@
 import { useState } from "react";
 import Nav from "../app/Nav";
-
-interface Person {
-  id: number;
-  name: string;
-  username: string;
-  role: string;
-  avatar: string;
-  isOnline: boolean;
-  mutualFriends: number;
-}
-
-interface FollowingStatus {
-  [key: number]: boolean;
-}
+import useUsers from "../../socket/hook/useUsers";
+// interface FollowingStatus {
+//   [key: number]: boolean;
+// }
 
 const Search = () => {
   const [searchQuery, setSearchQuery] = useState<string>("");
-  const [followingStatus, setFollowingStatus] = useState<FollowingStatus>({});
+//   const [followingStatus, setFollowingStatus] = useState<FollowingStatus>({});
+const { users } = useUsers();
 
-  const people: Person[] = [
-    {
-      id: 1,
-      name: "María González",
-      username: "@mariag",
-      role: "Diseñadora UI/UX",
-      avatar:
-        "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400&h=400&fit=crop",
-      isOnline: true,
-      mutualFriends: 12,
-    },
-    {
-      id: 2,
-      name: "Carlos Rodríguez",
-      username: "@carlosr",
-      role: "Desarrollador Full Stack",
-      avatar:
-        "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop",
-      isOnline: false,
-      mutualFriends: 8,
-    },
-    {
-      id: 3,
-      name: "Ana Martínez",
-      username: "@anamartinez",
-      role: "Product Manager",
-      avatar:
-        "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=400&h=400&fit=crop",
-      isOnline: true,
-      mutualFriends: 24,
-    },
-    {
-      id: 4,
-      name: "Luis Fernández",
-      username: "@luisf",
-      role: "Fotógrafo profesional",
-      avatar:
-        "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=400&h=400&fit=crop",
-      isOnline: false,
-      mutualFriends: 5,
-    },
-    {
-      id: 5,
-      name: "Sofia López",
-      username: "@sofial",
-      role: "Marketing Digital",
-      avatar:
-        "https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?w=400&h=400&fit=crop",
-      isOnline: true,
-      mutualFriends: 31,
-    },
-    {
-      id: 6,
-      name: "Diego Ramírez",
-      username: "@diegor",
-      role: "Músico independiente",
-      avatar:
-        "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=400&h=400&fit=crop",
-      isOnline: true,
-      mutualFriends: 15,
-    },
-    {
-      id: 7,
-      name: "Isabella Torres",
-      username: "@isabellat",
-      role: "Chef & Food Blogger",
-      avatar:
-        "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=400&h=400&fit=crop",
-      isOnline: false,
-      mutualFriends: 18,
-    },
-    {
-      id: 8,
-      name: "Miguel Ángel Ruiz",
-      username: "@miguelruiz",
-      role: "Fitness Coach",
-      avatar:
-        "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=400&h=400&fit=crop",
-      isOnline: true,
-      mutualFriends: 22,
-    },
-  ];
 
-  const handleFollow = (id: number): void => {
-    setFollowingStatus((prev) => ({
-      ...prev,
-      [id]: !prev[id],
-    }));
-  };
 
   return (
     <div className="h-screen bg-zinc-950 flex overflow-hidden">
@@ -193,9 +96,9 @@ const Search = () => {
                 Sugerencias
               </div>
 
-              {people.map((person) => (
+              {users.map((users) => (
                 <div
-                  key={person.id}
+                  key={users.id}
                   className="group relative bg-zinc-900/40 border border-zinc-800/50 rounded-xl p-4 hover:bg-zinc-900/60 hover:border-zinc-700/80 transition-all duration-200 cursor-pointer"
                 >
                   <div className="flex items-start gap-4">
@@ -203,14 +106,14 @@ const Search = () => {
                     <div className="relative flex-shrink-0">
                       <div className="w-14 h-14 rounded-xl overflow-hidden ring-1 ring-zinc-800 group-hover:ring-zinc-700 transition-all">
                         <img
-                          src={person.avatar}
-                          alt={person.name}
+                          src={users.photo}
+                          alt={users.name}
                           className="w-full h-full object-cover"
                         />
                       </div>
-                      {person.isOnline && (
+                      {/* {users.isOnline && (
                         <div className="absolute -bottom-0.5 -right-0.5 w-4 h-4 bg-emerald-500 rounded-md border-2 border-zinc-900"></div>
-                      )}
+                      )} */}
                     </div>
 
                     {/* Información */}
@@ -218,16 +121,16 @@ const Search = () => {
                       <div className="flex items-start justify-between mb-1">
                         <div className="flex-1 min-w-0">
                           <h3 className="text-white text-sm font-semibold truncate group-hover:text-emerald-400 transition-colors">
-                            {person.name}
+                            {users.name}
                           </h3>
                           <p className="text-zinc-500 text-xs truncate mb-2">
-                            {person.username}
+                            {users.username}
                           </p>
                         </div>
                       </div>
 
                       <p className="text-zinc-400 text-sm mb-3 line-clamp-1">
-                        {person.role}
+                        {users.job}
                       </p>
 
                       <div className="flex items-center justify-between">
@@ -245,21 +148,21 @@ const Search = () => {
                               d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"
                             />
                           </svg>
-                          <span>{person.mutualFriends} amigos en común</span>
+                          {/* <span>{users.mutualFriends} amigos en común</span> */}
                         </div>
 
                         <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleFollow(person.id);
-                          }}
+                        //   onClick={(e) => {
+                        //     e.stopPropagation();
+                        //     handleFollow(users.id);
+                        //   }}
                           className={`px-4 py-1.5 rounded-lg text-xs font-semibold transition-all ${
-                            followingStatus[person.id]
-                              ? "bg-zinc-800 text-zinc-400 hover:bg-zinc-700"
-                              : "bg-emerald-500 text-white hover:bg-emerald-600"
+                            // followingStatus[users.id]
+                            //   ? "bg-zinc-800 text-zinc-400 hover:bg-zinc-700"
+                               "bg-emerald-500 text-white hover:bg-emerald-600"
                           }`}
                         >
-                          {followingStatus[person.id] ? "Siguiendo" : "Seguir"}
+                          {/* {followingStatus[users.id] ? "Siguiendo" : "Seguir"} */}
                         </button>
                       </div>
                     </div>

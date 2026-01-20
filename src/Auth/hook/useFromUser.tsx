@@ -10,6 +10,12 @@ export type userProps = {
   conditions?: boolean;
   passwordConfirm?: string;
   created_at?: string;
+  photo?: string;
+  bio?: string;
+  job?: string;
+  birtday?: string;
+  friends?: number;
+  followers?: number;
 };
 type nameKeys = keyof userProps;
 export const useFormUser = () => {
