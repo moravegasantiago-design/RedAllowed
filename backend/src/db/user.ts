@@ -1,6 +1,10 @@
+import { json } from "stream/consumers";
 import { pool } from ".";
+import { userProps } from "../models/authProps";
 
-export const bringUsers = async () => {
+export const bringUsers = async (): Promise<
+  userProps[] | { error: boolean; throw: string }
+> => {
   try {
     const query = `SELECT 
   u.id,
@@ -24,6 +28,6 @@ export const bringUsers = async () => {
     return req.rows;
   } catch (e) {
     console.error(e);
-    return null;
+    return { error: true, throw: JSON.stringify(e) };
   }
 };

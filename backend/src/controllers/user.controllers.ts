@@ -3,10 +3,8 @@ import { Response, Request } from "express";
 export const requestUser = async (req: Request, res: Response) => {
   try {
     const users = await bringUsers();
-    if (!users)
-      return res
-        .status(401)
-        .json({ success: false, error: "Error en la base de datos" });
+    if ("error" in users && users.error)
+      return res.status(401).json({ success: false, error: users.throw });
     res.status(200).json({ success: true, data: users });
   } catch (e) {
     console.error(e);

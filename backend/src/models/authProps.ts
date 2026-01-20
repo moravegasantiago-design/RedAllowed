@@ -5,4 +5,10 @@ export type userProps = {
   email: string;
   password?: string;
   created_at?: string;
+  photo?: string;
+  bio?: string;
+  job?: string;
+  birtday?: string;
+  friends?: number;
+  followers?: number;
 };
