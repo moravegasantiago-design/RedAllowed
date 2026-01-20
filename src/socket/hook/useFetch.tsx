@@ -21,7 +21,7 @@ export const useFetch = <T = userProps,>() => {
       setData(null);
       try {
         const { href, method, isCredentials, user } = props;
-        const req = await fetch(`http://localhost:4000/${href}`, {
+        const req = await fetch(`https://redallowed.onrender.com/${href}`, {
           method: method,
           headers: { "Content-Type": "application/json" },
           ...(user && {

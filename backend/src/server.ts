@@ -2,6 +2,7 @@ import { Server } from "socket.io";
 import { createServer } from "http";
 import app from "./app";
 import { chatOnline } from "./sockets/chat.socket";
+import { PORT } from "./keysEnv";
 const server = createServer(app);
 const oi = new Server(server, {
   cors: {
@@ -14,7 +15,7 @@ const oi = new Server(server, {
   },
 });
 chatOnline(oi);
-const PORT = 4000;
-server.listen(PORT, () => {
+const PUERT = PORT ?? 4000;
+server.listen(PUERT, () => {
   console.log("Iniciando puerto" + PORT);
 });
