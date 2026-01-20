@@ -1,4 +1,3 @@
-import { json } from "stream/consumers";
 import { pool } from ".";
 import { userProps } from "../models/authProps";
 
@@ -9,7 +8,7 @@ export const bringUsers = async (): Promise<
     const query = `SELECT 
   u.id,
   u.name,
-  up.username,
+  u.username,
   up.photo,
   up.bio,
   up.job,
@@ -22,7 +21,7 @@ export const bringUsers = async (): Promise<
     LEFT JOIN followers f2 ON f2.follower_id = u.id 
     AND f2.following_id = f.follower_id
     GROUP BY 
-  u.id, u.name, up.username, up.photo, up.bio, up.job, up.birthday;
+  u.id, u.name, u.username, up.photo, up.bio, up.job, up.birthday;
 `;
     const req = await pool.query(query);
     return req.rows;
