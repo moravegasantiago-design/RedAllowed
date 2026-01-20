@@ -8,7 +8,7 @@ const useUsers = () => {
   useEffect(() => {
     (async () => {
       await handleRequest({
-        href: "/api/user/users",
+        href: "api/user/users",
         method: "GET",
         isCredentials: false,
       });
