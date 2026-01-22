@@ -1,5 +1,5 @@
 import { useEffect, useRef, type RefObject } from "react";
-import useVisibility from "./useVisibility";
+import useVisibility from "../../hook/useVisibility";
 import { Socket } from "socket.io-client";
 const useSeen = (socket: RefObject<Socket | null> | null) => {
   const isSeen = useRef<IntersectionObserver | null>(null);

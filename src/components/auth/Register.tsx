@@ -5,7 +5,7 @@ import useFormUser from "../../Auth/hook/useFromUser";
 import { useValidation } from "../../Auth/hook/useValidation";
 import { useComparePassword } from "../../Auth/tsx/comparePassword";
 import { useIndicator } from "../../Auth/hook/useIndicator";
-import { useFetch } from "../../socket/hook/useFetch";
+import { useFetch } from "../../hook/useFetch";
 // Register.tsx
 const Register = () => {
   const navegate = useNavigate();

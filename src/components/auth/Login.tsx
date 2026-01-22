@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { AlertCircle } from "lucide-react";
 import useFormUser from "../../Auth/hook/useFromUser";
 import { useValidation } from "../../Auth/hook/useValidation";
-import { useFetch } from "../../socket/hook/useFetch";
+import { useFetch } from "../../hook/useFetch";
 
 const Login = () => {
   const { formUser, handleChange } = useFormUser();

@@ -6,20 +6,38 @@ export const bringUsers = async (): Promise<
 > => {
   try {
     const query = `SELECT 
-  u.id,
-  u.name,
-  u.username,
-  up.photo,
-  up.bio,
-  up.job_title AS job,
-  up.birthday,
-  f2.following_id as friends,
-  f.follower_id AS followers
+    u.id,
+    u.name,
+    u.username,
+    up.photo,
+    up.bio,
+    up.job_title AS job,
+    up.birthday,
+
+    COALESCE(
+      ARRAY_AGG(DISTINCT f.follower_id)
+        FILTER (WHERE f.follower_id IS NOT NULL),
+      '{}'
+    ) AS followers,
+
+    COALESCE(
+      ARRAY_AGG(DISTINCT f2.following_id)
+        FILTER (WHERE f2.following_id IS NOT NULL),
+      '{}'
+    ) AS friends
+
     FROM users u
     JOIN user_profiles up ON up.user_id = u.id
-    LEFT JOIN followers f ON f.following_id = u.id
-    LEFT JOIN followers f2 ON f2.follower_id = u.id 
-    AND f2.following_id = f.follower_id;
+
+    LEFT JOIN followers f 
+      ON f.following_id = u.id
+
+    LEFT JOIN followers f2 
+      ON f2.follower_id = u.id
+
+    GROUP BY 
+      u.id, u.name, u.username,
+      up.photo, up.bio, up.job_title, up.birthday
 `;
     const req = await pool.query(query);
     return req.rows;

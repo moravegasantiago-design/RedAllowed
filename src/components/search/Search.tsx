@@ -1,8 +1,9 @@
 import { useContext, useState } from "react";
 import Nav from "../app/Nav";
-import useUsers from "../../socket/hook/useUsers";
-import { useFetch } from "../../socket/hook/useFetch";
+import useUsers from "../../hook/useUsers";
+import { useFetch } from "../../hook/useFetch";
 import MeContext from "../../context/MeContext";
+import UsersOnlineContext from "../../context/UsersOnlineContext";
 interface FollowingStatus {
   [key: number]: boolean;
 }
@@ -13,6 +14,7 @@ const Search = () => {
   const {handleRequest} = useFetch<{idP1?: number, idP2: number}>()
   const { users } = useUsers();
   const myCredentials = useContext(MeContext);
+  const { usersOnline } = useContext(UsersOnlineContext)!;
   const handleFollowing = (id: number) => {
     const isFollowing = Boolean(followingStatus[id])
     setFollowingStatus((prev) => {
@@ -30,8 +32,7 @@ const Search = () => {
         className={`
         flex-col
         bg-zinc-900 border-r border-zinc-800
-        w-full md:w-96
-        ${location.pathname === "/Chat" ? "hidden md:flex" : "flex"}
+        w-full md:w-96 flex
       `}
       >
         <div className="flex-1 bg-zinc-950 h-screen overflow-hidden flex flex-col fade-in">
@@ -118,9 +119,9 @@ const Search = () => {
                           className="w-full h-full object-cover"
                         />
                       </div>
-                      {/* {user.isOnline && (
+                       {usersOnline.flatMap(u => u.userId).includes(user.id) && (
                         <div className="absolute -bottom-0.5 -right-0.5 w-4 h-4 bg-emerald-500 rounded-md border-2 border-zinc-900"></div>
-                      )} */}
+                      )}
                     </div>
 
                     {/* Información */}
@@ -155,7 +156,7 @@ const Search = () => {
                               d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"
                             />
                           </svg>
-                          {/* <span>{user.mutualFriends} amigos en común</span> */}
+                           <span>{user.friends.length} amigos en común</span> */
                         </div>
 
                         <button

@@ -1,6 +1,6 @@
 import { useContext, useEffect } from "react";
 import MeContext from "../../context/MeContext";
-import { useFetch } from "./useFetch";
+import { useFetch } from "../../hook/useFetch";
 import type { ChatsProps } from "../../context/ChatsContext";
 
 const useChats = () => {

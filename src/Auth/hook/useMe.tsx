@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { useFetch } from "../../socket/hook/useFetch";
+import { useFetch } from "../../hook/useFetch";
 
 const useMe = () => {
   const navigate = useNavigate();

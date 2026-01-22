@@ -7,16 +7,19 @@ import ScrollToTop from "../src/Router/ScrollToTop.tsx";
 import SocketProvider from "./providers/SocketProvider.tsx";
 import MeProvider from "./providers/MeProvider.tsx";
 import ChatsProvider from "./providers/ChatsProvider.tsx";
+import UsersOnlineProvider from "./providers/UsersOnlineProvider.tsx";
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <BrowserRouter>
       <ScrollToTop />
       <ChatsProvider>
-        <SocketProvider>
-          <MeProvider>
-            <App />
-          </MeProvider>
-        </SocketProvider>
+        <UsersOnlineProvider>
+          <SocketProvider>
+            <MeProvider>
+              <App />
+            </MeProvider>
+          </SocketProvider>
+        </UsersOnlineProvider>
       </ChatsProvider>
     </BrowserRouter>
   </StrictMode>
