@@ -14,7 +14,7 @@ export const useFetch = <T = userProps,>() => {
       href: string;
       method: string;
       isCredentials: boolean;
-      user?: userProps;
+      user?: T | userProps;
     }) => {
       setLoading(true);
       setError(null);

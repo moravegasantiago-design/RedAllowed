@@ -1,10 +1,20 @@
 import { useEffect } from "react";
-import type { userProps } from "../../Auth/hook/useFromUser";
 import { useFetch } from "./useFetch";
-
+export type usersType = {
+  id: number;
+  type: "login" | "register";
+  username: string;
+  name: string;
+  photo: string;
+  bio: string;
+  job: string;
+  birtday: string;
+  friends: number;
+  followers: number;
+};
 const useUsers = () => {
-  const { handleRequest, data } = useFetch<userProps[]>();
-  const users: userProps[] = data?.data ?? [];
+  const { handleRequest, data } = useFetch<usersType[]>();
+  const users: usersType[] = data?.data ?? [];
   useEffect(() => {
     (async () => {
       await handleRequest({

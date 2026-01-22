@@ -13,15 +13,13 @@ export const bringUsers = async (): Promise<
   up.bio,
   up.job_title AS job,
   up.birthday,
-  COUNT(DISTINCT f2.following_id) as friends,
-  COUNT(DISTINCT f.follower_id) AS followers
+  f2.following_id as friends,
+  f.follower_id AS followers
     FROM users u
     JOIN user_profiles up ON up.user_id = u.id
     LEFT JOIN followers f ON f.following_id = u.id
     LEFT JOIN followers f2 ON f2.follower_id = u.id 
-    AND f2.following_id = f.follower_id
-    GROUP BY 
-  u.id, u.name, u.username, up.photo, up.bio, up.job_title, up.birthday;
+    AND f2.following_id = f.follower_id;
 `;
     const req = await pool.query(query);
     return req.rows;

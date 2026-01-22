@@ -1,20 +1,31 @@
-import { useState } from "react";
+import { useContext, useState } from "react";
 import Nav from "../app/Nav";
 import useUsers from "../../socket/hook/useUsers";
-// interface FollowingStatus {
-//   [key: number]: boolean;
-// }
+import { useFetch } from "../../socket/hook/useFetch";
+import MeContext from "../../context/MeContext";
+interface FollowingStatus {
+  [key: number]: boolean;
+}
 
 const Search = () => {
   const [searchQuery, setSearchQuery] = useState<string>("");
-//   const [followingStatus, setFollowingStatus] = useState<FollowingStatus>({});
-const { users } = useUsers();
-
-
+  const [followingStatus, setFollowingStatus] = useState<FollowingStatus>({});
+  const {handleRequest} = useFetch<{idP1?: number, idP2: number}>()
+  const { users } = useUsers();
+  const myCredentials = useContext(MeContext);
+  const handleFollowing = (id: number) => {
+    const isFollowing = Boolean(followingStatus[id])
+    setFollowingStatus((prev) => {
+      const copyPrev = { ...prev };
+      if (copyPrev[id]) delete copyPrev[id];
+      else copyPrev[id] = true;
+      return copyPrev;
+    });
+    return !isFollowing;
+  };
 
   return (
     <div className="h-screen bg-zinc-950 flex overflow-hidden">
-
       <div
         className={`
         flex-col
@@ -24,8 +35,6 @@ const { users } = useUsers();
       `}
       >
         <div className="flex-1 bg-zinc-950 h-screen overflow-hidden flex flex-col fade-in">
-
- 
           <div className="p-4 border-b border-zinc-800">
             <div className="flex items-center justify-between mb-4">
               <h1 className="text-xl font-bold text-white">Contactos</h1>
@@ -89,29 +98,27 @@ const { users } = useUsers();
             </div>
           </div>
 
-
           <div className="flex-1 overflow-y-auto animate-[fadeIn_0.3s_ease-out]">
             <div className="p-4 space-y-2">
               <div className="text-xs text-zinc-500 px-2 mb-2 font-medium uppercase tracking-wider">
                 Sugerencias
               </div>
 
-              {users.map((users) => (
+              {users.map((user) => (
                 <div
-                  key={users.id}
+                  key={user.id}
                   className="group relative bg-zinc-900/40 border border-zinc-800/50 rounded-xl p-4 hover:bg-zinc-900/60 hover:border-zinc-700/80 transition-all duration-200 cursor-pointer"
                 >
                   <div className="flex items-start gap-4">
-
                     <div className="relative flex-shrink-0">
                       <div className="w-14 h-14 rounded-xl overflow-hidden ring-1 ring-zinc-800 group-hover:ring-zinc-700 transition-all">
                         <img
-                          src={users.photo}
-                          alt={users.name}
+                          src={user.photo}
+                          alt={user.name}
                           className="w-full h-full object-cover"
                         />
                       </div>
-                      {/* {users.isOnline && (
+                      {/* {user.isOnline && (
                         <div className="absolute -bottom-0.5 -right-0.5 w-4 h-4 bg-emerald-500 rounded-md border-2 border-zinc-900"></div>
                       )} */}
                     </div>
@@ -121,16 +128,16 @@ const { users } = useUsers();
                       <div className="flex items-start justify-between mb-1">
                         <div className="flex-1 min-w-0">
                           <h3 className="text-white text-sm font-semibold truncate group-hover:text-emerald-400 transition-colors">
-                            {users.name}
+                            {user.name}
                           </h3>
                           <p className="text-zinc-500 text-xs truncate mb-2">
-                            {users.username}
+                            {user.username}
                           </p>
                         </div>
                       </div>
 
                       <p className="text-zinc-400 text-sm mb-3 line-clamp-1">
-                        {users.job}
+                        {user.job}
                       </p>
 
                       <div className="flex items-center justify-between">
@@ -148,21 +155,27 @@ const { users } = useUsers();
                               d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"
                             />
                           </svg>
-                          {/* <span>{users.mutualFriends} amigos en común</span> */}
+                          {/* <span>{user.mutualFriends} amigos en común</span> */}
                         </div>
 
                         <button
-                        //   onClick={(e) => {
-                        //     e.stopPropagation();
-                        //     handleFollow(users.id);
-                        //   }}
+                          onClick={async(e) => {
+                            e.stopPropagation();
+                            if(!handleFollowing || !myCredentials?.data.id)return;
+                            try {
+                                await handleRequest({ href : "/api/chat/create", method: "POST", isCredentials: false, user: {idP1: myCredentials?.data.id, idP2: user.id}})
+                            } catch (e) {
+                                console.error(e);
+                                return;
+                            }
+                          }}
                           className={`px-4 py-1.5 rounded-lg text-xs font-semibold transition-all ${
-                            // followingStatus[users.id]
-                            //   ? "bg-zinc-800 text-zinc-400 hover:bg-zinc-700"
-                               "bg-emerald-500 text-white hover:bg-emerald-600"
+                            followingStatus[user.id]
+                              ? "bg-zinc-800 text-zinc-400 hover:bg-zinc-700"
+                              : "bg-emerald-500 text-white hover:bg-emerald-600"
                           }`}
                         >
-                          {/* {followingStatus[users.id] ? "Siguiendo" : "Seguir"} */}
+                          {followingStatus[user.id] ? "Siguiendo" : "Seguir"}
                         </button>
                       </div>
                     </div>
@@ -172,7 +185,7 @@ const { users } = useUsers();
             </div>
           </div>
         </div>
-        <Nav/>
+        <Nav />
       </div>
     </div>
   );

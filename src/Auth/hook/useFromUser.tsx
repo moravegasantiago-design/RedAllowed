@@ -1,7 +1,7 @@
 import { useState, type ChangeEvent } from "react";
 
 export type userProps = {
-  id?: string;
+  id?: number;
   type?: "login" | "register";
   name?: nameKeys | "";
   username?: string;
