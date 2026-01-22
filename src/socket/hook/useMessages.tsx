@@ -12,14 +12,11 @@ type Messages = {
 const useMessages = (socketRef: RefObject<Socket | null> | null) => {
   const [messages, setMessages] = useState<Messages[]>([]);
   const [isWriting, setIsWriting] = useState<boolean>(false);
-  const handleStatusMessages = (
-    status: "delivered" | "seen",
-    idMsg: string
-  ) => {
+  const handleStatusMessages = (status: "delivered" | "seen", idMsg: string) =>
     setMessages((prev) =>
       prev.map((p) => (p.idMessage === idMsg ? { ...p, status: status } : p))
     );
-  };
+
   const handleMessages = (data: Messages, current: Socket) => {
     setMessages((prev) =>
       prev.find((p) => p.idMessage === data.idMessage)

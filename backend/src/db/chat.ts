@@ -52,3 +52,35 @@ export const createGroup = async (props: { idP1: string; idP2: string }) => {
     return null;
   }
 };
+
+export const addMessage = async (props: {
+  idMessage: string;
+  chatId: number;
+  userId: number;
+  content: string;
+}) => {
+  const query = `INSERT INTO messages (id , chat_id, sender_id, content) VALUES ($1, $2, $3, $4)`;
+  try {
+    await pool.query(query, Object.values(props));
+    return true;
+  } catch (e) {
+    console.error(e);
+    return null;
+  }
+};
+
+export const modifyStatus = async (props: {
+  idMessage: string;
+  chatId: number;
+  userId: number;
+  status: "delivered" | "seen";
+}) => {
+  const query = `UPDATE messages SET status=$4 WHERE id=$1 AND chat_id=$2 AND sender_id=$3`;
+  try {
+    await pool.query(query, Object.values(props));
+    return true;
+  } catch (e) {
+    console.error(e);
+    return null;
+  }
+};
