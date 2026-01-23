@@ -1,17 +1,22 @@
 import { useContext, useEffect, useRef, useState } from "react";
 import Typing from "../message/Typing";
 import useSeen from "../../socket/hook/useSeen";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { SocketContext } from "../../context/SocketContext";
 import useSocketMessages from "../../socket/hook/useSocketMessages";
+import useMessages from "../../socket/hook/useMessages";
+import MeContext from "../../context/MeContext";
 
 const ChatView = () => {
   const navegate = useNavigate();
+  const { chatId } = useParams<{ chatId: string }>();
   const socketRef = useContext(SocketContext);
   const [message, setMessage] = useState<{ message: string }>({ message: "" });
   const typingTimeOut = useRef<number | null>(null);
-  const { messages, isWriting } = useSocketMessages(socketRef);
+  const { messagesSocket, isWriting } = useSocketMessages(socketRef);
+  const { messages } = useMessages(Number(chatId));
   const { isSeen } = useSeen(socketRef);
+  const credendials = useContext(MeContext);
   useEffect(() => {
     const container = document.getElementById("chat-messages");
     if (container) {
@@ -122,29 +127,40 @@ const ChatView = () => {
             Hoy
           </span>
         </div>
-        {messages.map((m, i) => (
+        {[...messages, ...messagesSocket].map((m, i) => (
           <div
             key={i}
             ref={(el) => {
-              if (!el || m.isMe || m.status !== "delivered") return;
+              if (
+                !el ||
+                m.userId === credendials?.data.id ||
+                m.status !== "delivered"
+              )
+                return;
               isSeen.current?.observe(el);
             }}
-            id={m.idMessage}
+            id={m.id}
             className={`flex ${
-              m.isMe ? "justify-end" : "justify-start"
+              m.userId === credendials?.data.id
+                ? "justify-end"
+                : "justify-start"
             } animate-[slideIn_0.1s_ease-out_0.2s_both]`}
           >
             <div className="max-w-[85%] sm:max-w-[70%]">
               <div
                 className={`${
-                  m.isMe ? "bg-emerald-600" : "bg-zinc-800"
+                  m.userId === credendials?.data.id
+                    ? "bg-emerald-600"
+                    : "bg-zinc-800"
                 } text-white px-4 py-2.5 rounded-2xl ${
-                  m.isMe ? "rounded-br-md" : "rounded-bl-md"
+                  m.userId === credendials?.data.id
+                    ? "rounded-br-md"
+                    : "rounded-bl-md"
                 } w-fit ${
-                  m.isMe ? "ml-auto" : "mr-auto"
+                  m.userId === credendials?.data.id ? "ml-auto" : "mr-auto"
                 } max-w-[250px] break-words`}
               >
-                <p>{m.text}</p>
+                <p>{m.content}</p>
               </div>
               <div className={`flex items-center justify-end gap-1 mt-0.5`}>
                 <span className="text-xs text-zinc-600">
@@ -153,7 +169,7 @@ const ChatView = () => {
                     minute: "2-digit",
                   })}
                 </span>
-                {m.isMe && (
+                {m.userId === credendials?.data.id && (
                   <>
                     {m.status === "sent" && (
                       <svg

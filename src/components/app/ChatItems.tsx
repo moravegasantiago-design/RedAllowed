@@ -10,7 +10,8 @@ const ChatItems = () => {
   return chats.map((C) => (
     <div
       className="flex items-center gap-3 p-4 bg-zinc-800/50 border-l-2 border-emerald-500 cursor-pointer animate-[fadeIn_0.3s_ease-out]"
-      onClick={() => navegate("/Chat")}
+      key={C.chat_id}
+      onClick={() => navegate(`/Chat/${C.chat_id}`)}
     >
       <div className="relative">
         <img
@@ -18,7 +19,13 @@ const ChatItems = () => {
           alt={C.friend}
           className="w-12 h-12 rounded-full object-cover"
         />
-        <div className={`absolute bottom-0 right-0 w-3 h-3 ${usersOnline.flatMap(u => u.userId).includes(C.user_id) ? "bg-emerald-500" : "bg-zinc-500"} rounded-full border-2 border-zinc-900`}></div>
+        <div
+          className={`absolute bottom-0 right-0 w-3 h-3 ${
+            usersOnline.flatMap((u) => u.userId).includes(C.user_id)
+              ? "bg-emerald-500"
+              : "bg-zinc-500"
+          } rounded-full border-2 border-zinc-900`}
+        ></div>
       </div>
       <div className="flex-1 min-w-0">
         <div className="flex items-center justify-between">

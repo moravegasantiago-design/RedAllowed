@@ -15,11 +15,11 @@ export const chatOnline = (oi: Server) => {
     socket.on("message", async (text: string, chat_id: number) => {
       const id = `${crypto.randomUUID()}/${new Date().toISOString()}`;
       oi.to(String(chat_id)).emit("message", {
-        user: socket.id,
-        text: text,
+        userId: socket.id,
+        content: text,
         date: new Date(),
         status: "sent",
-        idMessage: id,
+        id: id,
       });
       try {
         await addMessage({

@@ -86,7 +86,7 @@ export const modifyStatus = async (props: {
 };
 
 export const bringMessage = async ({ chatId }: { chatId: number }) => {
-  const query = `SELECT content, status, created_at, sender_id AS userId, id, chat_id AS chatId
+  const query = `SELECT content, status, created_at AS date, sender_id AS userId, id, chat_id AS chatId
   FROM messages WHERE chat_id=$1 ORDER BY created_at DESC`;
   try {
     const req = await pool.query(query, [chatId]);
