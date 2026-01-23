@@ -16,6 +16,7 @@ export type userProps = {
   birtday?: string;
   friends?: number;
   followers?: number;
+  chatId?: number;
 };
 type nameKeys = keyof userProps;
 export const useFormUser = () => {

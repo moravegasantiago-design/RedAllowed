@@ -1,16 +1,16 @@
 import { useContext, useEffect, useRef, useState } from "react";
 import Typing from "../message/Typing";
 import useSeen from "../../socket/hook/useSeen";
-import useMessages from "../../socket/hook/useMessages";
 import { useNavigate } from "react-router-dom";
 import { SocketContext } from "../../context/SocketContext";
+import useSocketMessages from "../../socket/hook/useSocketMessages";
 
 const ChatView = () => {
   const navegate = useNavigate();
   const socketRef = useContext(SocketContext);
   const [message, setMessage] = useState<{ message: string }>({ message: "" });
   const typingTimeOut = useRef<number | null>(null);
-  const { messages, isWriting } = useMessages(socketRef);
+  const { messages, isWriting } = useSocketMessages(socketRef);
   const { isSeen } = useSeen(socketRef);
   useEffect(() => {
     const container = document.getElementById("chat-messages");

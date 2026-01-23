@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { bringChats, createGroup } from "../db/chat";
+import { bringChats, bringMessage, createGroup } from "../db/chat";
 export const requestChat = async (req: Request, res: Response) => {
   const { id } = req.body;
   try {
@@ -28,4 +28,14 @@ export const newChat = async (req: Request, res: Response) => {
     console.error(e);
     return;
   }
+};
+
+export const requestMessage = async (req: Request, res: Response) => {
+  const chatId = req.body;
+  const messages = await bringMessage({ chatId: chatId });
+  if (!messages)
+    return res
+      .status(401)
+      .json({ success: false, error: "Error en consulta de base de datos" });
+  res.status(200).json({ success: true, data: messages.reverse() });
 };
