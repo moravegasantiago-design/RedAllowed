@@ -15,7 +15,7 @@ const useMessages = (chatId: number) => {
     (async () => {
       await handleRequest({
         href: "api/chat/messages",
-        method: "GET",
+        method: "POST",
         isCredentials: false,
         user: { chatId: chatId },
       });

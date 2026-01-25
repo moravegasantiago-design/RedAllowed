@@ -2,7 +2,7 @@ import { createContext } from "react";
 
 export type ChatsProps = {
   user_id: number;
-  chat_id: string;
+  chat_id: number;
   created_at: Date;
   friend: string;
   friendPhoto: string;

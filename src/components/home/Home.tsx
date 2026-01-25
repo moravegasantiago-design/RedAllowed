@@ -4,6 +4,7 @@ import { Outlet } from "react-router-dom";
 import Nav from "../app/Nav";
 
 const Home = () => {
+  
   return (
     <>
       <div className="h-screen bg-zinc-950 flex overflow-hidden">

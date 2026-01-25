@@ -2,11 +2,17 @@ import { useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import ChatsContext from "../../context/ChatsContext";
 import UsersOnlineContext from "../../context/UsersOnlineContext";
+import MeContext from "../../context/MeContext";
+import useLastMessages from "../../socket/hook/useLastMessages";
+import orderChats from "../../socket/logic/ordenChats";
 
 const ChatItems = () => {
   const navegate = useNavigate();
-  const chats = useContext(ChatsContext);
+  const chatsUser = useContext(ChatsContext);
   const { usersOnline } = useContext(UsersOnlineContext)!;
+  const credendials = useContext(MeContext);
+  const { lastMessages } = useLastMessages({ userId: credendials?.data.id });
+  const chats = orderChats({ chats: chatsUser, lastMessages: lastMessages });
   return chats.map((C) => (
     <div
       className="flex items-center gap-3 p-4 bg-zinc-800/50 border-l-2 border-emerald-500 cursor-pointer animate-[fadeIn_0.3s_ease-out]"
@@ -30,11 +36,16 @@ const ChatItems = () => {
       <div className="flex-1 min-w-0">
         <div className="flex items-center justify-between">
           <h3 className="text-white font-medium truncate">{C.friend}</h3>
-          <span className="text-xs text-emerald-500">12:45</span>
+          <span className="text-xs text-emerald-500">
+            {new Date(C.lastMessages.date).toLocaleTimeString("es-CO", {
+              hour: "2-digit",
+              minute: "2-digit",
+            })}
+          </span>
         </div>
         <div className="flex items-center justify-between">
           <p className="text-zinc-400 text-sm truncate">
-            ¡Hola! ¿Cómo estás? 👋
+            {C.lastMessages.content}
           </p>
           <span className="bg-emerald-500 text-white text-xs rounded-full px-2 py-0.5 ml-2">
             3
