@@ -99,8 +99,25 @@ export const bringMessage = async ({ chatId }: { chatId: number }) => {
 
 export const lastMessages = async ({ userId }: { userId: number }) => {
   try {
-    const query = `SELECT DISTINCT ON (m.chat_id) m.chat_id AS chatId, m.id, m.sender_id AS userId, m.content, m.status, m.created_at AS date
-  FROM messages m JOIN chat_members cm ON cm.chat_id = m.chat_id WHERE cm.user_id =$1 ORDER BY m.chat_id, m.created_at DESC`;
+    const query = `SELECT DISTINCT ON (m.chat_id)
+    m.chat_id AS "chatId",
+    m.id,
+    m.sender_id AS "userId",
+    m.content,
+    m.status,
+    m.created_at AS "date",
+    (
+      SELECT COUNT(*)
+      FROM messages m2
+      WHERE m2.chat_id = m.chat_id
+        AND m2.status = 'delivered'
+        AND m2.sender_id != $1
+    ) AS unreadMessages
+  FROM messages m
+  JOIN chat_members cm ON cm.chat_id = m.chat_id
+  WHERE cm.user_id = $1
+  ORDER BY m.chat_id, m.created_at DESC
+`;
     const req = await pool.query(query, [userId]);
     return req.rows;
   } catch (e) {

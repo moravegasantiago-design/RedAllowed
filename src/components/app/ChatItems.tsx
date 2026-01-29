@@ -1,4 +1,5 @@
 import { useContext } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import ChatsContext from "../../context/ChatsContext";
 import UsersOnlineContext from "../../context/UsersOnlineContext";
@@ -12,12 +13,27 @@ const ChatItems = () => {
   const { usersOnline } = useContext(UsersOnlineContext)!;
   const credendials = useContext(MeContext);
   const { lastMessages } = useLastMessages({ userId: credendials?.data.id });
-  const chats = orderChats({ chats: chatsUser, lastMessages: lastMessages });
-  return chats.map((C) => (
+  const chats = orderChats({ chats: chatsUser, lastMessages: lastMessages});
+
+  const [unSeenChats, setSeenChats] = useState<string[]>(() =>
+    chats
+      .filter((c) => c.lastMessages.unreadMessages !== 0)
+      .map((c) => `${c.chat_id}`)
+  );
+  return chats.map((C) => {
+    const isOnline = usersOnline.find(u => u.userId === C.user_id) ?? false;
     <div
-      className="flex items-center gap-3 p-4 bg-zinc-800/50 border-l-2 border-emerald-500 cursor-pointer animate-[fadeIn_0.3s_ease-out]"
+      className={`flex items-center gap-3 p-4 
+        ${
+          unSeenChats.includes(`${C.chat_id}`)
+            ? "bg-zinc-800/50 border-l-2 border-emerald-500 cursor-pointer animate-[fadeIn_0.3s_ease-out]"
+            : "hover:bg-zinc-800/30 cursor-pointer transition-colors animate-[fadeIn_0.3s_ease-out_0.2s_both]"
+        }`}
       key={C.chat_id}
-      onClick={() => navegate(`/Chat/${C.chat_id}`)}
+      onClick={() => {
+        navegate(`/Chat/${C.chat_id}`);
+        setSeenChats((prev) => prev.filter((p) => p !== C.chat_id.toString()));
+      }}
     >
       <div className="relative">
         <img
@@ -27,16 +43,20 @@ const ChatItems = () => {
         />
         <div
           className={`absolute bottom-0 right-0 w-3 h-3 ${
-            usersOnline.flatMap((u) => u.userId).includes(C.user_id)
-              ? "bg-emerald-500"
-              : "bg-zinc-500"
+            isOnline ? "bg-emerald-500" : "bg-zinc-500"
           } rounded-full border-2 border-zinc-900`}
         ></div>
       </div>
       <div className="flex-1 min-w-0">
         <div className="flex items-center justify-between">
           <h3 className="text-white font-medium truncate">{C.friend}</h3>
-          <span className="text-xs text-emerald-500">
+          <span
+            className={`text-xs ${
+              unSeenChats.includes(`${C.chat_id}`)
+                ? "text-emerald-500"
+                : "text-zinc-400"
+            }`}
+          >
             {new Date(C.lastMessages.date).toLocaleTimeString("es-CO", {
               hour: "2-digit",
               minute: "2-digit",
@@ -47,19 +67,19 @@ const ChatItems = () => {
           <p className="text-zinc-400 text-sm truncate">
             {C.lastMessages.content}
           </p>
-          <span className="bg-emerald-500 text-white text-xs rounded-full px-2 py-0.5 ml-2">
-            3
-          </span>
+          {unSeenChats.includes(`${C.chat_id}`) && (
+            <span className="bg-emerald-500 text-white text-xs rounded-full px-2 py-0.5 ml-2">
+              {C.lastMessages.unreadMessages}
+            </span>
+          )}
         </div>
       </div>
     </div>
-  ));
+});
 };
 
-// offine : <div className="absolute bottom-0 right-0 w-3 h-3  rounded-full border-2 border-zinc-900"></div>'
-// messageNotSeen: <span className="bg-emerald-500 text-white text-xs rounded-full px-2 py-0.5 ml-2">3</span>
 // hour : <span className="text-xs text-emerald-500">12:45</span>
-//ChatSelect: flex items-center gap-3 p-4 hover:bg-zinc-800/30 cursor-pointer transition-colors animate-[fadeIn_0.3s_ease-out_0.2s_both]
+//ChatSelect: flex items-center gap-3 p-4
 /*
 img grup: 
 <div className="relative w-12 h-12 bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-full flex items-center justify-center">

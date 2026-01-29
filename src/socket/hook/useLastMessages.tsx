@@ -7,6 +7,7 @@ export type lastMessagesProps = {
   content: string;
   status: "sent" | "delivered" | "seen";
   date: string;
+  unreadMessages: number;
 };
 const useLastMessages = ({ userId }: { userId?: number }) => {
   const { data, handleRequest } = useFetch<lastMessagesProps[]>();
