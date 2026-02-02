@@ -1,44 +1,77 @@
-import { useContext } from "react";
-import { useState } from "react";
+import { useContext, useMemo, type Dispatch, type SetStateAction } from "react";
 import { useNavigate } from "react-router-dom";
-import ChatsContext from "../../context/ChatsContext";
 import UsersOnlineContext from "../../context/UsersOnlineContext";
-import MeContext from "../../context/MeContext";
-import useLastMessages from "../../socket/hook/useLastMessages";
-import orderChats from "../../socket/logic/ordenChats";
+import { SocketContext } from "../../context/SocketContext";
+import useSocketMessages from "../../socket/hook/useSocketMessages";
+import type { chatProps } from "../home/Home";
+import Typing from "../message/Typing";
+import { Delivered, Seen, Sent } from "../message/Status";
 
-const ChatItems = () => {
+const ChatItems = ({
+  chat,
+  unSeenChats,
+  setSeenChats,
+  id,
+}: {
+  chat: chatProps;
+  unSeenChats: string[];
+  setSeenChats: Dispatch<SetStateAction<string[]>>;
+  id?: number;
+}) => {
   const navegate = useNavigate();
-  const chatsUser = useContext(ChatsContext);
   const { usersOnline } = useContext(UsersOnlineContext)!;
-  const credendials = useContext(MeContext);
-  const { lastMessages } = useLastMessages({ userId: credendials?.data.id });
-  const chats = orderChats({ chats: chatsUser, lastMessages: lastMessages});
+  const socketRef = useContext(SocketContext);
+  const isOnline = usersOnline.find((u) => u.userId === chat.user_id) ?? false;
+  const { messagesSocket, isWriting } = useSocketMessages(socketRef);
+  const lastMessage = useMemo<{
+    content: string;
+    date: Date;
+    isMe: boolean;
+    status: "sent" | "delivered" | "seen";
+  }>(() => {
+    if (!messagesSocket.length)
+      return {
+        content: chat.lastMessages.content,
+        date: new Date(chat.lastMessages.date),
+        isMe: chat.lastMessages.userId === id,
+        status: chat.lastMessages.status,
+      };
 
-  const [unSeenChats, setSeenChats] = useState<string[]>(() =>
-    chats
-      .filter((c) => c.lastMessages.unreadMessages !== 0)
-      .map((c) => `${c.chat_id}`)
-  );
-  return chats.map((C) => {
-    const isOnline = usersOnline.find(u => u.userId === C.user_id) ?? false;
+    const lastSocketMsg = messagesSocket[messagesSocket.length - 1];
+
+    return {
+      content: lastSocketMsg.content,
+      date: lastSocketMsg.date,
+      isMe: lastSocketMsg.userId === id,
+      status: lastSocketMsg.status,
+    };
+  }, [messagesSocket, id, chat.lastMessages]);
+  return (
     <div
       className={`flex items-center gap-3 p-4 
         ${
-          unSeenChats.includes(`${C.chat_id}`)
+          unSeenChats.includes(`${chat.chat_id}`)
             ? "bg-zinc-800/50 border-l-2 border-emerald-500 cursor-pointer animate-[fadeIn_0.3s_ease-out]"
             : "hover:bg-zinc-800/30 cursor-pointer transition-colors animate-[fadeIn_0.3s_ease-out_0.2s_both]"
         }`}
-      key={C.chat_id}
+      key={chat.chat_id}
       onClick={() => {
-        navegate(`/Chat/${C.chat_id}`);
-        setSeenChats((prev) => prev.filter((p) => p !== C.chat_id.toString()));
+        navegate(`/Chat/${chat.chat_id}`, {
+          state: {
+            name: chat.friend,
+            photo: chat.friendPhoto,
+            online: isOnline,
+          },
+        });
+        setSeenChats((prev) =>
+          prev.filter((p) => p !== chat.chat_id.toString())
+        );
       }}
     >
       <div className="relative">
         <img
-          src={C.friendPhoto}
-          alt={C.friend}
+          src={chat.friendPhoto}
+          alt={chat.friend}
           className="w-12 h-12 rounded-full object-cover"
         />
         <div
@@ -49,33 +82,46 @@ const ChatItems = () => {
       </div>
       <div className="flex-1 min-w-0">
         <div className="flex items-center justify-between">
-          <h3 className="text-white font-medium truncate">{C.friend}</h3>
+          <h3 className="text-white font-medium truncate">{chat.friend}</h3>
           <span
             className={`text-xs ${
-              unSeenChats.includes(`${C.chat_id}`)
+              unSeenChats.includes(`${chat.chat_id}`)
                 ? "text-emerald-500"
                 : "text-zinc-400"
             }`}
           >
-            {new Date(C.lastMessages.date).toLocaleTimeString("es-CO", {
+            {new Date(lastMessage.date).toLocaleTimeString("es-CO", {
               hour: "2-digit",
               minute: "2-digit",
             })}
           </span>
         </div>
         <div className="flex items-center justify-between">
-          <p className="text-zinc-400 text-sm truncate">
-            {C.lastMessages.content}
-          </p>
-          {unSeenChats.includes(`${C.chat_id}`) && (
+          {!isWriting &&
+          lastMessage.isMe &&
+          lastMessage.status === "delivered" ? (
+            <Delivered />
+          ) : lastMessage.status === "seen" ? (
+            <Seen />
+          ) : (
+            <Sent />
+          )}
+          {isWriting ? (
+            <Typing />
+          ) : (
+            <p className="text-zinc-400 text-sm truncate">
+              {lastMessage.content}
+            </p>
+          )}
+          {unSeenChats.includes(`${chat.chat_id}`) && (
             <span className="bg-emerald-500 text-white text-xs rounded-full px-2 py-0.5 ml-2">
-              {C.lastMessages.unreadMessages}
+              {chat.lastMessages.unreadMessages}
             </span>
           )}
         </div>
       </div>
     </div>
-});
+  );
 };
 
 // hour : <span className="text-xs text-emerald-500">12:45</span>

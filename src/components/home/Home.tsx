@@ -2,9 +2,36 @@ import Suggestions from "../app/Suggestions";
 import ChatItems from "../app/ChatItems";
 import { Outlet } from "react-router-dom";
 import Nav from "../app/Nav";
-
+import orderChats from "../../socket/logic/ordenChats";
+import { useContext, useState } from "react";
+import ChatsContext from "../../context/ChatsContext";
+import MeContext from "../../context/MeContext";
+import useLastMessages, {
+  type lastMessagesProps,
+} from "../../socket/hook/useLastMessages";
+export type chatProps = {
+  user_id: number;
+  chat_id: number;
+  created_at: Date;
+  friend: string;
+  friendPhoto: string;
+  friendBio: string | null;
+  friendJob: string;
+  friendBirthDay: string;
+  friendTime: string;
+  lastMessages: lastMessagesProps;
+};
 const Home = () => {
-  
+  const chatsUser = useContext(ChatsContext);
+  const credendials = useContext(MeContext);
+  const { lastMessages } = useLastMessages({ userId: credendials?.data.id });
+  const chats = orderChats({ chats: chatsUser, lastMessages: lastMessages });
+  const [unSeenChats, setSeenChats] = useState<string[]>(() =>
+    chats
+      .filter((c) => c.lastMessages.unreadMessages !== 0)
+      .map((c) => `${c.chat_id}`)
+  );
+
   return (
     <>
       <div className="h-screen bg-zinc-950 flex overflow-hidden">
@@ -86,7 +113,14 @@ const Home = () => {
 
           {/* Chat List */}
           <div className="flex-1 overflow-y-auto">
-            <ChatItems />
+            {chats.map((chat) => (
+              <ChatItems
+                chat={chat}
+                setSeenChats={setSeenChats}
+                unSeenChats={unSeenChats}
+                id={credendials?.data.id}
+              />
+            ))}
           </div>
           <Nav />
         </div>
