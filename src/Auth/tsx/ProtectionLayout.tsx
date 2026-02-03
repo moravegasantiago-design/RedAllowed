@@ -6,7 +6,7 @@ export const RouterProtection = () => {
   const navigate = useNavigate();
   const data = useContext(MeContext) ?? null;
   useEffect(() => {
-    if (data?.isLogin ?? true) return;
+    if (data?.isLogin) return;
     navigate("/login");
   }, [data?.isLogin, navigate]);
   return <Outlet />;

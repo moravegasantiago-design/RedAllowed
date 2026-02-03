@@ -13,7 +13,7 @@ const Login = () => {
   const navegate = useNavigate();
   useEffect(() => {
     if (!data) return;
-    navegate("/Home");
+    navegate("/");
   }, [data, navegate]);
   return (
     <div className="min-h-screen bg-gradient-to-br from-zinc-950 via-zinc-900 to-zinc-950 flex items-center justify-center p-4">
