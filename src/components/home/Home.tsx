@@ -24,7 +24,7 @@ export type chatProps = {
 const Home = () => {
   const chatsUser = useContext(ChatsContext);
   const credendials = useContext(MeContext);
-  const { lastMessages } = useLastMessages({ userId: credendials?.data.id });
+  const { lastMessages } = useLastMessages({ userId: credendials?.data?.id });
   const chats = orderChats({ chats: chatsUser, lastMessages: lastMessages });
   const [unSeenChats, setSeenChats] = useState<string[]>(() =>
     chats
@@ -118,7 +118,7 @@ const Home = () => {
                 chat={chat}
                 setSeenChats={setSeenChats}
                 unSeenChats={unSeenChats}
-                id={credendials?.data.id}
+                id={credendials?.data?.id}
               />
             ))}
           </div>

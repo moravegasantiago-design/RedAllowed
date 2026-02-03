@@ -40,7 +40,7 @@ export const useFetch = <T = userProps,>() => {
           setError({ error: res.error });
           return null;
         }
-        setData(res.data);
+        setData({ success: true, data: res.data });
         return true;
       } finally {
         setLoading(false);

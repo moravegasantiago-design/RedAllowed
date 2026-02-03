@@ -1,10 +1,8 @@
 import { useEffect } from "react";
-import { useNavigate } from "react-router-dom";
 import { useFetch } from "../../hook/useFetch";
 
 const useMe = () => {
-  const navigate = useNavigate();
-  const { handleRequest, data } = useFetch();
+  const { handleRequest, data, loading } = useFetch();
   useEffect(() => {
     (async () => {
       try {
@@ -21,7 +19,7 @@ const useMe = () => {
   }, [handleRequest]);
   const me = data?.data ?? null;
   const isLogin = Boolean(data?.data);
-  return { me, isLogin, navigate };
+  return { me, isLogin, loading };
 };
 
 export default useMe;

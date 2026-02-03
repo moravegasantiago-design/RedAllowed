@@ -6,9 +6,10 @@ export const RouterProtection = () => {
   const navigate = useNavigate();
   const data = useContext(MeContext) ?? null;
   useEffect(() => {
-    if (data?.isLogin) return;
+    if (data?.loading) return;
+    if (data?.data) return;
     navigate("/login");
-  }, [data?.isLogin, navigate]);
+  }, [data, data?.data, data?.loading, navigate]);
   return <Outlet />;
 };
 
@@ -27,3 +28,4 @@ export const RouterProtection = () => {
 };
 
 */
+

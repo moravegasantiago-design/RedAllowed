@@ -8,7 +8,7 @@ const useChats = () => {
   const { handleRequest, data } = useFetch<ChatsProps[]>();
   useEffect(() => {
     (async () => {
-      if (!id?.data.id) return;
+      if (!id?.data?.id) return;
       try {
         await handleRequest({
           href: "api/chat/chats",
@@ -21,7 +21,7 @@ const useChats = () => {
         return;
       }
     })();
-  }, [handleRequest, id?.data.id]);
+  }, [handleRequest, id?.data?.id]);
   const chats: ChatsProps[] = data?.data ?? [];
   return { chats };
 };
