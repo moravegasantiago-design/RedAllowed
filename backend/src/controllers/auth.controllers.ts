@@ -43,7 +43,7 @@ export const loginUser = async (req: Request, res: Response) => {
     res
       .cookie("authToken", token, {
         httpOnly: true,
-        secure: false,
+        secure: true,
         sameSite: "none",
         maxAge: 48 * 60 * 60 * 1000,
       })
