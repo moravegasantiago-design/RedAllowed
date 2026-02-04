@@ -13,7 +13,6 @@ export type usersType = {
 };
 const useUsers = () => {
   const { handleRequest, data } = useFetch<usersType[]>();
-  const users: usersType[] = data?.data ?? [];
   useEffect(() => {
     (async () => {
       await handleRequest({
@@ -23,6 +22,7 @@ const useUsers = () => {
       });
     })();
   }, [handleRequest]);
+  const users: usersType[] = data?.data ?? [];
   return { users };
 };
 export default useUsers;

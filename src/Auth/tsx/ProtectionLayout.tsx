@@ -9,7 +9,7 @@ export const RouterProtection = () => {
   const isLogin = useRef(false);
   useEffect(() => {
     (async () => {
-      if (!isLogin.current) {
+      if (!isLogin?.current) {
         await dataMe?.fetchMe();
         isLogin.current = true;
         return;
