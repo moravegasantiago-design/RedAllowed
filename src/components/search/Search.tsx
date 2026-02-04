@@ -26,8 +26,8 @@ const Search = () => {
     return !isFollowing;
   };
   useEffect(()=> {
-    console.log(followingStatus)
-  },[followingStatus])
+    console.log(users)
+  },[users])
   return (
     <div className="h-screen bg-zinc-950 flex overflow-hidden">
       <div
@@ -107,7 +107,7 @@ const Search = () => {
                 Sugerencias
               </div>
 
-              {users.map((user) => (
+              {users.filter(u => u.id !== myCredentials?.data?.id).map((user) => (
                 <div
                   key={user.id}
                   className="group relative bg-zinc-900/40 border border-zinc-800/50 rounded-xl p-4 hover:bg-zinc-900/60 hover:border-zinc-700/80 transition-all duration-200 cursor-pointer"
@@ -164,10 +164,9 @@ const Search = () => {
                         <button
                           onClick={async(e) => {
                             e.stopPropagation();
-                            console.log(myCredentials)
                             if(!handleFollowing || !myCredentials?.data?.id)return;
                             try {
-                                await handleRequest({ href : "/api/chat/create", method: "POST", isCredentials: false, user: {idP1: myCredentials?.data.id, idP2: user.id}})
+                                await handleRequest({ href : "api/chat/create", method: "POST", isCredentials: false, user: {idP1: myCredentials?.data.id, idP2: user.id}})
                             } catch (e) {
                                 console.error(e);
                                 return;
