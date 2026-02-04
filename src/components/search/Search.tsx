@@ -1,4 +1,4 @@
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import Nav from "../app/Nav";
 import useUsers from "../../hook/useUsers";
 import { useFetch } from "../../hook/useFetch";
@@ -14,7 +14,7 @@ const Search = () => {
   const {handleRequest} = useFetch<{idP1?: number, idP2: number}>();
   const { users } = useUsers();
   const myCredentials = useContext(MeContext);
-const { usersOnline } = useContext(UsersOnlineContext)?? {usersOnline : []};
+  const { usersOnline } = useContext(UsersOnlineContext)?? {usersOnline : []};
   const handleFollowing = (id: number) => {
     const isFollowing = Boolean(followingStatus[id])
     setFollowingStatus((prev) => {
@@ -25,7 +25,9 @@ const { usersOnline } = useContext(UsersOnlineContext)?? {usersOnline : []};
     });
     return !isFollowing;
   };
-
+  useEffect(()=> {
+    console.log(followingStatus)
+  },[followingStatus])
   return (
     <div className="h-screen bg-zinc-950 flex overflow-hidden">
       <div
@@ -162,6 +164,7 @@ const { usersOnline } = useContext(UsersOnlineContext)?? {usersOnline : []};
                         <button
                           onClick={async(e) => {
                             e.stopPropagation();
+                            console.log(myCredentials)
                             if(!handleFollowing || !myCredentials?.data?.id)return;
                             try {
                                 await handleRequest({ href : "/api/chat/create", method: "POST", isCredentials: false, user: {idP1: myCredentials?.data.id, idP2: user.id}})

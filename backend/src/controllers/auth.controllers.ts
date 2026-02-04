@@ -38,8 +38,8 @@ export const loginUser = async (req: Request, res: Response) => {
       return res
         .status(401)
         .json({ success: false, error: "Contraseña incorrecta" });
-    const { name, username, created_at } = userCredentials;
-    const token = createToken({ name, username, email, created_at });
+    const { id, name, username, created_at } = userCredentials;
+    const token = createToken({ id, name, username, email, created_at });
     res
       .cookie("authToken", token, {
         httpOnly: true,
@@ -48,7 +48,7 @@ export const loginUser = async (req: Request, res: Response) => {
         maxAge: 48 * 60 * 60 * 1000,
       })
       .status(201)
-      .json({ success: true, data: { name, username, email, created_at } });
+      .json({ success: true, data: { id, name, username, email, created_at } });
   } catch (error) {
     console.error(error);
     res.status(401).json({ success: false, error: error });
