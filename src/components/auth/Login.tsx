@@ -12,9 +12,9 @@ const Login = () => {
   const [seePassword, setSeePassword] = useState<boolean>(false);
   const navegate = useNavigate();
   useEffect(() => {
-    if (!data) return;
-    navegate("/");
-  }, [data, navegate]);
+    if (!data?.success || loading) return;
+    navegate("/", { state: { isLogin: true } });
+  }, [data?.success, navegate, loading]);
   return (
     <div className="min-h-screen bg-gradient-to-br from-zinc-950 via-zinc-900 to-zinc-950 flex items-center justify-center p-4">
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-zinc-800/20 via-transparent to-transparent"></div>

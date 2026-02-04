@@ -1,18 +1,30 @@
-import { Outlet, useNavigate } from "react-router-dom";
-import { useContext, useEffect } from "react";
+import { Outlet, useLocation, useNavigate } from "react-router-dom";
+import { useContext, useEffect, useRef } from "react";
 import MeContext from "../../context/MeContext";
 
 export const RouterProtection = () => {
   const navigate = useNavigate();
-  const data = useContext(MeContext) ?? null;
+  const dataMe = useContext(MeContext) ?? null;
+  const { state } = useLocation();
+  const isLogin = useRef(false);
   useEffect(() => {
-    if (data?.loading) return;
-    if (data?.data) return;
-    navigate("/login");
-  }, [data, data?.data, data?.loading, navigate]);
+    (async () => {
+      if (!isLogin.current) {
+        await dataMe?.fetchMe();
+        isLogin.current = true;
+        return;
+      }
+      if (dataMe?.data) {
+        navigate(location.pathname, { replace: true });
+        return;
+      }
+      navigate("/login");
+    })();
+  }, [dataMe, navigate, state]);
   return <Outlet />;
 };
 
+// error no esta comprobando el tocken no devuelve nada
 /*In production it should be like this,
 but since I don't have it connected for now, 
 I can't activate it because of the renderer.*/
@@ -25,7 +37,6 @@ export const RouterProtection = () => {
     navigate("/login");
   }, [data?.isLogin, navigate]);
   return <Outlet />;
-};
+}; 
 
 */
-

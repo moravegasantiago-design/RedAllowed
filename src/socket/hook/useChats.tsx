@@ -1,7 +1,7 @@
 import { useContext, useEffect } from "react";
 import MeContext from "../../context/MeContext";
-import { useFetch } from "../../hook/useFetch";
 import type { ChatsProps } from "../../context/ChatsContext";
+import { useFetch } from "../../hook/useFetch";
 
 const useChats = () => {
   const id = useContext(MeContext);
@@ -22,7 +22,7 @@ const useChats = () => {
       }
     })();
   }, [handleRequest, id?.data?.id]);
-  const chats: ChatsProps[] = data?.data ?? [];
+  const chats: ChatsProps[] | null = data?.data ?? [];
   return { chats };
 };
 
