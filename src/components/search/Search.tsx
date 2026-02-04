@@ -4,6 +4,7 @@ import useUsers from "../../hook/useUsers";
 import { useFetch } from "../../hook/useFetch";
 import MeContext from "../../context/MeContext";
 import UsersOnlineContext from "../../context/UsersOnlineContext";
+import useFollow from "../../hook/useFollow";
 interface FollowingStatus {
   [key: number]: boolean;
 }
@@ -23,11 +24,11 @@ const Search = () => {
       else copyPrev[id] = true;
       return copyPrev;
     });
-    return !isFollowing;
-  };
+    return !isFollowing};
+  const {loading, handlerFollow} = useFollow();
   useEffect(()=> {
-    console.log(users)
-  },[users])
+    console.log(followingStatus)
+  },[followingStatus])
   return (
     <div className="h-screen bg-zinc-950 flex overflow-hidden">
       <div
@@ -164,8 +165,10 @@ const Search = () => {
                         <button
                           onClick={async(e) => {
                             e.stopPropagation();
-                            if(!handleFollowing || !myCredentials?.data?.id)return;
                             try {
+                                if(!myCredentials?.data?.id)return;
+                                await handlerFollow(myCredentials?.data?.id, user.id)
+                                if(loading ||!handleFollowing(user.id))return;
                                 await handleRequest({ href : "api/chat/create", method: "POST", isCredentials: false, user: {idP1: myCredentials?.data.id, idP2: user.id}})
                             } catch (e) {
                                 console.error(e);

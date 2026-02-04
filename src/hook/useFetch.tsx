@@ -13,7 +13,7 @@ export const useFetch = <T = userProps,>() => {
   const handleRequest = useCallback(
     async (props: {
       href: string;
-      method: string;
+      method: "GET" | "POST";
       isCredentials: boolean;
       user?: T | userProps;
     }) => {

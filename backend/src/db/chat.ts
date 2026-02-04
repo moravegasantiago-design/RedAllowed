@@ -17,7 +17,6 @@ export const bringChats = async (id: string) => {
 
 export const createGroup = async (props: { idP1: number; idP2: number }) => {
   const { idP1, idP2 } = props;
-  console.log([idP1, idP2]);
   try {
     const existing = await pool.query(
       `SELECT DISTINCT cm2.chat_id FROM chat_members cm JOIN chat_members cm2 ON cm2.chat_id = cm2.chat_id AND cm2.user_id = $2 WHERE cm.user_id = $1 
