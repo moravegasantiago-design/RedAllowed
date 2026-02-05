@@ -1,9 +1,9 @@
 import { pool } from ".";
 import { userProps } from "../models/authProps";
 
-export const bringUsers = async (): Promise<
-  userProps[] | { error: boolean; throw: string }
-> => {
+export const bringUsers = async (
+  userId: number
+): Promise<userProps[] | { error: boolean; throw: string }> => {
   try {
     const query = `SELECT 
     u.id,
@@ -13,33 +13,31 @@ export const bringUsers = async (): Promise<
     up.bio,
     up.job_title AS job,
     up.birthday,
-
-    COALESCE(
-      ARRAY_AGG(DISTINCT f.follower_id)
-        FILTER (WHERE f.follower_id IS NOT NULL),
-      '{}'
-    ) AS followers,
-
-    COALESCE(
-      ARRAY_AGG(DISTINCT f2.following_id)
-        FILTER (WHERE f2.following_id IS NOT NULL),
-      '{}'
-    ) AS friends
-
+    COUNT (DISTINCT f.follower_id) AS followers,
+    COUNT (DISTINCT fr.follower_id) AS friends,
+    EXISTS(SELECT 1 FROM followers fo WHERE follower_id = $1 AND following_id = u.id) AS iFollow,
+    EXISTS (SELECT 1 FROM followers fl WHERE follower_id = u.id AND following_id=$1) AS followMe
     FROM users u
     JOIN user_profiles up ON up.user_id = u.id
 
     LEFT JOIN followers f 
-      ON f.following_id = u.id
+      ON f.following_id = u.id 
 
-    LEFT JOIN followers f2 
-      ON f2.follower_id = u.id
-
+    
+    LEFT JOIN followers fr
+      ON fr.following_id = u.id
+    AND EXISTS (
+        SELECT 1
+        FROM followers back
+        WHERE back.follower_id = u.id
+          AND back.following_id = fr.follower_id
+    )
+    WHERE u.id != $1
+    
     GROUP BY 
       u.id, u.name, u.username,
-      up.photo, up.bio, up.job_title, up.birthday
-`;
-    const req = await pool.query(query);
+      up.photo, up.bio, up.job_title, up.birthday`;
+    const req = await pool.query(query, [userId]);
     return req.rows;
   } catch (e) {
     console.error(e);

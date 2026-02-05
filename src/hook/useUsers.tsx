@@ -8,10 +8,12 @@ export type usersType = {
   bio: string;
   job: string;
   birtday: string;
-  friends: number[];
-  followers: number[];
+  friends: number;
+  followers: number;
+  iFollow: boolean;
+  followMe: boolean;
 };
-const useUsers = () => {
+const useUsers = (id?: number) => {
   const { handleRequest, data } = useFetch<usersType[]>();
   useEffect(() => {
     (async () => {
@@ -19,9 +21,10 @@ const useUsers = () => {
         href: "api/user/users",
         method: "GET",
         isCredentials: false,
+        user: { id: id },
       });
     })();
-  }, [handleRequest]);
+  }, [handleRequest, id]);
   const users: usersType[] = data?.data ?? [];
   return { users };
 };
