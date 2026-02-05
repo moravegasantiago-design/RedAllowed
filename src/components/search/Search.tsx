@@ -1,34 +1,35 @@
-import { useContext, useEffect, useState } from "react";
+import { useContext,  useEffect,  useState } from "react";
 import Nav from "../app/Nav";
 import useUsers from "../../hook/useUsers";
 import { useFetch } from "../../hook/useFetch";
 import MeContext from "../../context/MeContext";
 import UsersOnlineContext from "../../context/UsersOnlineContext";
 import useFollow from "../../hook/useFollow";
+import LoadingUsers from "./LoadingUsers";
 interface FollowingStatus {
-  [key: number]: boolean;
+  [key: number]: {followers : number, iFollow: boolean};
 }
-
 const Search = () => {
   const [searchQuery, setSearchQuery] = useState<string>("");
   const {handleRequest} = useFetch<{idP1?: number, idP2: number}>();
   const myCredentials = useContext(MeContext);
   const { usersOnline } = useContext(UsersOnlineContext)?? {usersOnline : []};
   const handleFollowing = (id: number) => {
-    const isFollowing = Boolean(followingStatus[id])
+
     setFollowingStatus((prev) => {
-      const copyPrev = { ...prev };
-      if (copyPrev[id]) delete copyPrev[id];
-      else copyPrev[id] = true;
-      return copyPrev;
+      if (prev[id].iFollow)return {...prev, [id]: {followers: prev[id].followers === 0 ? 0 : prev[id].followers - 1, iFollow: false}}
+      else return {...prev, [id]: { followers: prev[id].followers + 1, iFollow: true}}
     });
-    return !isFollowing};
-  const {loading, handlerFollow} = useFollow();
+};
+  const { handlerFollow} = useFollow();
+  const { users, loading } = useUsers(myCredentials?.data?.id);
   const [followingStatus, setFollowingStatus] = useState<FollowingStatus>({});
-  const { users } = useUsers(myCredentials?.data?.id);
-  useEffect(()=> {
-    console.log(users)
-  },[users])
+  useEffect(() => {
+    const dbFollowing: FollowingStatus = Object.fromEntries(
+      users.map(u => [u.id, {followers : Number(u.followers), iFollow: u.ifollow}])
+    );
+    setFollowingStatus(prev => ({ ...prev, ...dbFollowing }));
+  }, [users]);
   return (
     <div className="h-screen bg-zinc-950 flex overflow-hidden">
       <div
@@ -108,8 +109,10 @@ const Search = () => {
                 Sugerencias
               </div>
 
-              {users.filter(u => u.id !== myCredentials?.data?.id).map((user) => (
-                <div
+              {(loading && <LoadingUsers/>) || users.map((user) => {
+                const notFollowed = user.followme ? "Te sigue" : "Seguir";
+                const followed = user.followme ? "Amigos" : "Siguiendo";
+                return <div
                   key={user.id}
                   className="group relative bg-zinc-900/40 border border-zinc-800/50 rounded-xl p-4 hover:bg-zinc-900/60 hover:border-zinc-700/80 transition-all duration-200 cursor-pointer"
                 >
@@ -141,7 +144,7 @@ const Search = () => {
                       </div>
 
                       <p className="text-zinc-400 text-sm mb-3 line-clamp-1">
-                        {user.job}
+                        {user.job ?? "No especificado"}
                       </p>
 
                       <div className="flex items-center justify-between">
@@ -159,7 +162,8 @@ const Search = () => {
                               d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"
                             />
                           </svg>
-                           <span>{user.followers} seguidores</span> 
+                          
+                           <span>{followingStatus[user.id]?.followers} Seguidores</span> 
                         </div>
 
                         <button
@@ -168,7 +172,7 @@ const Search = () => {
                             try {
                                 if(!myCredentials?.data?.id)return;
                                 await handlerFollow(myCredentials?.data?.id, user.id)
-                                if(loading ||!handleFollowing(user.id))return;
+                                handleFollowing(user.id);
                                 await handleRequest({ href : "api/chat/create", method: "POST", isCredentials: false, user: {idP1: myCredentials?.data.id, idP2: user.id}})
                             } catch (e) {
                                 console.error(e);
@@ -176,18 +180,18 @@ const Search = () => {
                             }
                           }}
                           className={`px-4 py-1.5 rounded-lg text-xs font-semibold transition-all ${
-                            followingStatus[user.id]
+                            followingStatus[user.id]?.iFollow
                               ? "bg-zinc-800 text-zinc-400 hover:bg-zinc-700"
                               : "bg-emerald-500 text-white hover:bg-emerald-600"
                           }`}
                         >
-                          {followingStatus[user.id] ? "Siguiendo" : "Seguir"}
+                          {followingStatus[user.id]?.iFollow ? followed : notFollowed}
                         </button>
                       </div>
                     </div>
                   </div>
                 </div>
-              ))}
+              })}
             </div>
           </div>
         </div>

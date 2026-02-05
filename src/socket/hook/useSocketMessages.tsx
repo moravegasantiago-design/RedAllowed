@@ -30,15 +30,15 @@ const useSocketMessages = (socketRef: RefObject<Socket | null> | null) => {
                 date: data.date,
                 userId: data.userId,
                 status:
-                  data.userId === credendials?.data.id ? "sent" : "delivered",
+                  data.userId === credendials?.data?.id ? "sent" : "delivered",
                 id: data.id,
               },
             ]
       );
-      if (data.userId === credendials?.data.id) return;
+      if (data.userId === credendials?.data?.id) return;
       current?.emit("delivered", data.id, "id");
     },
-    [credendials?.data.id]
+    [credendials?.data?.id]
   );
   useEffect(() => {
     if (!socketRef?.current) return;

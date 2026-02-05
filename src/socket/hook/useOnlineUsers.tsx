@@ -7,7 +7,6 @@ const useOnlineUser = () => {
     (users: userOnlineProps[]) => setUserOnline([...users]),
     []
   );
-
   return { usersOnline, handlerUsers };
 };
 

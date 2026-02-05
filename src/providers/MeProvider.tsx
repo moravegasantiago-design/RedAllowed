@@ -13,7 +13,7 @@ const MeProvider = ({ children }: { children: ReactNode }) => {
       return { data: me, isLogin: isLogin, loading: loading, fetchMe: fetchMe };
     return null;
   }, [me, isLogin, loading, fetchMe]);
-
+  console.log(data);
   return <MeContext.Provider value={data}>{children}</MeContext.Provider>;
 };
 export default MeProvider;

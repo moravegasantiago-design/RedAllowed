@@ -8,24 +8,24 @@ export type usersType = {
   bio: string;
   job: string;
   birtday: string;
-  friends: number;
-  followers: number;
-  iFollow: boolean;
-  followMe: boolean;
+  friends: string;
+  followers: string;
+  ifollow: boolean;
+  followme: boolean;
 };
 const useUsers = (id?: number) => {
-  const { handleRequest, data } = useFetch<usersType[]>();
+  const { handleRequest, data, loading } = useFetch<usersType[]>();
   useEffect(() => {
     (async () => {
       await handleRequest({
         href: "api/user/users",
-        method: "GET",
+        method: "POST",
         isCredentials: false,
         user: { id: id },
       });
     })();
   }, [handleRequest, id]);
   const users: usersType[] = data?.data ?? [];
-  return { users };
+  return { users, loading };
 };
 export default useUsers;
