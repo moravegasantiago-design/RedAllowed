@@ -12,7 +12,7 @@ const useChats = () => {
       try {
         await handleRequest({
           href: "api/chat/chats",
-          method: "GET",
+          method: "POST",
           isCredentials: false,
           user: { id: id.data.id },
         });
