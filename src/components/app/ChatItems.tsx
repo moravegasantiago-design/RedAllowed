@@ -59,7 +59,7 @@ const ChatItems = ({
         navegate(`/Chat/${chat.chat_id}`, {
           state: {
             name: chat.friend,
-            photo: chat.friendPhoto,
+            photo: chat.friendphoto,
             online: isOnline,
           },
         });
@@ -70,7 +70,7 @@ const ChatItems = ({
     >
       <div className="relative">
         <img
-          src={chat.friendPhoto}
+          src={chat.friendphoto}
           alt={chat.friend}
           className="w-12 h-12 rounded-full object-cover"
         />

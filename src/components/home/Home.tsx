@@ -3,18 +3,19 @@ import ChatItems from "../app/ChatItems";
 import { Outlet } from "react-router-dom";
 import Nav from "../app/Nav";
 import orderChats from "../../socket/logic/ordenChats";
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import ChatsContext from "../../context/ChatsContext";
 import MeContext from "../../context/MeContext";
 import useLastMessages, {
   type lastMessagesProps,
 } from "../../socket/hook/useLastMessages";
+import useSearch from "../../hook/useSearch";
 export type chatProps = {
   user_id: number;
   chat_id: number;
   created_at: Date;
   friend: string;
-  friendPhoto: string;
+  friendphoto: string;
   friendBio: string | null;
   friendJob: string;
   friendBirthDay: string;
@@ -31,11 +32,17 @@ const Home = () => {
       .filter((c) => c.lastMessages.unreadMessages !== 0)
       .map((c) => `${c.chat_id}`)
   );
-
+  const newFriend = chats.sort(
+    (a, b) => b.created_at.getTime() - a.created_at.getTime()
+  );
+  const { search, handleSearch } = useSearch<chatProps>(["friend"]);
+  const [focus, setFocus] = useState<boolean>(false);
+  useEffect(() => {
+    console.log(chats);
+  }, [chats]);
   return (
     <>
       <div className="h-screen bg-zinc-950 flex overflow-hidden">
-        {/* Sidebar */}
         <div
           className={`
         flex-col
@@ -102,25 +109,33 @@ const Home = () => {
                 type="text"
                 placeholder="Buscar o iniciar un nuevo chat"
                 className="w-full bg-zinc-800 border border-zinc-700 text-white placeholder-zinc-500 rounded-xl py-2.5 pl-10 pr-4 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500 transition-all duration-200 text-sm"
+                value={search.value}
+                onFocus={() => setFocus(true)}
+                onBlur={() => setFocus(false)}
+                onChange={(e) => handleSearch({ e, list: chats })}
               />
             </div>
 
-            {/* Search Suggestions (visible cuando se busca) */}
-            <div className="mt-2 bg-zinc-800 border border-zinc-700 rounded-xl overflow-hidden animate-[slideDown_0.2s_ease-out]">
-              <Suggestions />
-            </div>
+            {search.value
+              ? focus && <Suggestions chat={search.filter} method="input" />
+              : !newFriend[0]?.lastMessages?.id &&
+                chats.length > 0 && (
+                  <Suggestions chat={chats[0]} method="friend" />
+                )}
           </div>
 
           {/* Chat List */}
           <div className="flex-1 overflow-y-auto">
-            {chats.map((chat) => (
-              <ChatItems
-                chat={chat}
-                setSeenChats={setSeenChats}
-                unSeenChats={unSeenChats}
-                id={credendials?.data?.id}
-              />
-            ))}
+            {chats
+              .filter((c) => c.lastMessages?.id)
+              .map((chat) => (
+                <ChatItems
+                  chat={chat}
+                  setSeenChats={setSeenChats}
+                  unSeenChats={unSeenChats}
+                  id={credendials?.data?.id}
+                />
+              ))}
           </div>
           <Nav />
         </div>

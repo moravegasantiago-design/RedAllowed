@@ -138,7 +138,7 @@ const Search = () => {
                             {user.name}
                           </h3>
                           <p className="text-zinc-500 text-xs truncate mb-2">
-                            {user.username}
+                            @{user.username}
                           </p>
                         </div>
                       </div>

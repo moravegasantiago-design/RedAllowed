@@ -5,7 +5,7 @@ export type ChatsProps = {
   chat_id: number;
   created_at: Date;
   friend: string;
-  friendPhoto: string;
+  friendphoto: string;
   friendBio: string | null;
   friendJob: string;
   friendBirthDay: string;

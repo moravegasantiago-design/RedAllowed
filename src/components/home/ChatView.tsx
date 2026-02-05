@@ -25,6 +25,9 @@ const ChatView = () => {
       container.scrollTop = container.scrollHeight;
     }
   }, [messages]);
+  useEffect(() => {
+    console.log(state?.photo);
+  }, [state]);
   return (
     <div className="flex-1 flex flex-col bg-zinc-950">
       {/* Chat Header */}
@@ -51,17 +54,19 @@ const ChatView = () => {
 
         <div className="relative">
           <img
-            src={state.photo ?? ""}
-            alt={state.name ?? ""}
+            src={state?.photo}
+            alt={state?.name}
             className="w-10 h-10 rounded-full object-cover"
           />
-          <div className="absolute bottom-0 right-0 w-3 h-3 bg-emerald-500 rounded-full border-2 border-zinc-900"></div>
+          {state?.online && (
+            <div className="absolute bottom-0 right-0 w-3 h-3 bg-emerald-500 rounded-full border-2 border-zinc-900"></div>
+          )}
         </div>
 
         <div className="flex-1">
-          <h2 className="text-white font-semibold">{state.name ?? ""}</h2>
+          <h2 className="text-white font-semibold">{state?.name}</h2>
           <p className="text-emerald-500 text-sm">
-            {isWriting ? "Escribiendo..." : state.online ? "Online" : ""}
+            {isWriting ? "Escribiendo..." : state?.online ? "Online" : ""}
           </p>
         </div>
 

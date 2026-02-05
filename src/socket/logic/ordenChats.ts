@@ -8,11 +8,24 @@ const orderChats = ({
   chats: ChatsProps[];
   lastMessages: lastMessagesProps[];
 }) => {
-  return lastMessages
-    .map((l) => {
-      const chat = chats.find((c) => c.chat_id === l.chatId) as ChatsProps;
-      return { ...chat, lastMessages: { ...l } };
-    })
-    .filter(Boolean);
+  return lastMessages.length
+    ? lastMessages
+        .map((l) => {
+          const chat = chats.find((c) => c.chat_id === l.chatId) as ChatsProps;
+          return { ...chat, lastMessages: { ...l } };
+        })
+        .filter(Boolean)
+    : chats.map((c) => ({
+        ...c,
+        lastMessages: {
+          chatId: c.chat_id,
+          id: "",
+          userId: c.user_id,
+          content: "",
+          status: "sent" as "sent" | "delivered" | "seen",
+          date: "",
+          unreadMessages: 0,
+        },
+      }));
 };
 export default orderChats;
