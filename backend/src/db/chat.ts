@@ -65,10 +65,9 @@ export const addMessage = async (props: {
 export const modifyStatus = async (props: {
   idMessage: string;
   chatId: number;
-  userId: number;
   status: "delivered" | "seen";
 }) => {
-  const query = `UPDATE messages SET status=$4 WHERE id=$1 AND chat_id=$2 AND sender_id=$3`;
+  const query = `UPDATE messages SET status=$3 WHERE id=$1 AND chat_id=$2`;
   try {
     await pool.query(query, Object.values(props));
     return true;

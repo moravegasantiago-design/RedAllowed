@@ -8,6 +8,7 @@ import {
 import type { Socket } from "socket.io-client";
 import type { messagesProps } from "./useMessages";
 import MeContext from "../../context/MeContext";
+import { useParams } from "react-router-dom";
 
 const useSocketMessages = (socketRef: RefObject<Socket | null> | null) => {
   const [messagesSocket, setMessages] = useState<messagesProps[]>([]);
@@ -17,7 +18,7 @@ const useSocketMessages = (socketRef: RefObject<Socket | null> | null) => {
     setMessages((prev) =>
       prev.map((p) => (p.id === idMsg ? { ...p, status: status } : p))
     );
-
+  const { chatId } = useParams<{ chatId: string }>();
   const handleSocketMessages = useCallback(
     (data: messagesProps, current: Socket) => {
       setMessages((prev) =>
@@ -26,19 +27,19 @@ const useSocketMessages = (socketRef: RefObject<Socket | null> | null) => {
           : [
               ...prev,
               {
-                content: data.content,
-                date: data.date,
-                userId: data.userId,
+                content: data?.content,
+                date: data?.date,
+                userid: data?.userid,
                 status:
-                  data.userId === credendials?.data?.id ? "sent" : "delivered",
-                id: data.id,
+                  data.userid === credendials?.data?.id ? "sent" : "delivered",
+                id: data?.id,
               },
             ]
       );
-      if (data.userId === credendials?.data?.id) return;
-      current?.emit("delivered", data.id, "id");
+      if (data.userid === credendials?.data?.id) return;
+      current?.emit("delivered", data.id, Number(chatId));
     },
-    [credendials?.data?.id]
+    [credendials?.data?.id, chatId]
   );
   useEffect(() => {
     if (!socketRef?.current) return;
@@ -48,7 +49,7 @@ const useSocketMessages = (socketRef: RefObject<Socket | null> | null) => {
     const onTyping = (isTrue: boolean) => setIsWriting(isTrue);
     const onDelivered = (id: string) => handleStatusMessages("delivered", id);
     const onSeen = (idMsg: string) => handleStatusMessages("seen", idMsg);
-    current.emit("join_chat", "id");
+    current.emit("join_chat", Number(chatId));
     current.on("message", onMessages);
     current.on("typing", onTyping);
     current.on("delivered", onDelivered);
@@ -60,7 +61,7 @@ const useSocketMessages = (socketRef: RefObject<Socket | null> | null) => {
       current.off("delivered", onDelivered);
       current.off("seen", onSeen);
     };
-  }, [socketRef, handleSocketMessages]);
+  }, [socketRef, handleSocketMessages, chatId]);
   return { messagesSocket, isWriting };
 };
 export default useSocketMessages;

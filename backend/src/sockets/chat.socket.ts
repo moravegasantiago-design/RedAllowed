@@ -1,12 +1,12 @@
 import { Server, Socket } from "socket.io";
 import { addMessage, modifyStatus } from "../db/chat";
 export const chatOnline = (oi: Server) => {
-  const usersOnline: { userId: number; socketId: string }[] = [];
+  const usersOnline: { userid: number; socketId: string }[] = [];
 
   oi.on("connection", (socket: Socket) => {
     const userId = socket.handshake.auth.userId;
 
-    usersOnline.push({ userId: userId, socketId: socket.id });
+    usersOnline.push({ userid: userId, socketId: socket.id });
 
     socket.on("online_users", () => oi.emit("online_users", usersOnline));
 
@@ -15,7 +15,7 @@ export const chatOnline = (oi: Server) => {
     socket.on("message", async (text: string, chat_id: number) => {
       const id = `${crypto.randomUUID()}/${new Date().toISOString()}`;
       oi.to(String(chat_id)).emit("message", {
-        userId: socket.id,
+        userid: userId,
         content: text,
         date: new Date(),
         status: "sent",
@@ -43,7 +43,6 @@ export const chatOnline = (oi: Server) => {
         await modifyStatus({
           idMessage: idMsg,
           chatId: chat_id,
-          userId: userId,
           status: "delivered",
         });
       } catch (e) {
@@ -58,7 +57,6 @@ export const chatOnline = (oi: Server) => {
         await modifyStatus({
           idMessage: idMsg,
           chatId: chat_id,
-          userId: userId,
           status: "seen",
         });
       } catch (e) {

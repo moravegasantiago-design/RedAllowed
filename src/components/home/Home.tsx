@@ -128,8 +128,9 @@ const Home = () => {
           <div className="flex-1 overflow-y-auto">
             {chats
               .filter((c) => c.lastMessages?.id)
-              .map((chat) => (
+              .map((chat, i) => (
                 <ChatItems
+                  key={i}
                   chat={chat}
                   setSeenChats={setSeenChats}
                   unSeenChats={unSeenChats}

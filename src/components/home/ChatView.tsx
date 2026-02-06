@@ -6,7 +6,7 @@ import { SocketContext } from "../../context/SocketContext";
 import useSocketMessages from "../../socket/hook/useSocketMessages";
 import useMessages from "../../socket/hook/useMessages";
 import MeContext from "../../context/MeContext";
-import { Delivered, Sent } from "../message/Status";
+import { Delivered, Seen, Sent } from "../message/Status";
 
 const ChatView = () => {
   const navegate = useNavigate();
@@ -25,9 +25,7 @@ const ChatView = () => {
       container.scrollTop = container.scrollHeight;
     }
   }, [messages]);
-  useEffect(() => {
-    console.log(state?.photo);
-  }, [state]);
+
   return (
     <div className="flex-1 flex flex-col bg-zinc-950">
       {/* Chat Header */}
@@ -134,13 +132,13 @@ const ChatView = () => {
             Hoy
           </span>
         </div>
-        {[...messages, ...messagesSocket].map((m, i) => (
+        {[...messages, ...messagesSocket.map((m) => ({ ...m }))].map((m, i) => (
           <div
             key={i}
             ref={(el) => {
               if (
                 !el ||
-                m.userId === credendials?.data?.id ||
+                m.userid === credendials?.data?.id ||
                 m.status !== "delivered"
               )
                 return;
@@ -148,7 +146,7 @@ const ChatView = () => {
             }}
             id={m.id}
             className={`flex ${
-              m.userId === credendials?.data?.id
+              m.userid === credendials?.data?.id
                 ? "justify-end"
                 : "justify-start"
             } animate-[slideIn_0.1s_ease-out_0.2s_both]`}
@@ -156,15 +154,15 @@ const ChatView = () => {
             <div className="max-w-[85%] sm:max-w-[70%]">
               <div
                 className={`${
-                  m.userId === credendials?.data?.id
+                  m.userid === credendials?.data?.id
                     ? "bg-emerald-600"
                     : "bg-zinc-800"
                 } text-white px-4 py-2.5 rounded-2xl ${
-                  m.userId === credendials?.data?.id
+                  m.userid === credendials?.data?.id
                     ? "rounded-br-md"
                     : "rounded-bl-md"
                 } w-fit ${
-                  m.userId === credendials?.data?.id ? "ml-auto" : "mr-auto"
+                  m.userid === credendials?.data?.id ? "ml-auto" : "mr-auto"
                 } max-w-[250px] break-words`}
               >
                 <p>{m.content}</p>
@@ -176,11 +174,11 @@ const ChatView = () => {
                     minute: "2-digit",
                   })}
                 </span>
-                {m.userId === credendials?.data?.id && (
+                {m.userid === credendials?.data?.id && (
                   <>
                     {m.status === "sent" && <Sent />}
                     {m.status === "delivered" && <Delivered />}
-                    {m.status === "seen" && <Sent />}
+                    {m.status === "seen" && <Seen />}
                   </>
                 )}
               </div>
@@ -234,8 +232,12 @@ const ChatView = () => {
               onSubmit={(e) => {
                 e.preventDefault();
                 if (!message.message || !socketRef?.current) return;
-                socketRef.current?.emit("typing", false, "id");
-                socketRef.current?.emit("message", message.message, "id");
+                socketRef.current?.emit("typing", false, Number(chatId));
+                socketRef.current?.emit(
+                  "message",
+                  message.message,
+                  Number(chatId)
+                );
                 setMessage({ message: "" });
               }}
             >
@@ -247,11 +249,11 @@ const ChatView = () => {
                 onChange={(e) => {
                   if (!socketRef?.current) return;
                   setMessage({ message: e.target.value });
-                  socketRef.current?.emit("typing", true, "id");
+                  socketRef.current?.emit("typing", true, Number(chatId));
                   if (typingTimeOut.current)
                     clearTimeout(typingTimeOut.current);
                   typingTimeOut.current = setTimeout(() => {
-                    socketRef.current?.emit("typing", false, "id");
+                    socketRef.current?.emit("typing", false, Number(chatId));
                   }, 1000);
                 }}
                 value={message.message}
