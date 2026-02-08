@@ -6,7 +6,7 @@ export type messagesProps = {
   userid: number;
   chatid?: number;
   content: string;
-  date: Date;
+  date: string;
   status: "sent" | "delivered" | "seen";
 };
 const useMessages = (chatId: number) => {

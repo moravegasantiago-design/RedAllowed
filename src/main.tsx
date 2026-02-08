@@ -12,14 +12,14 @@ createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <BrowserRouter>
       <MeProvider>
-        <ScrollToTop />
-        <ChatsProvider>
-          <UsersOnlineProvider>
-            <SocketProvider>
+        <UsersOnlineProvider>
+          <ScrollToTop />
+          <SocketProvider>
+            <ChatsProvider>
               <App />
-            </SocketProvider>
-          </UsersOnlineProvider>
-        </ChatsProvider>
+            </ChatsProvider>
+          </SocketProvider>
+        </UsersOnlineProvider>
       </MeProvider>
     </BrowserRouter>
   </StrictMode>

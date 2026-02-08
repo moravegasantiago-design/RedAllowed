@@ -43,6 +43,7 @@ const useSocketMessages = (socketRef: RefObject<Socket | null> | null) => {
   );
   useEffect(() => {
     if (!socketRef?.current) return;
+    console.log(socketRef.current);
     const current = socketRef?.current;
     const onMessages = (data: messagesProps) =>
       handleSocketMessages(data, current);

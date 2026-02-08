@@ -7,6 +7,7 @@ import useSocketMessages from "../../socket/hook/useSocketMessages";
 import useMessages from "../../socket/hook/useMessages";
 import MeContext from "../../context/MeContext";
 import { Delivered, Seen, Sent } from "../message/Status";
+import useMergedMessages from "../../socket/hook/useMergedMessages";
 
 const ChatView = () => {
   const navegate = useNavigate();
@@ -19,12 +20,13 @@ const ChatView = () => {
   const { messages } = useMessages(Number(chatId));
   const { isSeen } = useSeen(socketRef);
   const credendials = useContext(MeContext);
+  const { mergedMessages } = useMergedMessages({ messages, messagesSocket });
   useEffect(() => {
     const container = document.getElementById("chat-messages");
     if (container) {
       container.scrollTop = container.scrollHeight;
     }
-  }, [messages]);
+  }, [mergedMessages]);
 
   return (
     <div className="flex-1 flex flex-col bg-zinc-950">
@@ -132,7 +134,7 @@ const ChatView = () => {
             Hoy
           </span>
         </div>
-        {[...messages, ...messagesSocket.map((m) => ({ ...m }))].map((m, i) => (
+        {mergedMessages.map((m, i) => (
           <div
             key={i}
             ref={(el) => {
