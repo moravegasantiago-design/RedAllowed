@@ -1,24 +1,16 @@
 import { useNavigate } from "react-router-dom";
 import type { chatProps } from "../home/Home";
 
-const Suggestions = ({
-  chat,
-  method,
-}: {
-  chat: chatProps | chatProps[];
-  method: "input" | "friend";
-}) => {
+const Suggestions = ({ chat }: { chat: chatProps[] }) => {
   return (
     <div className="mt-2 bg-zinc-800 border border-zinc-700 rounded-xl overflow-hidden animate-[slideDown_0.2s_ease-out]">
       <div className="p-2 text-xs text-zinc-500 border-b border-zinc-700">
-        {method === "input" ? "Sugerencias" : "Amigo reciente"}
+        Sugerencias
       </div>
 
-      {Array.isArray(chat) ? (
-        chat.map((c, i) => <Users key={i} chat={c} />)
-      ) : (
-        <Users chat={chat} />
-      )}
+      {chat.map((c, i) => (
+        <Users key={i} chat={c} />
+      ))}
     </div>
   );
 };
@@ -28,7 +20,7 @@ const Users = ({ chat }: { chat: chatProps }) => {
   return (
     <button
       className="w-full flex items-center gap-3 p-3 hover:bg-zinc-700/50 transition-colors"
-      onClick={() =>
+      onMouseDown={() =>
         navegate(`/Chat/${chat?.chat_id}`, {
           state: {
             name: chat?.friend,

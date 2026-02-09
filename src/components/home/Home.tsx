@@ -13,26 +13,23 @@ import useChats from "../../socket/hook/useChats";
 export type chatProps = {
   user_id: number;
   chat_id: number;
-  created_at: Date;
+  created_at: string;
   friend: string;
   friendphoto: string;
   friendBio: string | null;
   friendJob: string;
   friendBirthDay: string;
   friendTime: string;
-  lastMessages: lastMessagesProps;
+  lastMessages: lastMessagesProps | null;
 };
 const Home = () => {
   const { chats } = useChats();
   const credendials = useContext(MeContext);
   const { lastMessages } = useLastMessages({ userId: credendials?.data?.id });
   const chatsUser = orderChats({ chats: chats, lastMessages: lastMessages });
-  const newFriend = chatsUser.sort(
-    (a, b) => b.created_at.getTime() - a.created_at.getTime(),
-  );
+
   const { search, handleSearch } = useSearch<chatProps>(["friend"]);
   const [focus, setFocus] = useState<boolean>(false);
-
   return (
     <>
       <div className="h-screen bg-zinc-950 flex overflow-hidden">
@@ -109,18 +106,15 @@ const Home = () => {
               />
             </div>
 
-            {search.value
-              ? focus && <Suggestions chat={search.filter} method="input" />
-              : !newFriend[0]?.lastMessages?.id &&
-                chats.length > 0 && (
-                  <Suggestions chat={chatsUser[0]} method="friend" />
-                )}
+            {search.value && focus && search.filter.length > 0 && (
+              <Suggestions chat={search.filter} />
+            )}
           </div>
 
           {/* Chat List */}
           <div className="flex-1 overflow-y-auto">
             {chatsUser
-              .filter((c) => c.lastMessages?.id)
+              .filter((c) => c.lastMessages)
               .map((chat, i) => (
                 <ChatItems key={i} chat={chat} id={credendials?.data?.id} />
               ))}

@@ -21,7 +21,7 @@ const useLastMessageSource = ({
       messages?: messagesProps[];
     }) => {
       const unreadMessages =
-        "unreadmessages" in object
+        object && "unreadmessages" in object
           ? Number(object.unreadmessages)
           : messages!.filter((m) => m.status !== "seen" && m.userid !== id)
               .length;
@@ -42,7 +42,7 @@ const useLastMessageSource = ({
     status: "sent" | "delivered" | "seen";
     unreadMessages: number;
   }>(() => {
-    if (!messagesSocket.length)
+    if (!messagesSocket.length && chat.lastMessages)
       return handlerMessage({ object: chat.lastMessages });
 
     const lastSocketMsg = messagesSocket[messagesSocket.length - 1];

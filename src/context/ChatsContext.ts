@@ -3,7 +3,7 @@ import { createContext } from "react";
 export type ChatsProps = {
   user_id: number;
   chat_id: number;
-  created_at: Date;
+  created_at: string;
   friend: string;
   friendphoto: string;
   friendBio: string | null;
