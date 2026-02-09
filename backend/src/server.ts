@@ -10,6 +10,7 @@ const oi = new Server(server, {
       "http://localhost:5173",
       "http://192.168.101.15:5173",
       "http://127.0.0.1:5173",
+      "https://red-allowed.vercel.app",
     ],
     credentials: true,
   },
