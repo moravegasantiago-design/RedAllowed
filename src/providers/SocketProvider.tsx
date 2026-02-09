@@ -56,9 +56,8 @@ const SocketProvider = ({ children }: { children: ReactNode }) => {
       socketRef.current?.disconnect();
       socketRef.current = null;
     },
-    []
+    [],
   );
-
   if (!isConnected) return <LoadingSocket />;
 
   return (

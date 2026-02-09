@@ -3,7 +3,7 @@ import ChatItems from "../app/ChatItems";
 import { Outlet } from "react-router-dom";
 import Nav from "../app/Nav";
 import orderChats from "../../socket/logic/ordenChats";
-import { useContext, useEffect, useState } from "react";
+import { useContext, useState } from "react";
 import ChatsContext from "../../context/ChatsContext";
 import MeContext from "../../context/MeContext";
 import useLastMessages, {
@@ -27,19 +27,11 @@ const Home = () => {
   const credendials = useContext(MeContext);
   const { lastMessages } = useLastMessages({ userId: credendials?.data?.id });
   const chats = orderChats({ chats: chatsUser, lastMessages: lastMessages });
-  const [unSeenChats, setSeenChats] = useState<string[]>(() =>
-    chats
-      .filter((c) => c.lastMessages.unreadMessages !== 0)
-      .map((c) => `${c.chat_id}`)
-  );
   const newFriend = chats.sort(
-    (a, b) => b.created_at.getTime() - a.created_at.getTime()
+    (a, b) => b.created_at.getTime() - a.created_at.getTime(),
   );
   const { search, handleSearch } = useSearch<chatProps>(["friend"]);
   const [focus, setFocus] = useState<boolean>(false);
-  useEffect(() => {
-    console.log(chats);
-  }, [chats]);
   return (
     <>
       <div className="h-screen bg-zinc-950 flex overflow-hidden">
@@ -129,13 +121,7 @@ const Home = () => {
             {chats
               .filter((c) => c.lastMessages?.id)
               .map((chat, i) => (
-                <ChatItems
-                  key={i}
-                  chat={chat}
-                  setSeenChats={setSeenChats}
-                  unSeenChats={unSeenChats}
-                  id={credendials?.data?.id}
-                />
+                <ChatItems key={i} chat={chat} id={credendials?.data?.id} />
               ))}
           </div>
           <Nav />

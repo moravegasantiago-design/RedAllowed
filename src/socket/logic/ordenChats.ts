@@ -20,11 +20,11 @@ const orderChats = ({
         lastMessages: {
           chatId: c.chat_id,
           id: "",
-          userId: c.user_id,
+          userid: c.user_id,
           content: "",
           status: "sent" as "sent" | "delivered" | "seen",
           date: "",
-          unreadMessages: 0,
+          unreadmessages: "",
         },
       }));
 };

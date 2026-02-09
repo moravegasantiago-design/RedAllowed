@@ -1,4 +1,4 @@
-import { useContext, useMemo, type Dispatch, type SetStateAction } from "react";
+import { useContext, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import UsersOnlineContext from "../../context/UsersOnlineContext";
 import { SocketContext } from "../../context/SocketContext";
@@ -6,51 +6,24 @@ import useSocketMessages from "../../socket/hook/useSocketMessages";
 import type { chatProps } from "../home/Home";
 import Typing from "../message/Typing";
 import { Delivered, Seen, Sent } from "../message/Status";
+import useLastMessageSource from "../../socket/hook/useLastMessageSource";
 
-const ChatItems = ({
-  chat,
-  unSeenChats,
-  setSeenChats,
-  id,
-}: {
-  chat: chatProps;
-  unSeenChats: string[];
-  setSeenChats: Dispatch<SetStateAction<string[]>>;
-  id?: number;
-}) => {
+const ChatItems = ({ chat, id }: { chat: chatProps; id?: number }) => {
   const navegate = useNavigate();
   const { usersOnline } = useContext(UsersOnlineContext)!;
   const socketRef = useContext(SocketContext);
   const isOnline = usersOnline.find((u) => u.userId === chat.user_id) ?? false;
-  const { messagesSocket, isWriting } = useSocketMessages(socketRef);
-  const lastMessage = useMemo<{
-    content: string;
-    date: Date;
-    isMe: boolean;
-    status: "sent" | "delivered" | "seen";
-  }>(() => {
-    if (!messagesSocket.length)
-      return {
-        content: chat.lastMessages.content,
-        date: new Date(chat.lastMessages.date),
-        isMe: chat.lastMessages.userId === id,
-        status: chat.lastMessages.status,
-      };
-
-    const lastSocketMsg = messagesSocket[messagesSocket.length - 1];
-
-    return {
-      content: lastSocketMsg.content,
-      date: lastSocketMsg.date,
-      isMe: lastSocketMsg.userId === id,
-      status: lastSocketMsg.status,
-    };
-  }, [messagesSocket, id, chat.lastMessages]);
+  const { messagesSocket, isWriting } = useSocketMessages({
+    socketRef,
+    chatId: chat.chat_id,
+  });
+  const { lastMessage } = useLastMessageSource({ messagesSocket, chat, id });
+  useEffect(() => console.log(messagesSocket), [messagesSocket]);
   return (
     <div
       className={`flex items-center gap-3 p-4 
         ${
-          unSeenChats.includes(`${chat.chat_id}`)
+          lastMessage.unreadMessages !== 0 && !lastMessage.isMe
             ? "bg-zinc-800/50 border-l-2 border-emerald-500 cursor-pointer animate-[fadeIn_0.3s_ease-out]"
             : "hover:bg-zinc-800/30 cursor-pointer transition-colors animate-[fadeIn_0.3s_ease-out_0.2s_both]"
         }`}
@@ -63,9 +36,6 @@ const ChatItems = ({
             online: isOnline,
           },
         });
-        setSeenChats((prev) =>
-          prev.filter((p) => p !== chat.chat_id.toString())
-        );
       }}
     >
       <div className="relative">
@@ -85,7 +55,7 @@ const ChatItems = ({
           <h3 className="text-white font-medium truncate">{chat.friend}</h3>
           <span
             className={`text-xs ${
-              unSeenChats.includes(`${chat.chat_id}`)
+              lastMessage.unreadMessages !== 0 && !lastMessage.isMe
                 ? "text-emerald-500"
                 : "text-zinc-400"
             }`}
@@ -97,15 +67,6 @@ const ChatItems = ({
           </span>
         </div>
         <div className="flex items-center justify-between">
-          {!isWriting &&
-          lastMessage.isMe &&
-          lastMessage.status === "delivered" ? (
-            <Delivered />
-          ) : lastMessage.status === "seen" ? (
-            <Seen />
-          ) : (
-            <Sent />
-          )}
           {isWriting ? (
             <Typing />
           ) : (
@@ -113,9 +74,15 @@ const ChatItems = ({
               {lastMessage.content}
             </p>
           )}
-          {unSeenChats.includes(`${chat.chat_id}`) && (
+          {!isWriting &&
+            lastMessage.isMe &&
+            ((lastMessage.status === "delivered" && <Delivered />) ||
+              (lastMessage.status === "sent" && <Sent />) ||
+              (lastMessage.status === "seen" && <Seen />))}
+
+          {lastMessage.unreadMessages !== 0 && !lastMessage.isMe && (
             <span className="bg-emerald-500 text-white text-xs rounded-full px-2 py-0.5 ml-2">
-              {chat.lastMessages.unreadMessages}
+              {lastMessage.unreadMessages}
             </span>
           )}
         </div>

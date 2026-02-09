@@ -3,11 +3,11 @@ import { useFetch } from "../../hook/useFetch";
 export type lastMessagesProps = {
   chatId: number;
   id: string;
-  userId: number;
+  userid: number;
   content: string;
   status: "sent" | "delivered" | "seen";
   date: string;
-  unreadMessages: number;
+  unreadmessages: string;
 };
 const useLastMessages = ({ userId }: { userId?: number }) => {
   const { data, handleRequest } = useFetch<lastMessagesProps[]>();

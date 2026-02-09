@@ -52,7 +52,7 @@ export const chatOnline = (oi: Server) => {
     });
 
     socket.on("seen", async (idMsg: string, chat_id: number) => {
-      socket.to(String(chat_id)).emit("seen", idMsg);
+      oi.to(String(chat_id)).emit("seen", idMsg);
       try {
         await modifyStatus({
           idMessage: idMsg,

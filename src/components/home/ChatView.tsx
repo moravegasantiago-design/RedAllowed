@@ -16,7 +16,10 @@ const ChatView = () => {
   const socketRef = useContext(SocketContext);
   const [message, setMessage] = useState<{ message: string }>({ message: "" });
   const typingTimeOut = useRef<number | null>(null);
-  const { messagesSocket, isWriting } = useSocketMessages(socketRef);
+  const { messagesSocket, isWriting } = useSocketMessages({
+    socketRef,
+    chatId: Number(chatId),
+  });
   const { messages } = useMessages(Number(chatId));
   const { isSeen } = useSeen(socketRef);
   const credendials = useContext(MeContext);
@@ -171,7 +174,7 @@ const ChatView = () => {
               </div>
               <div className={`flex items-center justify-end gap-1 mt-0.5`}>
                 <span className="text-xs text-zinc-600">
-                  {new Date(m.date).toLocaleTimeString("es", {
+                  {new Date(m.date).toLocaleTimeString("es-CO", {
                     hour: "2-digit",
                     minute: "2-digit",
                   })}
@@ -238,7 +241,7 @@ const ChatView = () => {
                 socketRef.current?.emit(
                   "message",
                   message.message,
-                  Number(chatId)
+                  Number(chatId),
                 );
                 setMessage({ message: "" });
               }}
