@@ -31,8 +31,8 @@ const ChatItems = ({ chat, id }: { chat: chatProps; id?: number }) => {
       onClick={() => {
         navegate(`/Chat/${chat.chat_id}`, {
           state: {
-            name: chat.friend,
-            photo: chat.friendphoto,
+            name: chat?.friend,
+            photo: chat?.friendphoto,
             online: isOnline,
           },
         });

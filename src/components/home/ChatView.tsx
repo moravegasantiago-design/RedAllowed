@@ -1,18 +1,18 @@
 import { useContext, useEffect, useRef, useState } from "react";
 import Typing from "../message/Typing";
 import useSeen from "../../socket/hook/useSeen";
-import { useLocation, useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { SocketContext } from "../../context/SocketContext";
 import useSocketMessages from "../../socket/hook/useSocketMessages";
 import useMessages from "../../socket/hook/useMessages";
 import MeContext from "../../context/MeContext";
 import { Delivered, Seen, Sent } from "../message/Status";
 import useMergedMessages from "../../socket/hook/useMergedMessages";
+import useRoutestateInf from "../../hook/useRouteState";
 
 const ChatView = () => {
   const navegate = useNavigate();
   const { chatId } = useParams<{ chatId: string }>();
-  const { state } = useLocation();
   const socketRef = useContext(SocketContext);
   const [message, setMessage] = useState<{ message: string }>({ message: "" });
   const typingTimeOut = useRef<number | null>(null);
@@ -30,7 +30,11 @@ const ChatView = () => {
       container.scrollTop = container.scrollHeight;
     }
   }, [mergedMessages]);
-
+  const { stateInf } = useRoutestateInf<{
+    name: string;
+    photo: string;
+    online: boolean;
+  }>();
   return (
     <div className="flex-1 flex flex-col bg-zinc-950">
       {/* Chat Header */}
@@ -57,19 +61,19 @@ const ChatView = () => {
 
         <div className="relative">
           <img
-            src={state?.photo}
-            alt={state?.name}
+            src={stateInf?.photo}
+            alt={stateInf?.name}
             className="w-10 h-10 rounded-full object-cover"
           />
-          {state?.online && (
+          {stateInf?.online && (
             <div className="absolute bottom-0 right-0 w-3 h-3 bg-emerald-500 rounded-full border-2 border-zinc-900"></div>
           )}
         </div>
 
         <div className="flex-1">
-          <h2 className="text-white font-semibold">{state?.name}</h2>
+          <h2 className="text-white font-semibold">{stateInf?.name}</h2>
           <p className="text-emerald-500 text-sm">
-            {isWriting ? "Escribiendo..." : state?.online ? "Online" : ""}
+            {isWriting ? "Escribiendo..." : stateInf?.online ? "Online" : ""}
           </p>
         </div>
 

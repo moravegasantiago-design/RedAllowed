@@ -32,6 +32,7 @@ const Home = () => {
   );
   const { search, handleSearch } = useSearch<chatProps>(["friend"]);
   const [focus, setFocus] = useState<boolean>(false);
+  
   return (
     <>
       <div className="h-screen bg-zinc-950 flex overflow-hidden">
@@ -40,7 +41,7 @@ const Home = () => {
         flex-col
         bg-zinc-900 border-r border-zinc-800
         w-full md:w-96
-        ${location.pathname === "/Chat" ? "hidden md:flex" : "flex"}
+        ${location.pathname !== "/" ? "hidden md:flex" : "flex"}
       `}
         >
           <div className="p-4 border-b border-zinc-800">
