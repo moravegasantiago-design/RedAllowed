@@ -1,6 +1,8 @@
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import { useContext, useEffect, useRef } from "react";
 import MeContext from "../../context/MeContext";
+import SocketProvider from "../../providers/SocketProvider";
+import UsersOnlineProvider from "../../providers/UsersOnlineProvider";
 
 export const RouterProtection = () => {
   const navigate = useNavigate();
@@ -21,7 +23,13 @@ export const RouterProtection = () => {
       navigate("/login");
     })();
   }, [dataMe, navigate, state]);
-  return <Outlet />;
+  return (
+    <UsersOnlineProvider>
+      <SocketProvider>
+        <Outlet />
+      </SocketProvider>
+    </UsersOnlineProvider>
+  );
 };
 
 // error no esta comprobando el tocken no devuelve nada

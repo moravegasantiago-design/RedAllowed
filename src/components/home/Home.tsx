@@ -4,12 +4,12 @@ import { Outlet } from "react-router-dom";
 import Nav from "../app/Nav";
 import orderChats from "../../socket/logic/ordenChats";
 import { useContext, useState } from "react";
-import ChatsContext from "../../context/ChatsContext";
 import MeContext from "../../context/MeContext";
 import useLastMessages, {
   type lastMessagesProps,
 } from "../../socket/hook/useLastMessages";
 import useSearch from "../../hook/useSearch";
+import useChats from "../../socket/hook/useChats";
 export type chatProps = {
   user_id: number;
   chat_id: number;
@@ -23,16 +23,16 @@ export type chatProps = {
   lastMessages: lastMessagesProps;
 };
 const Home = () => {
-  const chatsUser = useContext(ChatsContext);
+  const { chats } = useChats();
   const credendials = useContext(MeContext);
   const { lastMessages } = useLastMessages({ userId: credendials?.data?.id });
-  const chats = orderChats({ chats: chatsUser, lastMessages: lastMessages });
-  const newFriend = chats.sort(
+  const chatsUser = orderChats({ chats: chats, lastMessages: lastMessages });
+  const newFriend = chatsUser.sort(
     (a, b) => b.created_at.getTime() - a.created_at.getTime(),
   );
   const { search, handleSearch } = useSearch<chatProps>(["friend"]);
   const [focus, setFocus] = useState<boolean>(false);
-  
+
   return (
     <>
       <div className="h-screen bg-zinc-950 flex overflow-hidden">
@@ -105,7 +105,7 @@ const Home = () => {
                 value={search.value}
                 onFocus={() => setFocus(true)}
                 onBlur={() => setFocus(false)}
-                onChange={(e) => handleSearch({ e, list: chats })}
+                onChange={(e) => handleSearch({ e, list: chatsUser })}
               />
             </div>
 
@@ -113,13 +113,13 @@ const Home = () => {
               ? focus && <Suggestions chat={search.filter} method="input" />
               : !newFriend[0]?.lastMessages?.id &&
                 chats.length > 0 && (
-                  <Suggestions chat={chats[0]} method="friend" />
+                  <Suggestions chat={chatsUser[0]} method="friend" />
                 )}
           </div>
 
           {/* Chat List */}
           <div className="flex-1 overflow-y-auto">
-            {chats
+            {chatsUser
               .filter((c) => c.lastMessages?.id)
               .map((chat, i) => (
                 <ChatItems key={i} chat={chat} id={credendials?.data?.id} />
