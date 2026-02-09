@@ -20,6 +20,7 @@ export const chatOnline = (oi: Server) => {
         date: new Date(),
         status: "sent",
         id: id,
+        chatid: chat_id,
       });
       try {
         await addMessage({
@@ -63,6 +64,9 @@ export const chatOnline = (oi: Server) => {
         console.error(e);
         return;
       }
+    });
+    socket.on("leave_group", (chat_id: number) => {
+      socket.leave(String(chat_id));
     });
     socket.on("disconnect", () => {
       const index = usersOnline.findIndex((u) => u.socketId === socket.id);

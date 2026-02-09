@@ -25,6 +25,7 @@ const useSocketMessages = ({
     );
   const handleSocketMessages = useCallback(
     (data: messagesProps, current: Socket) => {
+      if (data?.chatid !== chatId) return console.log(data);
       setMessages((prev) =>
         prev.find((p) => p.id === data.id)
           ? prev
@@ -60,6 +61,7 @@ const useSocketMessages = ({
     current.on("seen", onSeen);
 
     return () => {
+
       current.off("message", onMessages);
       current.off("typing", onTyping);
       current.off("delivered", onDelivered);
