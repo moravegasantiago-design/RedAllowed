@@ -22,7 +22,7 @@ const Search = () => {
     });
 };
   const { handlerFollow} = useFollow();
-  const { users, loading } = useUsers(myCredentials?.data?.id);
+  const { users, loading } = useUsers(myCredentials?.data?.id, "ALL");
   const [followingStatus, setFollowingStatus] = useState<FollowingStatus>({});
   useEffect(() => {
     const dbFollowing: FollowingStatus = Object.fromEntries(

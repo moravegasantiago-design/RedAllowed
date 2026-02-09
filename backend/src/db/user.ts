@@ -2,7 +2,8 @@ import { pool } from ".";
 import { userProps } from "../models/authProps";
 
 export const bringUsers = async (
-  userId: number
+  userId: number,
+  amount: "ALL" | "ONE",
 ): Promise<userProps[] | { error: boolean; throw: string }> => {
   try {
     const query = `SELECT 
@@ -32,7 +33,7 @@ export const bringUsers = async (
         WHERE back.follower_id = u.id
           AND back.following_id = fr.follower_id
     )
-    WHERE u.id != $1
+    WHERE ${amount === "ALL" ? "u.id != $1" : "u.id = $1"}
     
     GROUP BY 
       u.id, u.name, u.username,

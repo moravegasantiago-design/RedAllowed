@@ -16,7 +16,7 @@ const App = () => {
       <Route path="/Register" element={<Register />} />
       <Route element={<RouterProtection />}>
         <Route path="/" element={<Home />}>
-          <Route path="Chat/:chatId" element={<ChatView />} />
+          <Route path="Chat/:chatId/:userId" element={<ChatView />} />
           <Route index element={<EmptyScreen />} />
         </Route>
         <Route path="/Search" element={<Search />} />

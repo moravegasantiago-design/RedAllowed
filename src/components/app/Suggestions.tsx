@@ -21,7 +21,7 @@ const Users = ({ chat }: { chat: chatProps }) => {
     <button
       className="w-full flex items-center gap-3 p-3 hover:bg-zinc-700/50 transition-colors"
       onMouseDown={() =>
-        navegate(`/Chat/${chat?.chat_id}`, {
+        navegate(`/Chat/${chat?.chat_id}/$${chat?.user_id}`, {
           state: {
             name: chat?.friend,
             photo: chat?.friendphoto,

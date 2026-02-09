@@ -8,11 +8,11 @@ import useMessages from "../../socket/hook/useMessages";
 import MeContext from "../../context/MeContext";
 import { Delivered, Seen, Sent } from "../message/Status";
 import useMergedMessages from "../../socket/hook/useMergedMessages";
-import useRoutestateInf from "../../hook/useRouteState";
+import useUsers from "../../hook/useUsers";
 
 const ChatView = () => {
   const navegate = useNavigate();
-  const { chatId } = useParams<{ chatId: string }>();
+  const { chatId, userId } = useParams<{ chatId: string; userId: string }>();
   const socketRef = useContext(SocketContext);
   const [message, setMessage] = useState<{ message: string }>({ message: "" });
   const typingTimeOut = useRef<number | null>(null);
@@ -30,11 +30,7 @@ const ChatView = () => {
       container.scrollTop = container.scrollHeight;
     }
   }, [mergedMessages]);
-  const { stateInf } = useRoutestateInf<{
-    name: string;
-    photo: string;
-    online: boolean;
-  }>();
+  const { users } = useUsers(Number(userId), "ONE");
   return (
     <div className="flex-1 flex flex-col bg-zinc-950">
       {/* Chat Header */}
@@ -61,19 +57,19 @@ const ChatView = () => {
 
         <div className="relative">
           <img
-            src={stateInf?.photo}
-            alt={stateInf?.name}
+            src={users[0]?.photo}
+            alt={users[0]?.name}
             className="w-10 h-10 rounded-full object-cover"
           />
-          {stateInf?.online && (
+          {users[0] && (
             <div className="absolute bottom-0 right-0 w-3 h-3 bg-emerald-500 rounded-full border-2 border-zinc-900"></div>
           )}
         </div>
 
         <div className="flex-1">
-          <h2 className="text-white font-semibold">{stateInf?.name}</h2>
+          <h2 className="text-white font-semibold">{users[0]?.name}</h2>
           <p className="text-emerald-500 text-sm">
-            {isWriting ? "Escribiendo..." : stateInf?.online ? "Online" : ""}
+            {isWriting ? "Escribiendo..." : users[0] ? "Online" : ""}
           </p>
         </div>
 

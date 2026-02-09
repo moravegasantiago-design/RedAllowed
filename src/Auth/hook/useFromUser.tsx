@@ -17,6 +17,7 @@ export type userProps = {
   friends?: number;
   followers?: number;
   chatId?: number;
+  amount?: "ALL" | "ONE";
 };
 type nameKeys = keyof userProps;
 export const useFormUser = () => {
