@@ -35,22 +35,27 @@ export const chatOnline = (oi: Server) => {
       }
     });
     socket.on("typing", (isTrue: boolean, chat_id: number) => {
-      socket.to(String(chat_id)).emit("typing", isTrue);
+      socket.to(String(chat_id)).emit("typing", isTrue, chat_id);
     });
 
-    socket.on("delivered", async (idMsg: string, chat_id: number) => {
-      socket.to(String(chat_id)).emit("delivered", idMsg);
-      try {
-        await modifyStatus({
-          idMessage: idMsg,
-          chatId: chat_id,
-          status: "delivered",
-        });
-      } catch (e) {
-        console.error(e);
-        return;
-      }
-    });
+    socket.on(
+      "delivered",
+      async ({ idMsg, chat_id }: { idMsg?: string; chat_id: number }) => {
+        socket.to(String(chat_id)).emit("delivered", idMsg);
+        console.log(chat_id);
+        try {
+          await modifyStatus({
+            idMessage: idMsg,
+            chatId: chat_id,
+            status: "delivered",
+            userId: userId,
+          });
+        } catch (e) {
+          console.error(e);
+          return;
+        }
+      },
+    );
 
     socket.on("seen", async (idMsg: string, chat_id: number) => {
       oi.to(String(chat_id)).emit("seen", idMsg);
@@ -59,6 +64,7 @@ export const chatOnline = (oi: Server) => {
           idMessage: idMsg,
           chatId: chat_id,
           status: "seen",
+          userId: userId,
         });
       } catch (e) {
         console.error(e);

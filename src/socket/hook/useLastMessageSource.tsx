@@ -1,8 +1,15 @@
-import { useCallback, useMemo } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import type { chatProps } from "../../components/home/Home";
 import type { messagesProps } from "./useMessages";
 import type { lastMessagesProps } from "./useLastMessages";
 
+type refLastMessages = {
+  content: string;
+  date: Date;
+  isMe: boolean;
+  status: "sent" | "delivered" | "seen";
+  unreadMessages: number;
+};
 const useLastMessageSource = ({
   messagesSocket,
   chat,
@@ -12,42 +19,46 @@ const useLastMessageSource = ({
   chat: chatProps;
   id?: number;
 }) => {
-  const handlerMessage = useCallback(
+  const unReadMessages = useRef<number>(0);
+  const lastMessages = useRef<Map<string, refLastMessages>>(new Map());
+  const [lastMessage, setLastMessage] = useState<refLastMessages | null>(null);
+  const handleObject = useCallback(
     ({
       object,
-      messages,
     }: {
       object: lastMessagesProps | messagesProps;
-      messages?: messagesProps[];
-    }) => {
-      const unreadMessages =
-        object && "unreadmessages" in object
+    }): refLastMessages => ({
+      content: object.content,
+      date: new Date(object.date),
+      isMe: Number(object.userid) === id,
+      status: object.status,
+      unreadMessages:
+        "unreadmessages" in object
           ? Number(object.unreadmessages)
-          : messages!.filter((m) => m.status !== "seen" && m.userid !== id)
-              .length;
-      return {
-        content: object.content,
-        date: new Date(object.date),
-        isMe: object.userid === id,
-        status: object.status,
-        unreadMessages,
-      };
-    },
+          : unReadMessages.current +
+            Array.from(lastMessages?.current.values()).length,
+    }),
     [id],
   );
-  const lastMessage = useMemo<{
-    content: string;
-    date: Date;
-    isMe: boolean;
-    status: "sent" | "delivered" | "seen";
-    unreadMessages: number;
-  }>(() => {
-    if (!messagesSocket.length && chat.lastMessages)
-      return handlerMessage({ object: chat.lastMessages });
+  useEffect(() => {
+    if (!messagesSocket.length && chat.lastMessages) {
+      unReadMessages.current = Number(chat.lastMessages.unreadmessages);
+      lastMessages.current.set(
+        chat.lastMessages.id,
+        handleObject({ object: chat.lastMessages }),
+      );
+    } else
+      messagesSocket.forEach((m) => {
+        if (m.status === "seen") return lastMessages.current.delete(m.id);
+        lastMessages.current.set(m.id, handleObject({ object: m }));
+      });
+    setLastMessage(
+      Array.from(lastMessages.current.values()).sort(
+        (a, b) => b.date.getTime() - a.date.getTime(),
+      )[0],
+    );
+  }, [messagesSocket, chat, handleObject, id]);
 
-    const lastSocketMsg = messagesSocket[messagesSocket.length - 1];
-    return handlerMessage({ object: lastSocketMsg, messages: messagesSocket });
-  }, [messagesSocket, chat.lastMessages, handlerMessage]);
   return { lastMessage };
 };
 export default useLastMessageSource;

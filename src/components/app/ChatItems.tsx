@@ -18,12 +18,11 @@ const ChatItems = ({ chat, id }: { chat: chatProps; id?: number }) => {
     chatId: chat.chat_id,
   });
   const { lastMessage } = useLastMessageSource({ messagesSocket, chat, id });
-
   return (
     <div
       className={`flex items-center gap-3 p-4 
         ${
-          lastMessage.unreadMessages !== 0 && !lastMessage.isMe
+          lastMessage?.unreadMessages && !lastMessage?.isMe
             ? "bg-zinc-800/50 border-l-2 border-emerald-500 cursor-pointer animate-[fadeIn_0.3s_ease-out]"
             : "hover:bg-zinc-800/30 cursor-pointer transition-colors animate-[fadeIn_0.3s_ease-out_0.2s_both]"
         }`}
@@ -55,12 +54,12 @@ const ChatItems = ({ chat, id }: { chat: chatProps; id?: number }) => {
           <h3 className="text-white font-medium truncate">{chat.friend}</h3>
           <span
             className={`text-xs ${
-              lastMessage.unreadMessages !== 0 && !lastMessage.isMe
+              lastMessage?.unreadMessages && !lastMessage?.isMe
                 ? "text-emerald-500"
                 : "text-zinc-400"
             }`}
           >
-            {new Date(lastMessage.date).toLocaleTimeString("es-CO", {
+            {lastMessage?.date.toLocaleTimeString("es-CO", {
               hour: "2-digit",
               minute: "2-digit",
             })}
@@ -71,20 +70,22 @@ const ChatItems = ({ chat, id }: { chat: chatProps; id?: number }) => {
             <Typing />
           ) : (
             <p className="text-zinc-400 text-sm truncate">
-              {lastMessage.content}
+              {lastMessage?.content}
             </p>
           )}
           {!isWriting &&
-            lastMessage.isMe &&
-            ((lastMessage.status === "delivered" && <Delivered />) ||
-              (lastMessage.status === "sent" && <Sent />) ||
-              (lastMessage.status === "seen" && <Seen />))}
+            lastMessage?.isMe &&
+            ((lastMessage?.status === "delivered" && <Delivered />) ||
+              (lastMessage?.status === "sent" && <Sent />) ||
+              (lastMessage?.status === "seen" && <Seen />))}
 
-          {lastMessage.unreadMessages !== 0 && !lastMessage.isMe && (
-            <span className="bg-emerald-500 text-white text-xs rounded-full px-2 py-0.5 ml-2">
-              {lastMessage.unreadMessages}
-            </span>
-          )}
+          {lastMessage?.unreadMessages !== 0 &&
+            lastMessage?.unreadMessages &&
+            !lastMessage?.isMe && (
+              <span className="bg-emerald-500 text-white text-xs rounded-full px-2 py-0.5 ml-2">
+                {lastMessage?.unreadMessages}
+              </span>
+            )}
         </div>
       </div>
     </div>

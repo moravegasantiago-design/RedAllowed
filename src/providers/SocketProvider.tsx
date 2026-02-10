@@ -4,6 +4,7 @@ import { SocketContext } from "../context/SocketContext";
 import LoadingSocket from "../components/lodding/LoddingSocket";
 import UsersOnlineContext from "../context/UsersOnlineContext";
 import MeContext from "../context/MeContext";
+import ChatsContext from "../context/ChatsContext";
 
 const SOCKET_URL = "https://redallowed.onrender.com";
 
@@ -20,7 +21,7 @@ const SOCKET_CONFIG = {
 const SocketProvider = ({ children }: { children: ReactNode }) => {
   const socketRef = useRef<Socket | null>(null);
   const [isConnected, setIsConnected] = useState(false);
-
+  const chats = useContext(ChatsContext);
   const { handlerUsers } = useContext(UsersOnlineContext)!;
   const credentials = useContext(MeContext);
 
@@ -40,7 +41,11 @@ const SocketProvider = ({ children }: { children: ReactNode }) => {
 
     socketRef.current = socket;
 
-    socket.on("connect", () => setIsConnected(true));
+    socket.on("connect", () => {
+      setIsConnected(true);
+      if (chats.length)
+        chats.forEach((c) => socket.emit("delivered", Number(c.chat_id)));
+    });
     socket.on("disconnect", () => setIsConnected(false));
     socket.on("online_users", handlerUsers);
 
@@ -49,7 +54,7 @@ const SocketProvider = ({ children }: { children: ReactNode }) => {
       socket.off("disconnect");
       socket.off("online_users");
     };
-  }, [credentials?.data?.id, handlerUsers]);
+  }, [credentials?.data?.id, handlerUsers, chats]);
 
   useEffect(
     () => () => {

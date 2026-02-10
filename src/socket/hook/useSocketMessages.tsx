@@ -51,7 +51,9 @@ const useSocketMessages = ({
     const current = socketRef?.current;
     const onMessages = (data: messagesProps) =>
       handleSocketMessages(data, current);
-    const onTyping = (isTrue: boolean) => setIsWriting(isTrue);
+    const onTyping = (isTrue: boolean, chat_id: number) => {
+      if (chat_id === chatId) setIsWriting(isTrue);
+    };
     const onDelivered = (id: string) => handleStatusMessages("delivered", id);
     const onSeen = (idMsg: string) => handleStatusMessages("seen", idMsg);
     current.emit("join_chat", chatId);

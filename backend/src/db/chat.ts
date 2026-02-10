@@ -62,14 +62,29 @@ export const addMessage = async (props: {
   }
 };
 
-export const modifyStatus = async (props: {
-  idMessage: string;
+export const modifyStatus = async ({
+  idMessage,
+  chatId,
+  userId,
+  status,
+}: {
+  idMessage?: string;
   chatId: number;
+  userId: number;
   status: "delivered" | "seen";
 }) => {
-  const query = `UPDATE messages SET status=$3 WHERE id=$1 AND chat_id=$2`;
+  const previousStatus = status === "delivered" ? "sent" : "delivered";
+  const query = `UPDATE messages SET status=$4
+   WHERE chat_id = $2 AND sender_id != $3 AND status = $5
+   AND created_at <= COALESCE((SELECT created_at FROM messages WHERE id = $1), NOW())`;
   try {
-    await pool.query(query, Object.values(props));
+    await pool.query(query, [
+      idMessage || null,
+      chatId,
+      userId,
+      status,
+      previousStatus,
+    ]);
     return true;
   } catch (e) {
     console.error(e);

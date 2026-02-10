@@ -9,7 +9,7 @@ import useLastMessages, {
   type lastMessagesProps,
 } from "../../socket/hook/useLastMessages";
 import useSearch from "../../hook/useSearch";
-import useChats from "../../socket/hook/useChats";
+import ChatsContext from "../../context/ChatsContext";
 export type chatProps = {
   user_id: number;
   chat_id: number;
@@ -23,11 +23,10 @@ export type chatProps = {
   lastMessages: lastMessagesProps | null;
 };
 const Home = () => {
-  const { chats } = useChats();
+  const chats = useContext(ChatsContext);
   const credendials = useContext(MeContext);
   const { lastMessages } = useLastMessages({ userId: credendials?.data?.id });
   const chatsUser = orderChats({ chats: chats, lastMessages: lastMessages });
-
   const { search, handleSearch } = useSearch<chatProps>(["friend"]);
   const [focus, setFocus] = useState<boolean>(false);
   return (

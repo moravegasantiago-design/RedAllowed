@@ -3,6 +3,7 @@ import { useContext, useEffect, useRef } from "react";
 import MeContext from "../../context/MeContext";
 import SocketProvider from "../../providers/SocketProvider";
 import UsersOnlineProvider from "../../providers/UsersOnlineProvider";
+import ChatsProvider from "../../providers/ChatsProvider";
 
 export const RouterProtection = () => {
   const navigate = useNavigate();
@@ -24,11 +25,13 @@ export const RouterProtection = () => {
     })();
   }, [dataMe, navigate, state]);
   return (
-    <UsersOnlineProvider>
-      <SocketProvider>
-        <Outlet />
-      </SocketProvider>
-    </UsersOnlineProvider>
+    <ChatsProvider>
+      <UsersOnlineProvider>
+        <SocketProvider>
+          <Outlet />
+        </SocketProvider>
+      </UsersOnlineProvider>
+    </ChatsProvider>
   );
 };
 
