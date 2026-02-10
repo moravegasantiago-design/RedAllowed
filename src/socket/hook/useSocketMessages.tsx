@@ -19,13 +19,22 @@ const useSocketMessages = ({
   const [messagesSocket, setMessages] = useState<messagesProps[]>([]);
   const [isWriting, setIsWriting] = useState<boolean>(false);
   const credendials = useContext(MeContext);
-  const handleStatusMessages = (status: "delivered" | "seen", idMsg: string) =>
+  const handleStatusMessages = (
+    status: "delivered" | "seen",
+    idMsg: string,
+  ) => {
+    const searchStatus = status === "delivered" ? "sent" : "delivered";
     setMessages((prev) =>
-      prev.map((p) => (p.id === idMsg ? { ...p, status: status } : p)),
+      prev.map((p) =>
+        p.id === idMsg || p.status === searchStatus
+          ? { ...p, status: status }
+          : p,
+      ),
     );
+  };
   const handleSocketMessages = useCallback(
     (data: messagesProps, current: Socket) => {
-      if (data?.chatid !== chatId) return console.log(data);
+      if (data?.chatId !== chatId) return;
       setMessages((prev) =>
         prev.find((p) => p.id === data.id)
           ? prev
@@ -34,15 +43,15 @@ const useSocketMessages = ({
               {
                 content: data?.content,
                 date: data?.date,
-                userid: data?.userid,
+                userId: data?.userId,
                 status:
-                  data.userid === credendials?.data?.id ? "sent" : "delivered",
+                  data.userId === credendials?.data?.id ? "sent" : "delivered",
                 id: data?.id,
               },
             ],
       );
-      if (data.userid === credendials?.data?.id) return;
-      current?.emit("delivered", data.id, Number(chatId));
+      if (data.userId === credendials?.data?.id) return;
+      current?.emit("delivered", { idMsg: data.id, chat_id: Number(chatId) });
     },
     [credendials?.data?.id, chatId],
   );

@@ -44,7 +44,9 @@ const SocketProvider = ({ children }: { children: ReactNode }) => {
     socket.on("connect", () => {
       setIsConnected(true);
       if (chats.length)
-        chats.forEach((c) => socket.emit("delivered", Number(c.chat_id)));
+        chats.forEach((c) =>
+          socket.emit("delivered", { chat_id: Number(c.chat_id) }),
+        );
     });
     socket.on("disconnect", () => setIsConnected(false));
     socket.on("online_users", handlerUsers);

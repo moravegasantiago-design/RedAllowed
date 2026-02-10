@@ -143,7 +143,7 @@ const ChatView = () => {
             ref={(el) => {
               if (
                 !el ||
-                m.userid === credendials?.data?.id ||
+                m.userId === credendials?.data?.id ||
                 m.status !== "delivered"
               )
                 return;
@@ -151,7 +151,7 @@ const ChatView = () => {
             }}
             id={m.id}
             className={`flex ${
-              m.userid === credendials?.data?.id
+              m.userId === credendials?.data?.id
                 ? "justify-end"
                 : "justify-start"
             } animate-[slideIn_0.1s_ease-out_0.2s_both]`}
@@ -159,15 +159,15 @@ const ChatView = () => {
             <div className="max-w-[85%] sm:max-w-[70%]">
               <div
                 className={`${
-                  m.userid === credendials?.data?.id
+                  m.userId === credendials?.data?.id
                     ? "bg-emerald-600"
                     : "bg-zinc-800"
                 } text-white px-4 py-2.5 rounded-2xl ${
-                  m.userid === credendials?.data?.id
+                  m.userId === credendials?.data?.id
                     ? "rounded-br-md"
                     : "rounded-bl-md"
                 } w-fit ${
-                  m.userid === credendials?.data?.id ? "ml-auto" : "mr-auto"
+                  m.userId === credendials?.data?.id ? "ml-auto" : "mr-auto"
                 } max-w-[250px] break-words`}
               >
                 <p>{m.content}</p>
@@ -179,7 +179,7 @@ const ChatView = () => {
                     minute: "2-digit",
                   })}
                 </span>
-                {m.userid === credendials?.data?.id && (
+                {m.userId === credendials?.data?.id && (
                   <>
                     {m.status === "sent" && <Sent />}
                     {m.status === "delivered" && <Delivered />}

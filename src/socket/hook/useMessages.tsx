@@ -3,8 +3,8 @@ import { useFetch } from "../../hook/useFetch";
 
 export type messagesProps = {
   id: string;
-  userid: number;
-  chatid?: number;
+  userId: number;
+  chatId?: number;
   content: string;
   date: string;
   status: "sent" | "delivered" | "seen";

@@ -1,4 +1,4 @@
-import { useContext } from "react";
+import { useContext, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import UsersOnlineContext from "../../context/UsersOnlineContext";
 import { SocketContext } from "../../context/SocketContext";
@@ -18,11 +18,12 @@ const ChatItems = ({ chat, id }: { chat: chatProps; id?: number }) => {
     chatId: chat.chat_id,
   });
   const { lastMessage } = useLastMessageSource({ messagesSocket, chat, id });
+  useEffect(() => console.log(lastMessage), [lastMessage]);
   return (
     <div
       className={`flex items-center gap-3 p-4 
         ${
-          lastMessage?.unreadMessages && !lastMessage?.isMe
+          lastMessage?.unReadMessages && !lastMessage?.isMe
             ? "bg-zinc-800/50 border-l-2 border-emerald-500 cursor-pointer animate-[fadeIn_0.3s_ease-out]"
             : "hover:bg-zinc-800/30 cursor-pointer transition-colors animate-[fadeIn_0.3s_ease-out_0.2s_both]"
         }`}
@@ -31,7 +32,7 @@ const ChatItems = ({ chat, id }: { chat: chatProps; id?: number }) => {
         navegate(`/Chat/${chat.chat_id}/${chat.user_id}`, {
           state: {
             name: chat?.friend,
-            photo: chat?.friendphoto,
+            photo: chat?.friendPhoto,
             online: isOnline,
           },
         });
@@ -39,7 +40,7 @@ const ChatItems = ({ chat, id }: { chat: chatProps; id?: number }) => {
     >
       <div className="relative">
         <img
-          src={chat.friendphoto}
+          src={chat.friendPhoto}
           alt={chat.friend}
           className="w-12 h-12 rounded-full object-cover"
         />
@@ -54,7 +55,7 @@ const ChatItems = ({ chat, id }: { chat: chatProps; id?: number }) => {
           <h3 className="text-white font-medium truncate">{chat.friend}</h3>
           <span
             className={`text-xs ${
-              lastMessage?.unreadMessages && !lastMessage?.isMe
+              lastMessage?.unReadMessages && !lastMessage?.isMe
                 ? "text-emerald-500"
                 : "text-zinc-400"
             }`}
@@ -79,11 +80,11 @@ const ChatItems = ({ chat, id }: { chat: chatProps; id?: number }) => {
               (lastMessage?.status === "sent" && <Sent />) ||
               (lastMessage?.status === "seen" && <Seen />))}
 
-          {lastMessage?.unreadMessages !== 0 &&
-            lastMessage?.unreadMessages &&
+          {lastMessage?.unReadMessages !== 0 &&
+            lastMessage?.unReadMessages &&
             !lastMessage?.isMe && (
               <span className="bg-emerald-500 text-white text-xs rounded-full px-2 py-0.5 ml-2">
-                {lastMessage?.unreadMessages}
+                {lastMessage?.unReadMessages}
               </span>
             )}
         </div>

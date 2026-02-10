@@ -8,7 +8,7 @@ type refLastMessages = {
   date: Date;
   isMe: boolean;
   status: "sent" | "delivered" | "seen";
-  unreadMessages: number;
+  unReadMessages: number;
 };
 const useLastMessageSource = ({
   messagesSocket,
@@ -27,22 +27,26 @@ const useLastMessageSource = ({
       object,
     }: {
       object: lastMessagesProps | messagesProps;
-    }): refLastMessages => ({
-      content: object.content,
-      date: new Date(object.date),
-      isMe: Number(object.userid) === id,
-      status: object.status,
-      unreadMessages:
-        "unreadmessages" in object
-          ? Number(object.unreadmessages)
-          : unReadMessages.current +
-            Array.from(lastMessages?.current.values()).length,
-    }),
+    }): refLastMessages => {
+      console.log(object);
+      console.log(id);
+      return {
+        content: object.content,
+        date: new Date(object.date),
+        isMe: Number(object.userId) === id,
+        status: object.status,
+        unReadMessages:
+          "unreadmessages" in object
+            ? Number(object.unreadmessages)
+            : unReadMessages.current +
+              Array.from(lastMessages?.current.values()).length,
+      };
+    },
     [id],
   );
   useEffect(() => {
     if (!messagesSocket.length && chat.lastMessages) {
-      unReadMessages.current = Number(chat.lastMessages.unreadmessages);
+      unReadMessages.current = Number(chat.lastMessages.unReadMessages);
       lastMessages.current.set(
         chat.lastMessages.id,
         handleObject({ object: chat.lastMessages }),

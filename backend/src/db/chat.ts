@@ -2,7 +2,7 @@ import { pool } from ".";
 export const bringChats = async (id: string) => {
   try {
     const query = `SELECT DISTINCT ON (c_m1.chat_id) up.user_id, c_m1.chat_id, c_m1.created_at, u.username AS friend, 
-    up.photo AS friendPhoto, up.bio AS friendBio, up.job_title AS friendJob, up.birthday AS friendBirthDay, f.created_at AS friendTime 
+    up.photo AS "friendPhoto", up.bio AS "friendBio", up.job_title AS "friendJob", up.birthday AS "friendBirthDay", f.created_at AS "friendTime" 
     FROM chat_members c_m1 INNER JOIN chat_members c_m2 ON c_m1.chat_id = c_m2.chat_id AND c_m1.user_id != c_m2.user_id
     JOIN users u ON u.id = c_m2.user_id JOIN user_profiles up ON u.id = up.user_id 
     JOIN followers f ON u.id = f.following_id AND c_m1.user_id = f.follower_id
@@ -21,7 +21,7 @@ export const createGroup = async (props: { idP1: number; idP2: number }) => {
     const existing = await pool.query(
       `SELECT DISTINCT cm2.chat_id FROM chat_members cm JOIN chat_members cm2 ON cm2.chat_id = cm2.chat_id AND cm2.user_id = $2 WHERE cm.user_id = $1 
     `,
-      [idP1, idP2]
+      [idP1, idP2],
     );
     let chatId: number;
 
@@ -29,13 +29,13 @@ export const createGroup = async (props: { idP1: number; idP2: number }) => {
       chatId = existing.rows[0].chat_id;
     } else {
       const newChat = await pool.query(
-        `INSERT INTO chats DEFAULT VALUES RETURNING id`
+        `INSERT INTO chats DEFAULT VALUES RETURNING id`,
       );
       chatId = newChat.rows[0].id;
 
       await pool.query(
         `INSERT INTO chat_members (chat_id, user_id) VALUES ($1, $2), ($1, $3)`,
-        [chatId, idP1, idP2]
+        [chatId, idP1, idP2],
       );
     }
     return true;
@@ -44,7 +44,6 @@ export const createGroup = async (props: { idP1: number; idP2: number }) => {
     return null;
   }
 };
-
 
 export const addMessage = async (props: {
   idMessage: string;
@@ -93,7 +92,7 @@ export const modifyStatus = async ({
 };
 
 export const bringMessage = async ({ chatId }: { chatId: number }) => {
-  const query = `SELECT content, status, created_at AS date, sender_id AS userId, id, chat_id AS chatId
+  const query = `SELECT content, status, created_at AS date, sender_id AS "userId", id, chat_id AS "chatId"
   FROM messages WHERE chat_id=$1 ORDER BY created_at DESC`;
   try {
     const req = await pool.query(query, [chatId]);
@@ -119,7 +118,7 @@ export const lastMessages = async ({ userId }: { userId: number }) => {
       WHERE m2.chat_id = m.chat_id
         AND m2.status = 'delivered'
         AND m2.sender_id != $1
-    ) AS unreadMessages
+    ) AS "unReadMessages"
   FROM messages m
   JOIN chat_members cm ON cm.chat_id = m.chat_id
   WHERE cm.user_id = $1

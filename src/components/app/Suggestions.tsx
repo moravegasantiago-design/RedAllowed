@@ -24,14 +24,14 @@ const Users = ({ chat }: { chat: chatProps }) => {
         navegate(`/Chat/${chat?.chat_id}/${chat?.user_id}`, {
           state: {
             name: chat?.friend,
-            photo: chat?.friendphoto,
+            photo: chat?.friendPhoto,
             isOnline: false,
           },
         })
       }
     >
       <img
-        src={chat?.friendphoto}
+        src={chat?.friendPhoto}
         alt={chat?.friend}
         className="w-10 h-10 rounded-full object-cover"
         onClick={(e) => e.stopPropagation()}

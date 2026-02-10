@@ -16,8 +16,8 @@ export const bringUsers = async (
     up.birthday,
     COUNT (DISTINCT f.follower_id) AS followers,
     COUNT (DISTINCT fr.follower_id) AS friends,
-    EXISTS(SELECT 1 FROM followers fo WHERE follower_id = $1 AND following_id = u.id) AS iFollow,
-    EXISTS (SELECT 1 FROM followers fl WHERE follower_id = u.id AND following_id=$1) AS followMe
+    EXISTS(SELECT 1 FROM followers fo WHERE follower_id = $1 AND following_id = u.id) AS "iFollow",
+    EXISTS (SELECT 1 FROM followers fl WHERE follower_id = u.id AND following_id=$1) AS "followMe"
     FROM users u
     JOIN user_profiles up ON up.user_id = u.id
 
