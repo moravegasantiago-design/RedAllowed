@@ -19,10 +19,12 @@ export const createGroup = async (props: { idP1: number; idP2: number }) => {
   const { idP1, idP2 } = props;
   try {
     const existing = await pool.query(
-      `SELECT DISTINCT cm2.chat_id FROM chat_members cm JOIN chat_members cm2 ON cm2.chat_id = cm2.chat_id AND cm2.user_id = $2 WHERE cm.user_id = $1 
+      `SELECT DISTINCT cm2.chat_id FROM chat_members cm JOIN chat_members cm2 ON cm2.chat_id = cm.chat_id AND cm2.user_id = $2 WHERE cm.user_id = $1 
     `,
       [idP1, idP2],
     );
+    console.log(idP1, idP2);
+    console.log(existing);
     let chatId: number;
 
     if (existing.rows.length > 0) {
