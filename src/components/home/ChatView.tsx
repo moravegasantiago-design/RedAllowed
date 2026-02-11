@@ -29,7 +29,7 @@ const ChatView = () => {
     if (container) {
       container.scrollTop = container.scrollHeight;
     }
-  }, [mergedMessages]);
+  }, [mergedMessages, isWriting]);
   const { users } = useUsers(Number(userId), "ONE");
   return (
     <div className="flex-1 flex flex-col bg-zinc-950">
@@ -190,7 +190,6 @@ const ChatView = () => {
             </div>
           </div>
         ))}
-
         {isWriting && <Typing />}
       </div>
 

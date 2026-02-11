@@ -41,7 +41,9 @@ export const chatOnline = (oi: Server) => {
     socket.on(
       "delivered",
       async ({ idMsg, chat_id }: { idMsg?: string; chat_id: number }) => {
-        socket.to(String(chat_id)).emit("delivered", idMsg);
+        socket
+          .to(String(chat_id))
+          .emit("delivered", { id: idMsg, chatId: chat_id });
         console.log(chat_id);
         try {
           await modifyStatus({
@@ -58,7 +60,7 @@ export const chatOnline = (oi: Server) => {
     );
 
     socket.on("seen", async (idMsg: string, chat_id: number) => {
-      oi.to(String(chat_id)).emit("seen", idMsg);
+      oi.to(String(chat_id)).emit("seen", { id: idMsg, chatId: chat_id });
       try {
         await modifyStatus({
           idMessage: idMsg,

@@ -1,6 +1,6 @@
 const Typing = () => {
   return (
-    <div className="flex items-end gap-2 animate-[slideIn_0.3s_ease-out_0.6s_both]">
+    <div className="flex items-end gap-2 animate-[slideIn_0.1s_ease-out_0.1s_both]">
       <img
         src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100"
         alt=""

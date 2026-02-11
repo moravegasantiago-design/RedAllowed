@@ -21,12 +21,13 @@ const useSocketMessages = ({
   const credendials = useContext(MeContext);
   const handleStatusMessages = (
     status: "delivered" | "seen",
-    idMsg: string,
+    obj: { idMsg: string; chatId: number },
   ) => {
+    if (obj.chatId !== obj.chatId) return;
     const searchStatus = status === "delivered" ? "sent" : "delivered";
     setMessages((prev) =>
       prev.map((p) =>
-        p.id === idMsg || p.status === searchStatus
+        p.id === obj.idMsg || p.status === searchStatus
           ? { ...p, status: status }
           : p,
       ),
@@ -63,8 +64,10 @@ const useSocketMessages = ({
     const onTyping = (isTrue: boolean, chat_id: number) => {
       if (chat_id === chatId) setIsWriting(isTrue);
     };
-    const onDelivered = (id: string) => handleStatusMessages("delivered", id);
-    const onSeen = (idMsg: string) => handleStatusMessages("seen", idMsg);
+    const onDelivered = (obj: { idMsg: string; chatId: number }) =>
+      handleStatusMessages("delivered", obj);
+    const onSeen = (obj: { idMsg: string; chatId: number }) =>
+      handleStatusMessages("seen", obj);
     current.emit("join_chat", chatId);
     current.on("message", onMessages);
     current.on("typing", onTyping);
@@ -72,7 +75,8 @@ const useSocketMessages = ({
     current.on("seen", onSeen);
 
     return () => {
-
+      setMessages([]);
+      setIsWriting(false);
       current.off("message", onMessages);
       current.off("typing", onTyping);
       current.off("delivered", onDelivered);
