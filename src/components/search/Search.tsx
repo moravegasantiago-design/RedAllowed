@@ -26,9 +26,12 @@ const Search = () => {
   const [followingStatus, setFollowingStatus] = useState<FollowingStatus>({});
   useEffect(() => {
     const dbFollowing: FollowingStatus = Object.fromEntries(
-      users.map(u => [u.id, {followers : Number(u.followers), iFollow: u.ifollow}])
+      users.map((u) => [
+        u.id,
+        { followers: Number(u.followers), iFollow: u.iFollow },
+      ]),
     );
-    setFollowingStatus(prev => ({ ...prev, ...dbFollowing }));
+    setFollowingStatus((prev) => ({ ...prev, ...dbFollowing }));
   }, [users]);
   return (
     <div className="h-screen bg-zinc-950 flex overflow-hidden">
@@ -109,89 +112,109 @@ const Search = () => {
                 Sugerencias
               </div>
 
-              {(loading && <LoadingUsers/>) || users.map((user) => {
-                const notFollowed = user.followme ? "Te sigue" : "Seguir";
-                const followed = user.followme ? "Amigos" : "Siguiendo";
-                return <div
-                  key={user.id}
-                  className="group relative bg-zinc-900/40 border border-zinc-800/50 rounded-xl p-4 hover:bg-zinc-900/60 hover:border-zinc-700/80 transition-all duration-200 cursor-pointer"
-                >
-                  <div className="flex items-start gap-4">
-                    <div className="relative flex-shrink-0">
-                      <div className="w-14 h-14 rounded-xl overflow-hidden ring-1 ring-zinc-800 group-hover:ring-zinc-700 transition-all">
-                        <img
-                          src={user.photo}
-                          alt={user.name}
-                          className="w-full h-full object-cover"
-                        />
-                      </div>
-                       {usersOnline.flatMap(u => u.userId).includes(user.id) && (
-                        <div className="absolute -bottom-0.5 -right-0.5 w-4 h-4 bg-emerald-500 rounded-md border-2 border-zinc-900"></div>
-                      )}
-                    </div>
-
-                    {/* Información */}
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-start justify-between mb-1">
-                        <div className="flex-1 min-w-0">
-                          <h3 className="text-white text-sm font-semibold truncate group-hover:text-emerald-400 transition-colors">
-                            {user.name}
-                          </h3>
-                          <p className="text-zinc-500 text-xs truncate mb-2">
-                            @{user.username}
-                          </p>
-                        </div>
-                      </div>
-
-                      <p className="text-zinc-400 text-sm mb-3 line-clamp-1">
-                        {user.job ?? "No especificado"}
-                      </p>
-
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-1.5 text-zinc-500 text-xs">
-                          <svg
-                            className="w-3.5 h-3.5"
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24"
-                          >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth={2}
-                              d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"
+              {(loading && <LoadingUsers />) ||
+                users.map((user) => {
+                  const notFollowed = user.followMe ? "Te sigue" : "Seguir";
+                  const followed = user.followMe ? "Amigos" : "Siguiendo";
+                  return (
+                    <div
+                      key={user.id}
+                      className="group relative bg-zinc-900/40 border border-zinc-800/50 rounded-xl p-4 hover:bg-zinc-900/60 hover:border-zinc-700/80 transition-all duration-200 cursor-pointer"
+                    >
+                      <div className="flex items-start gap-4">
+                        <div className="relative flex-shrink-0">
+                          <div className="w-14 h-14 rounded-xl overflow-hidden ring-1 ring-zinc-800 group-hover:ring-zinc-700 transition-all">
+                            <img
+                              src={user.photo}
+                              alt={user.name}
+                              className="w-full h-full object-cover"
                             />
-                          </svg>
-                          
-                           <span>{followingStatus[user.id]?.followers} Seguidores</span> 
+                          </div>
+                          {usersOnline
+                            .flatMap((u) => u.userId)
+                            .includes(user.id) && (
+                            <div className="absolute -bottom-0.5 -right-0.5 w-4 h-4 bg-emerald-500 rounded-md border-2 border-zinc-900"></div>
+                          )}
                         </div>
 
-                        <button
-                          onClick={async(e) => {
-                            e.stopPropagation();
-                            try {
-                                if(!myCredentials?.data?.id)return;
-                                await handlerFollow(myCredentials?.data?.id, user.id)
-                                handleFollowing(user.id);
-                                await handleRequest({ href : "api/chat/create", method: "POST", isCredentials: false, user: {idP1: myCredentials?.data.id, idP2: user.id}})
-                            } catch (e) {
-                                console.error(e);
-                                return;
-                            }
-                          }}
-                          className={`px-4 py-1.5 rounded-lg text-xs font-semibold transition-all ${
-                            followingStatus[user.id]?.iFollow
-                              ? "bg-zinc-800 text-zinc-400 hover:bg-zinc-700"
-                              : "bg-emerald-500 text-white hover:bg-emerald-600"
-                          }`}
-                        >
-                          {followingStatus[user.id]?.iFollow ? followed : notFollowed}
-                        </button>
+                        {/* Información */}
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-start justify-between mb-1">
+                            <div className="flex-1 min-w-0">
+                              <h3 className="text-white text-sm font-semibold truncate group-hover:text-emerald-400 transition-colors">
+                                {user.name}
+                              </h3>
+                              <p className="text-zinc-500 text-xs truncate mb-2">
+                                @{user.username}
+                              </p>
+                            </div>
+                          </div>
+
+                          <p className="text-zinc-400 text-sm mb-3 line-clamp-1">
+                            {user.job ?? "No especificado"}
+                          </p>
+
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-1.5 text-zinc-500 text-xs">
+                              <svg
+                                className="w-3.5 h-3.5"
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24"
+                              >
+                                <path
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  strokeWidth={2}
+                                  d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"
+                                />
+                              </svg>
+
+                              <span>
+                                {followingStatus[user.id]?.followers} Seguidores
+                              </span>
+                            </div>
+
+                            <button
+                              onClick={async (e) => {
+                                e.stopPropagation();
+                                try {
+                                  if (!myCredentials?.data?.id) return;
+                                  await handlerFollow(
+                                    myCredentials?.data?.id,
+                                    user.id,
+                                  );
+                                  handleFollowing(user.id);
+                                  await handleRequest({
+                                    href: "api/chat/create",
+                                    method: "POST",
+                                    isCredentials: false,
+                                    user: {
+                                      idP1: myCredentials?.data.id,
+                                      idP2: user.id,
+                                    },
+                                  });
+                                } catch (e) {
+                                  console.error(e);
+                                  return;
+                                }
+                              }}
+                              className={`px-4 py-1.5 rounded-lg text-xs font-semibold transition-all ${
+                                followingStatus[user.id]?.iFollow
+                                  ? "bg-zinc-800 text-zinc-400 hover:bg-zinc-700"
+                                  : "bg-emerald-500 text-white hover:bg-emerald-600"
+                              }`}
+                            >
+                              {followingStatus[user.id]?.iFollow
+                                ? followed
+                                : notFollowed}
+                            </button>
+                          </div>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                </div>
-              })}
+                  );
+                })}
             </div>
           </div>
         </div>

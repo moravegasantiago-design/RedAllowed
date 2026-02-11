@@ -10,8 +10,8 @@ export type usersType = {
   birtday: string;
   friends: string;
   followers: string;
-  ifollow: boolean;
-  followme: boolean;
+  iFollow: boolean;
+  followMe: boolean;
   amount?: "ALL" | "ONE";
 };
 const useUsers = (id?: number, amount?: "ALL" | "ONE") => {

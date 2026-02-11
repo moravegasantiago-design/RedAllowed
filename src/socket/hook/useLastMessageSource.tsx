@@ -10,6 +10,7 @@ type refLastMessages = {
   isMe: boolean;
   status: "sent" | "delivered" | "seen";
   unReadMessages: number;
+  isBd: boolean;
 };
 const useLastMessageSource = ({
   messagesSocket,
@@ -27,21 +28,25 @@ const useLastMessageSource = ({
   const handleObject = useCallback(
     ({
       object,
+      isBd,
     }: {
       object: lastMessagesProps | messagesProps;
+      isBd: boolean;
     }): refLastMessages => {
-      const myUnRead = object.status !== "seen" ? 1 : 0;
+      const myUnRead =
+        object.status !== "seen" && !("unReadMessages" in object) ? 1 : 0;
       return {
         content: object.content,
         date: new Date(object.date),
         isMe: Number(object.userId) === id,
         status: object.status,
+        isBd: isBd,
         unReadMessages:
           "unReadMessages" in object
             ? Number(object.unReadMessages)
             : unReadMessages.current +
               Array.from(lastMessages?.current.values()).filter(
-                (m) => m.status !== "seen" && !m.isMe,
+                (m) => m.status !== "seen" && !m.isMe && !m.isBd,
               ).length +
               myUnRead,
       };
@@ -55,16 +60,16 @@ const useLastMessageSource = ({
       chat.lastMessages &&
       lastMessages.current.size === 0
     ) {
-      console.log(lastMessages.current.size);
       unReadMessages.current = Number(chat.lastMessages.unReadMessages);
       lastMessages.current.set(
         chat.lastMessages.id,
-        handleObject({ object: chat.lastMessages }),
+        handleObject({ object: chat.lastMessages, isBd: true }),
       );
     }
     const current = socketRef?.current;
     const onSeen = (obj: { idMsg: string; chatId: number }) => {
-      if (obj.chatId !== chat.chat_id) unReadMessages.current = 0;
+      if (obj.chatId !== chat.chat_id) return;
+      unReadMessages.current = 0;
       lastMessages.current.forEach((values, key) =>
         lastMessages.current.set(key, {
           ...values,
@@ -82,7 +87,7 @@ const useLastMessageSource = ({
     current.on("seen", onSeen);
 
     messagesSocket.forEach((m) => {
-      lastMessages.current.set(m.id, handleObject({ object: m }));
+      lastMessages.current.set(m.id, handleObject({ object: m, isBd: false }));
     });
 
     setLastMessage(

@@ -44,7 +44,6 @@ export const chatOnline = (oi: Server) => {
         socket
           .to(String(chat_id))
           .emit("delivered", { id: idMsg, chatId: chat_id });
-        console.log(chat_id);
         try {
           await modifyStatus({
             idMessage: idMsg,

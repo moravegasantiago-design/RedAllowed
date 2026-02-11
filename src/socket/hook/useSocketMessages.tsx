@@ -19,20 +19,23 @@ const useSocketMessages = ({
   const [messagesSocket, setMessages] = useState<messagesProps[]>([]);
   const [isWriting, setIsWriting] = useState<boolean>(false);
   const credendials = useContext(MeContext);
-  const handleStatusMessages = (
-    status: "delivered" | "seen",
-    obj: { idMsg: string; chatId: number },
-  ) => {
-    if (obj.chatId !== obj.chatId) return;
-    const searchStatus = status === "delivered" ? "sent" : "delivered";
-    setMessages((prev) =>
-      prev.map((p) =>
-        p.id === obj.idMsg || p.status === searchStatus
-          ? { ...p, status: status }
-          : p,
-      ),
-    );
-  };
+  const handleStatusMessages = useCallback(
+    (
+      status: "delivered" | "seen",
+      obj: { idMsg: string | null; chatId: number },
+    ) => {
+      if (obj.chatId !== chatId) return;
+      const searchStatus = status === "delivered" ? "sent" : "delivered";
+      setMessages((prev) =>
+        prev.map((p) =>
+          p.id === obj.idMsg || p.status === searchStatus
+            ? { ...p, status: status }
+            : p,
+        ),
+      );
+    },
+    [chatId],
+  );
   const handleSocketMessages = useCallback(
     (data: messagesProps, current: Socket) => {
       if (data?.chatId !== chatId) return;
@@ -64,7 +67,7 @@ const useSocketMessages = ({
     const onTyping = (isTrue: boolean, chat_id: number) => {
       if (chat_id === chatId) setIsWriting(isTrue);
     };
-    const onDelivered = (obj: { idMsg: string; chatId: number }) =>
+    const onDelivered = (obj: { idMsg: string | null; chatId: number }) =>
       handleStatusMessages("delivered", obj);
     const onSeen = (obj: { idMsg: string; chatId: number }) =>
       handleStatusMessages("seen", obj);
@@ -82,7 +85,7 @@ const useSocketMessages = ({
       current.off("delivered", onDelivered);
       current.off("seen", onSeen);
     };
-  }, [socketRef, handleSocketMessages, chatId]);
+  }, [socketRef, handleSocketMessages, chatId, handleStatusMessages]);
   return { messagesSocket, isWriting };
 };
 export default useSocketMessages;

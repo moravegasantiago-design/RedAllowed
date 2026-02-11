@@ -9,7 +9,7 @@ export type messagesProps = {
   date: string;
   status: "sent" | "delivered" | "seen";
 };
-const useMessages = (chatId: number) => {
+const useMessages = (chatId?: number) => {
   const { handleRequest, data } = useFetch<messagesProps[]>();
   useEffect(() => {
     (async () => {

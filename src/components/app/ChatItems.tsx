@@ -1,4 +1,4 @@
-import { useContext, useEffect } from "react";
+import { useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import UsersOnlineContext from "../../context/UsersOnlineContext";
 import { SocketContext } from "../../context/SocketContext";
@@ -18,7 +18,7 @@ const ChatItems = ({ chat, id }: { chat: chatProps; id?: number }) => {
     chatId: chat.chat_id,
   });
   const { lastMessage } = useLastMessageSource({ messagesSocket, chat, id });
-  useEffect(() => console.log(lastMessage), [lastMessage]);
+
   return (
     <div
       className={`flex items-center gap-3 p-4 
