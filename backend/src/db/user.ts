@@ -49,8 +49,14 @@ export const bringUsers = async (
 export const bringProfile = async ({ id }: { id: number }) => {
   try {
     const query = `
-    SELECT u.name, u.username, p.bio, p.job_title, p.birthday FROM users u
-    JOIN user_profiles p ON p.user_id = u.id WHERE u.id = $1`;
+    SELECT u.name, u.username, p.bio, p.job_title AS job, p.birthday AS "birthDay", p.photo AS imagen,
+    COUNT (DISTINCT f.follower_id) AS followers, COUNT (DISTINCT f2.following_id) AS friends, 
+    COUNT (DISTINCT m.id) AS messages
+    FROM users u JOIN user_profiles p ON p.user_id = u.id 
+    LEFT JOIN followers f ON f.following_id = u.id
+    LEFT JOIN followers f2 ON f2.follower_id = u.id AND f.follower_id = f2.following_id
+    LEFT JOIN messages m ON m.sender_id = u.id
+    WHERE u.id = $1 GROUP BY u.id, u.name, u.username, p.bio, p.job_title, p.birthday, p.photo`;
     return (await pool.query(query, [id])).rows[0];
   } catch (e) {
     console.error(e);

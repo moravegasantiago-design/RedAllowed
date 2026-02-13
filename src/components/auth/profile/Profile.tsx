@@ -1,8 +1,16 @@
+import { useContext, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import MeContext from "../../../context/MeContext";
+import useProfile from "../../../hook/useProfile";
 
 // Profile.tsx
 const Profile = () => {
   const navigate = useNavigate();
+  const myCredentials = useContext(MeContext);
+  const { data } = useProfile({ id: myCredentials?.data?.id });
+  useEffect(() => {
+    console.log(data);
+  }, [data]);
   return (
     <div className="min-h-screen bg-zinc-950 flex">
       {/* Sidebar con lista de opciones */}
@@ -35,7 +43,7 @@ const Profile = () => {
           {/* Avatar with edit */}
           <div className="relative w-32 h-32 mx-auto mb-6 group">
             <img
-              src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=300"
+              src={data?.data?.imagen}
               alt="Profile"
               className="w-full h-full rounded-full object-cover border-4 border-zinc-800"
             />
@@ -69,7 +77,7 @@ const Profile = () => {
           {/* Name */}
           <div className="text-center mb-6">
             <h2 className="text-2xl font-bold text-white mb-1">
-              Santiago Vega
+              {data?.data?.name}
             </h2>
             <p className="text-emerald-500 text-sm">En línea</p>
           </div>
@@ -77,16 +85,22 @@ const Profile = () => {
           {/* Stats */}
           <div className="grid grid-cols-3 gap-4 mb-6">
             <div className="bg-zinc-800/50 rounded-xl p-3 text-center">
-              <p className="text-xl font-bold text-white">128</p>
-              <p className="text-xs text-zinc-500">Chats</p>
+              <p className="text-xl font-bold text-white">
+                {data?.data?.messages}
+              </p>
+              <p className="text-xs text-zinc-500">Mensages</p>
             </div>
             <div className="bg-zinc-800/50 rounded-xl p-3 text-center">
-              <p className="text-xl font-bold text-white">1.2k</p>
-              <p className="text-xs text-zinc-500">Mensajes</p>
+              <p className="text-xl font-bold text-white">
+                {data?.data?.followers}
+              </p>
+              <p className="text-xs text-zinc-500">Seguidores</p>
             </div>
             <div className="bg-zinc-800/50 rounded-xl p-3 text-center">
-              <p className="text-xl font-bold text-white">45</p>
-              <p className="text-xs text-zinc-500">Grupos</p>
+              <p className="text-xl font-bold text-white">
+                {data?.data?.friends}
+              </p>
+              <p className="text-xs text-zinc-500">Amigos</p>
             </div>
           </div>
         </div>
@@ -113,7 +127,7 @@ const Profile = () => {
               </div>
               <div className="flex-1">
                 <p className="text-xs text-zinc-500 mb-0.5">Nombre</p>
-                <p className="text-white font-medium">Santiago Vega</p>
+                <p className="text-white font-medium">{data?.data?.name}</p>
               </div>
               <svg
                 className="w-5 h-5 text-zinc-500 group-hover:text-emerald-500 transition-colors"
@@ -152,7 +166,7 @@ const Profile = () => {
               <div className="flex-1">
                 <p className="text-xs text-zinc-500 mb-0.5">Descripción</p>
                 <p className="text-white font-medium">
-                  Desarrollador Fullstack 💻
+                  {data?.data?.bio ?? "No bio yet"}
                 </p>
               </div>
               <svg
@@ -190,10 +204,10 @@ const Profile = () => {
                 </svg>
               </div>
               <div className="flex-1">
-                <p className="text-xs text-zinc-500 mb-0.5">
-                  Correo electrónico
+                <p className="text-xs text-zinc-500 mb-0.5">Username</p>
+                <p className="text-white font-medium">
+                  @{data?.data?.username}
                 </p>
-                <p className="text-white font-medium">santiago@email.com</p>
               </div>
               <svg
                 className="w-5 h-5 text-zinc-500 group-hover:text-purple-500 transition-colors"
@@ -230,8 +244,10 @@ const Profile = () => {
                 </svg>
               </div>
               <div className="flex-1">
-                <p className="text-xs text-zinc-500 mb-0.5">Teléfono</p>
-                <p className="text-white font-medium">+57 300 123 4567</p>
+                <p className="text-xs text-zinc-500 mb-0.5">Trabajo</p>
+                <p className="text-white font-medium">
+                  {data?.data?.job ?? "Jobless"}
+                </p>
               </div>
               <svg
                 className="w-5 h-5 text-zinc-500 group-hover:text-orange-500 transition-colors"
@@ -305,8 +321,8 @@ const Profile = () => {
             <div className="relative -mt-16 px-6">
               <div className="relative inline-block">
                 <img
-                  src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=300"
-                  alt="Profile"
+                  src={data?.data?.imagen}
+                  alt={data?.data?.name}
                   className="w-28 h-28 rounded-full object-cover border-4 border-zinc-900"
                 />
                 <div className="absolute bottom-1 right-1 w-6 h-6 bg-emerald-500 rounded-full border-4 border-zinc-900"></div>
@@ -315,11 +331,14 @@ const Profile = () => {
 
             {/* Info */}
             <div className="p-6 pt-4">
-              <h3 className="text-xl font-bold text-white">Santiago Vega</h3>
-              <p className="text-emerald-500 text-sm mb-4">@santidev</p>
+              <h3 className="text-xl font-bold text-white">
+                {data?.data?.name}
+              </h3>
+              <p className="text-emerald-500 text-sm mb-4">
+                @{data?.data?.username}
+              </p>
               <p className="text-zinc-400 text-sm mb-6">
-                Desarrollador Fullstack 💻 | React, Node, TypeScript |
-                Aprendiendo algo nuevo cada día 🚀
+                {data?.data?.bio ?? "No bio yet"}
               </p>
 
               {/* Quick Actions */}
