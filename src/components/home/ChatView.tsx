@@ -34,10 +34,10 @@ const ChatView = () => {
   return (
     <div className="flex-1 flex flex-col bg-zinc-950">
       {/* Chat Header */}
-      <div className="bg-zinc-900 border-b border-zinc-800 p-4 flex items-center gap-4 animate-[fadeIn_0.3s_ease-out]">
+      <div className="bg-zinc-900 border-b border-zinc-800 p-2 sm:p-4 flex items-center gap-2 sm:gap-4 animate-[fadeIn_0.3s_ease-out]">
         <button
-          className="md:hidden p-2 text-zinc-400 
-        hover:text-white hover:bg-zinc-800 rounded-xl transition-all"
+          className="md:hidden p-1.5 sm:p-2 text-zinc-400 
+        hover:text-white hover:bg-zinc-800 rounded-lg sm:rounded-xl transition-all"
           onClick={() => navegate("/")}
         >
           <svg
@@ -59,24 +59,26 @@ const ChatView = () => {
           <img
             src={users[0]?.photo}
             alt={users[0]?.name}
-            className="w-10 h-10 rounded-full object-cover"
+            className="w-9 h-9 sm:w-10 sm:h-10 rounded-full object-cover"
           />
           {users[0] && (
-            <div className="absolute bottom-0 right-0 w-3 h-3 bg-emerald-500 rounded-full border-2 border-zinc-900"></div>
+            <div className="absolute bottom-0 right-0 w-2.5 h-2.5 sm:w-3 sm:h-3 bg-emerald-500 rounded-full border-2 border-zinc-900"></div>
           )}
         </div>
 
-        <div className="flex-1">
-          <h2 className="text-white font-semibold">{users[0]?.name}</h2>
-          <p className="text-emerald-500 text-sm">
+        <div className="flex-1 min-w-0">
+          <h2 className="text-white font-semibold text-sm sm:text-base truncate">
+            {users[0]?.name}
+          </h2>
+          <p className="text-emerald-500 text-xs sm:text-sm">
             {isWriting ? "Escribiendo..." : users[0] ? "Online" : ""}
           </p>
         </div>
 
-        <div className="flex items-center gap-2">
-          <button className="p-2 text-zinc-400 hover:text-white hover:bg-zinc-800 rounded-xl transition-all">
+        <div className="flex items-center gap-1 sm:gap-2">
+          <button className="p-1.5 sm:p-2 text-zinc-400 hover:text-white hover:bg-zinc-800 rounded-lg sm:rounded-xl transition-all">
             <svg
-              className="w-5 h-5"
+              className="w-4 h-4 sm:w-5 sm:h-5"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -89,9 +91,9 @@ const ChatView = () => {
               />
             </svg>
           </button>
-          <button className="p-2 text-zinc-400 hover:text-white hover:bg-zinc-800 rounded-xl transition-all">
+          <button className="p-1.5 sm:p-2 text-zinc-400 hover:text-white hover:bg-zinc-800 rounded-lg sm:rounded-xl transition-all">
             <svg
-              className="w-5 h-5"
+              className="w-4 h-4 sm:w-5 sm:h-5"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -104,9 +106,9 @@ const ChatView = () => {
               />
             </svg>
           </button>
-          <button className="p-2 text-zinc-400 hover:text-white hover:bg-zinc-800 rounded-xl transition-all">
+          <button className="p-1.5 sm:p-2 text-zinc-400 hover:text-white hover:bg-zinc-800 rounded-lg sm:rounded-xl transition-all">
             <svg
-              className="w-5 h-5"
+              className="w-4 h-4 sm:w-5 sm:h-5"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -125,7 +127,7 @@ const ChatView = () => {
       {/* Messages Area */}
       <div
         id="chat-messages"
-        className="flex-1 overflow-y-auto p-4 space-y-4"
+        className="flex-1 overflow-y-auto p-2 sm:p-4 space-y-2 sm:space-y-4"
         style={{
           backgroundImage:
             'url("data:image/svg+xml,%3Csvg width="60" height="60" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg"%3E%3Cg fill="none" fill-rule="evenodd"%3E%3Cg fill="%2327272a" fill-opacity="0.4"%3E%3Cpath d="M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z"/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")',
@@ -133,7 +135,7 @@ const ChatView = () => {
       >
         {/* Date Separator */}
         <div className="flex items-center justify-center animate-[fadeIn_0.3s_ease-out]">
-          <span className="bg-zinc-800 text-zinc-400 text-xs px-3 py-1 rounded-full">
+          <span className="bg-zinc-800 text-zinc-400 text-xs px-2 sm:px-3 py-0.5 sm:py-1 rounded-full">
             Hoy
           </span>
         </div>
@@ -156,19 +158,19 @@ const ChatView = () => {
                 : "justify-start"
             } animate-[slideIn_0.1s_ease-out_0.2s_both]`}
           >
-            <div className="max-w-[85%] sm:max-w-[70%]">
+            <div className="max-w-[90%] sm:max-w-[85%] md:max-w-[70%]">
               <div
                 className={`${
                   m.userId === credendials?.data?.id
                     ? "bg-emerald-600"
                     : "bg-zinc-800"
-                } text-white px-4 py-2.5 rounded-2xl ${
+                } text-white px-3 sm:px-4 py-2 sm:py-2.5 rounded-2xl ${
                   m.userId === credendials?.data?.id
                     ? "rounded-br-md"
                     : "rounded-bl-md"
                 } w-fit ${
                   m.userId === credendials?.data?.id ? "ml-auto" : "mr-auto"
-                } max-w-[250px] break-words`}
+                } break-words text-sm sm:text-base`}
               >
                 <p>{m.content}</p>
               </div>
@@ -190,16 +192,16 @@ const ChatView = () => {
             </div>
           </div>
         ))}
-        {isWriting && <Typing />}
+        {isWriting && <Typing imagen={users[0].photo} />}
       </div>
 
       {/* Message Input */}
-      <div className="bg-zinc-900 border-t border-zinc-800 p-4 animate-[fadeIn_0.3s_ease-out]">
-        <div className="flex items-end gap-3">
+      <div className="bg-zinc-900 border-t border-zinc-800 p-2 sm:p-4 animate-[fadeIn_0.3s_ease-out]">
+        <div className="flex items-end gap-1.5 sm:gap-3">
           {/* Attachment Button */}
-          <button className="p-2.5 text-zinc-400 hover:text-white hover:bg-zinc-800 rounded-xl transition-all">
+          <button className="p-2 sm:p-2.5 text-zinc-400 hover:text-white hover:bg-zinc-800 rounded-lg sm:rounded-xl transition-all flex-shrink-0">
             <svg
-              className="w-6 h-6"
+              className="w-5 h-5 sm:w-6 sm:h-6"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -214,9 +216,9 @@ const ChatView = () => {
           </button>
 
           {/* Image Button */}
-          <button className="p-2.5 text-zinc-400 hover:text-white hover:bg-zinc-800 rounded-xl transition-all">
+          <button className="p-2 sm:p-2.5 text-zinc-400 hover:text-white hover:bg-zinc-800 rounded-lg sm:rounded-xl transition-all flex-shrink-0">
             <svg
-              className="w-6 h-6"
+              className="w-5 h-5 sm:w-6 sm:h-6"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -231,7 +233,7 @@ const ChatView = () => {
           </button>
 
           {/* Text Input */}
-          <div className="flex-1 relative">
+          <div className="flex-1 relative min-w-0">
             <form
               onSubmit={(e) => {
                 e.preventDefault();
@@ -247,8 +249,8 @@ const ChatView = () => {
             >
               <input
                 type="text"
-                placeholder="Escribe un message..."
-                className="w-full bg-zinc-800 border border-zinc-700 text-white placeholder-zinc-500 rounded-xl py-3 px-4 pr-12 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500 transition-all duration-200"
+                placeholder="Escribe un mensaje..."
+                className="w-full bg-zinc-800 border border-zinc-700 text-white placeholder-zinc-500 rounded-lg sm:rounded-xl py-2 sm:py-3 px-3 sm:px-4 pr-10 sm:pr-12 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500 transition-all duration-200 text-sm sm:text-base"
                 maxLength={1000}
                 onChange={(e) => {
                   if (!socketRef?.current) return;
@@ -263,12 +265,12 @@ const ChatView = () => {
                 value={message.message}
               />
               <button
-                className="absolute right-3 top-1/2 -translate-y-1/2 
+                className="absolute right-2 sm:right-3 top-1/2 -translate-y-1/2 
             text-zinc-400 hover:text-white transition-colors"
                 type="submit"
               >
                 <svg
-                  className="w-6 h-6"
+                  className="w-5 h-5 sm:w-6 sm:h-6"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -285,9 +287,9 @@ const ChatView = () => {
           </div>
 
           {/* Voice / Send Button */}
-          <button className="p-3 bg-emerald-500 hover:bg-emerald-600 text-white rounded-xl transition-all">
+          <button className="p-2 sm:p-3 bg-emerald-500 hover:bg-emerald-600 text-white rounded-lg sm:rounded-xl transition-all flex-shrink-0">
             <svg
-              className="w-6 h-6"
+              className="w-5 h-5 sm:w-6 sm:h-6"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"

@@ -4,7 +4,6 @@ import UsersOnlineContext from "../../context/UsersOnlineContext";
 import { SocketContext } from "../../context/SocketContext";
 import useSocketMessages from "../../socket/hook/useSocketMessages";
 import type { chatProps } from "../home/Home";
-import Typing from "../message/Typing";
 import { Delivered, Seen, Sent } from "../message/Status";
 import useLastMessageSource from "../../socket/hook/useLastMessageSource";
 
@@ -68,7 +67,7 @@ const ChatItems = ({ chat, id }: { chat: chatProps; id?: number }) => {
         </div>
         <div className="flex items-center justify-between">
           {isWriting ? (
-            <Typing />
+            <p className="text-emerald-500 text-sm">Escribiendo...</p>
           ) : (
             <p className="text-zinc-400 text-sm truncate">
               {lastMessage?.content}

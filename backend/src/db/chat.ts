@@ -23,8 +23,6 @@ export const createGroup = async (props: { idP1: number; idP2: number }) => {
     `,
       [idP1, idP2],
     );
-    console.log(idP1, idP2);
-    console.log(existing);
     let chatId: number;
 
     if (existing.rows.length > 0) {

@@ -1,15 +1,17 @@
 import Suggestions from "../app/Suggestions";
 import ChatItems from "../app/ChatItems";
-import { Outlet } from "react-router-dom";
+import { Outlet, useLocation } from "react-router-dom";
 import Nav from "../app/Nav";
 import orderChats from "../../socket/logic/ordenChats";
-import { useContext, useState } from "react";
+import { useContext } from "react";
 import MeContext from "../../context/MeContext";
 import useLastMessages, {
   type lastMessagesProps,
 } from "../../socket/hook/useLastMessages";
 import useSearch from "../../hook/useSearch";
 import ChatsContext from "../../context/ChatsContext";
+import useClickMenu from "../../hook/useClickMenu";
+import DropdownMenu from "./DropdownMenu";
 export type chatProps = {
   user_id: number;
   chat_id: number;
@@ -28,7 +30,13 @@ const Home = () => {
   const { lastMessages } = useLastMessages({ userId: credendials?.data?.id });
   const chatsUser = orderChats({ chats: chats, lastMessages: lastMessages });
   const { search, handleSearch } = useSearch<chatProps>(["friend"]);
-  const [focus, setFocus] = useState<boolean>(false);
+  const location = useLocation();
+  const { openMenu, setOpenMenu, divRef } = useClickMenu();
+  const {
+    openMenu: openSuggestions,
+    setOpenMenu: setOpenSuggestions,
+    divRef: refSuggestions,
+  } = useClickMenu();
   return (
     <>
       <div className="h-screen bg-zinc-950 flex overflow-hidden">
@@ -36,17 +44,17 @@ const Home = () => {
           className={`
         flex-col
         bg-zinc-900 border-r border-zinc-800
-        w-full md:w-96
+        w-full sm:w-80 md:w-96
         ${location.pathname !== "/" ? "hidden md:flex" : "flex"}
       `}
         >
-          <div className="p-4 border-b border-zinc-800">
-            <div className="flex items-center justify-between mb-4">
-              <h1 className="text-xl font-bold text-white">Chats</h1>
-              <div className="flex items-center gap-2">
-                <button className="p-2 text-zinc-400 hover:text-white hover:bg-zinc-800 rounded-xl transition-all">
+          <div className="p-3 sm:p-4 border-b border-zinc-800">
+            <div className="flex items-center justify-between mb-3 sm:mb-4">
+              <h1 className="text-lg sm:text-xl font-bold text-white">Chats</h1>
+              <div className="flex items-center gap-1 sm:gap-2">
+                <button className="p-1.5 sm:p-2 text-zinc-400 hover:text-white hover:bg-zinc-800 rounded-lg sm:rounded-xl transition-all">
                   <svg
-                    className="w-5 h-5"
+                    className="w-4 h-4 sm:w-5 sm:h-5"
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
@@ -59,29 +67,36 @@ const Home = () => {
                     />
                   </svg>
                 </button>
-                <button className="p-2 text-zinc-400 hover:text-white hover:bg-zinc-800 rounded-xl transition-all">
-                  <svg
-                    className="w-5 h-5"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
+                <div className="relative" ref={divRef}>
+                  <button
+                    className="p-1.5 sm:p-2 text-zinc-400 hover:text-white hover:bg-zinc-800 rounded-lg sm:rounded-xl transition-all"
+                    onClick={() => setOpenMenu((prev) => !prev)}
                   >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={1.5}
-                      d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"
-                    />
-                  </svg>
-                </button>
+                    <svg
+                      className="w-4 h-4 sm:w-5 sm:h-5"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={1.5}
+                        d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"
+                      />
+                    </svg>
+                  </button>
+
+                  {openMenu && <DropdownMenu />}
+                </div>
               </div>
             </div>
 
             {/* Search */}
-            <div className="relative">
-              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+            <div className="relative" ref={refSuggestions}>
+              <div className="absolute inset-y-0 left-0 pl-2.5 sm:pl-3 flex items-center pointer-events-none">
                 <svg
-                  className="w-5 h-5 text-zinc-500"
+                  className="w-4 h-4 sm:w-5 sm:h-5 text-zinc-500"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -97,15 +112,14 @@ const Home = () => {
               <input
                 type="text"
                 placeholder="Buscar o iniciar un nuevo chat"
-                className="w-full bg-zinc-800 border border-zinc-700 text-white placeholder-zinc-500 rounded-xl py-2.5 pl-10 pr-4 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500 transition-all duration-200 text-sm"
+                className="w-full bg-zinc-800 border border-zinc-700 text-white placeholder-zinc-500 rounded-lg sm:rounded-xl py-2 sm:py-2.5 pl-8 sm:pl-10 pr-3 sm:pr-4 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500 transition-all duration-200 text-xs sm:text-sm"
                 value={search.value}
-                onFocus={() => setFocus(true)}
-                onBlur={() => setFocus(false)}
+                onFocus={() => setOpenSuggestions(true)}
                 onChange={(e) => handleSearch({ e, list: chatsUser })}
               />
             </div>
 
-            {search.value && focus && search.filter.length > 0 && (
+            {search.value && openSuggestions && search.filter.length > 0 && (
               <Suggestions chat={search.filter} />
             )}
           </div>
@@ -120,6 +134,7 @@ const Home = () => {
           </div>
           <Nav />
         </div>
+
         <Outlet />
       </div>
     </>
