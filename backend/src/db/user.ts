@@ -45,3 +45,15 @@ export const bringUsers = async (
     return { error: true, throw: JSON.stringify(e) };
   }
 };
+
+export const bringProfile = async ({ id }: { id: number }) => {
+  try {
+    const query = `
+    SELECT u.name, u.username, p.bio, p.job_title, p.birthday FROM users u
+    JOIN user_profiles p ON p.user_id = u.id WHERE u.id = $1`;
+    return (await pool.query(query, [id])).rows[0];
+  } catch (e) {
+    console.error(e);
+    return null;
+  }
+};
