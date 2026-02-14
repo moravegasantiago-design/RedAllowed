@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { useFetch } from "./useFetch";
-type profileProps = {
+export type profileProps = {
   name: string;
   username: string;
   bio: string | null;
