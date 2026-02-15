@@ -9,19 +9,17 @@ export type lastMessagesProps = {
   date: string;
   unReadMessages: string;
 };
-const useLastMessages = ({ userId }: { userId?: number }) => {
+const useLastMessages = () => {
   const { data, handleRequest } = useFetch<lastMessagesProps[]>();
   useEffect(() => {
-    if (!userId) return;
     (async () => {
       await handleRequest({
         href: "api/chat/lastMessages",
-        method: "POST",
-        isCredentials: false,
-        user: { id: userId },
+        method: "GET",
+        isCredentials: true,
       });
     })();
-  }, [handleRequest, userId]);
+  }, [handleRequest]);
   const lastMessages: lastMessagesProps[] = data?.data ?? [];
   return { lastMessages };
 };

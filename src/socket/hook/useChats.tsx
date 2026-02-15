@@ -1,27 +1,23 @@
-import { useContext, useEffect } from "react";
-import MeContext from "../../context/MeContext";
+import { useEffect } from "react";
 import type { ChatsProps } from "../../context/ChatsContext";
 import { useFetch } from "../../hook/useFetch";
 
 const useChats = () => {
-  const id = useContext(MeContext);
   const { handleRequest, data } = useFetch<ChatsProps[]>();
   useEffect(() => {
     (async () => {
-      if (!id?.data?.id) return;
       try {
         await handleRequest({
           href: "api/chat/chats",
-          method: "POST",
-          isCredentials: false,
-          user: { id: id.data.id },
+          method: "GET",
+          isCredentials: true,
         });
       } catch (e) {
         console.error(e);
         return;
       }
     })();
-  }, [handleRequest, id?.data?.id]);
+  }, [handleRequest]);
   const chats: ChatsProps[] | null = data?.data ?? [];
   return { chats };
 };

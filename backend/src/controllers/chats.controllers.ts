@@ -5,10 +5,13 @@ import {
   createGroup,
   lastMessages,
 } from "../db/chat";
+import requireAuth from "../middlewares/requireAuth";
 export const requestChat = async (req: Request, res: Response) => {
-  const { id } = req.body;
+  const token = req.cookies.authToken;
+  const credentials = requireAuth({ token, res });
+  if (!credentials) return;
   try {
-    const chats = await bringChats(id);
+    const chats = await bringChats(credentials.id);
     if (!chats)
       return res
         .status(404)
@@ -21,9 +24,12 @@ export const requestChat = async (req: Request, res: Response) => {
 };
 
 export const newChat = async (req: Request, res: Response) => {
-  const { idP1, idP2 } = req.body;
+  const { idP2 } = req.body;
+  const token = req.cookies.authToken;
+  const credentials = requireAuth({ token, res });
+  if (!credentials) return;
   try {
-    const isCreateChat = await createGroup({ idP1, idP2 });
+    const isCreateChat = await createGroup({ idP1: credentials.id, idP2 });
     if (!isCreateChat)
       return res
         .status(404)
@@ -51,9 +57,11 @@ export const requestMessage = async (req: Request, res: Response) => {
 };
 
 export const requestLastMessages = async (req: Request, res: Response) => {
+  const token = req.cookies.authToken;
+  const credentials = requireAuth({ token, res });
+  if (!credentials) return;
   try {
-    const { id } = req.body;
-    const messages = await lastMessages({ userId: id });
+    const messages = await lastMessages({ userId: credentials.id });
     if (!messages)
       return res
         .status(401)

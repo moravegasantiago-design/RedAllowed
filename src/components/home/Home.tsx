@@ -27,7 +27,7 @@ export type chatProps = {
 const Home = () => {
   const chats = useContext(ChatsContext);
   const credendials = useContext(MeContext);
-  const { lastMessages } = useLastMessages({ userId: credendials?.data?.id });
+  const { lastMessages } = useLastMessages();
   const chatsUser = orderChats({ chats: chats, lastMessages: lastMessages });
   const { search, handleSearch } = useSearch<chatProps>(["friend"]);
   const location = useLocation();

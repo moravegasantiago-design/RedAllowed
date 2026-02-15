@@ -14,18 +14,24 @@ export type usersType = {
   followMe: boolean;
   amount?: "ALL" | "ONE";
 };
-const useUsers = (id?: number, amount?: "ALL" | "ONE") => {
+const useUsers = ({
+  userId,
+  amount,
+}: {
+  userId?: number;
+  amount?: "ALL" | "ONE";
+}) => {
   const { handleRequest, data, loading } = useFetch<usersType[]>();
   useEffect(() => {
     (async () => {
       await handleRequest({
         href: "api/user/users",
         method: "POST",
-        isCredentials: false,
-        user: { id: id, amount: amount },
+        isCredentials: true,
+        user: { amount: amount, id: userId },
       });
     })();
-  }, [handleRequest, id, amount]);
+  }, [handleRequest, amount, userId]);
   const users: usersType[] = data?.data ?? [];
   return { users, loading };
 };

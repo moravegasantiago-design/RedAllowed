@@ -53,7 +53,11 @@ const Field = ({
                 : "text"
             }
             value={
-              !disabled || updated ? text.text : (values ?? "Sin especificar")
+              !disabled || updated
+                ? text.text
+                : type === "birthDay" && values
+                  ? values.slice(0, 10).split("-").join("/")
+                  : (values ?? "Sin especificar")
             }
             disabled={disabled}
             className={`${
@@ -267,7 +271,10 @@ const Pencil = ({
               method: "POST",
               user: {
                 field: type === "job" ? "job_title" : type,
-                table: type === "name" ? "users" : "user_profiles",
+                table:
+                  type === "name" || type === "username"
+                    ? "users"
+                    : "user_profiles",
                 value: text.text,
               },
             }))

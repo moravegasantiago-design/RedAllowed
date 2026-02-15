@@ -8,6 +8,6 @@ import {
 const router = Router();
 
 router.post("/users", requestUser);
-router.post("/profile", requestProfile);
+router.get("/profile", requestProfile);
 router.post("/profile/update", requestUpdate);
 export default router;

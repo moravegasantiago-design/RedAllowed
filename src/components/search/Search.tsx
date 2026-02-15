@@ -2,27 +2,35 @@ import { useContext,  useEffect,  useState } from "react";
 import Nav from "../app/Nav";
 import useUsers from "../../hook/useUsers";
 import { useFetch } from "../../hook/useFetch";
-import MeContext from "../../context/MeContext";
 import UsersOnlineContext from "../../context/UsersOnlineContext";
 import useFollow from "../../hook/useFollow";
 import LoadingUsers from "./LoadingUsers";
 interface FollowingStatus {
-  [key: number]: {followers : number, iFollow: boolean};
+  [key: number]: { followers: number; iFollow: boolean };
 }
 const Search = () => {
   const [searchQuery, setSearchQuery] = useState<string>("");
-  const {handleRequest} = useFetch<{idP1?: number, idP2: number}>();
-  const myCredentials = useContext(MeContext);
-  const { usersOnline } = useContext(UsersOnlineContext)?? {usersOnline : []};
+  const { handleRequest } = useFetch<{ idP2: number }>();
+  const { usersOnline } = useContext(UsersOnlineContext) ?? { usersOnline: [] };
   const handleFollowing = (id: number) => {
-
     setFollowingStatus((prev) => {
-      if (prev[id].iFollow)return {...prev, [id]: {followers: prev[id].followers === 0 ? 0 : prev[id].followers - 1, iFollow: false}}
-      else return {...prev, [id]: { followers: prev[id].followers + 1, iFollow: true}}
+      if (prev[id].iFollow)
+        return {
+          ...prev,
+          [id]: {
+            followers: prev[id].followers === 0 ? 0 : prev[id].followers - 1,
+            iFollow: false,
+          },
+        };
+      else
+        return {
+          ...prev,
+          [id]: { followers: prev[id].followers + 1, iFollow: true },
+        };
     });
-};
-  const { handlerFollow} = useFollow();
-  const { users, loading } = useUsers(myCredentials?.data?.id, "ALL");
+  };
+  const { handlerFollow } = useFollow();
+  const { users, loading } = useUsers({ amount: "ALL" });
   const [followingStatus, setFollowingStatus] = useState<FollowingStatus>({});
   useEffect(() => {
     const dbFollowing: FollowingStatus = Object.fromEntries(
@@ -179,18 +187,13 @@ const Search = () => {
                               onClick={async (e) => {
                                 e.stopPropagation();
                                 try {
-                                  if (!myCredentials?.data?.id) return;
-                                  await handlerFollow(
-                                    myCredentials?.data?.id,
-                                    user.id,
-                                  );
+                                  await handlerFollow(user.id);
                                   handleFollowing(user.id);
                                   await handleRequest({
                                     href: "api/chat/create",
                                     method: "POST",
-                                    isCredentials: false,
+                                    isCredentials: true,
                                     user: {
-                                      idP1: myCredentials?.data.id,
                                       idP2: user.id,
                                     },
                                   });

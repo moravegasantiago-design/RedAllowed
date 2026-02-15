@@ -11,19 +11,17 @@ export type profileProps = {
   followers: string;
   messages: string;
 };
-const useProfile = ({ id }: { id?: number }) => {
+const useProfile = () => {
   const { handleRequest, data, loading } = useFetch<profileProps>();
   useEffect(() => {
     (async () => {
-      if (!id) return;
       await handleRequest({
         href: "api/user/profile",
-        isCredentials: false,
-        method: "POST",
-        user: { id: id },
+        isCredentials: true,
+        method: "GET",
       });
     })();
-  }, [handleRequest, id]);
+  }, [handleRequest]);
   return { data, loading };
 };
 

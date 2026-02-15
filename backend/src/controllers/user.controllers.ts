@@ -1,10 +1,16 @@
 import { bringProfile, bringUsers, updateProfile } from "../db/user";
 import { Response, Request } from "express";
-import { convertToken } from "./tokenAuth";
+import requireAuth from "../middlewares/requireAuth";
 export const requestUser = async (req: Request, res: Response) => {
-  const { id, amount } = req.body;
+  const { amount, id } = req.body;
+  const token = req.cookies.authToken;
+  const credentials = requireAuth({ token, res });
+  if (!credentials) return;
   try {
-    const users = await bringUsers(id, amount);
+    const users = await bringUsers(
+      amount === "ONE" ? id : credentials.id,
+      amount,
+    );
     if ("error" in users && users.error)
       return res.status(401).json({ success: false, error: users.throw });
     res.status(200).json({ success: true, data: users });
@@ -15,9 +21,11 @@ export const requestUser = async (req: Request, res: Response) => {
 };
 
 export const requestProfile = async (req: Request, res: Response) => {
+  const token = req.cookies.authToken;
+  const credentials = requireAuth({ token, res });
+  if (!credentials) return;
   try {
-    const { id } = req.body;
-    const profile = await bringProfile({ id });
+    const profile = await bringProfile({ id: credentials.id });
     if (!profile)
       return res
         .status(404)
@@ -31,17 +39,10 @@ export const requestProfile = async (req: Request, res: Response) => {
 
 export const requestUpdate = async (req: Request, res: Response) => {
   const { table, field, value } = req.body;
-  const cookies = req.cookies.authToken;
+  const token = req.cookies.authToken;
+  const credentials = requireAuth({ token, res });
+  if (!credentials) return;
   try {
-    const credentials = convertToken(cookies);
-    if (
-      !credentials ||
-      typeof credentials === "string" ||
-      !("id" in credentials)
-    )
-      return res
-        .status(403)
-        .json({ success: false, error: "No tienes acceso" });
     if (
       !["users", "user_profiles"].includes(table) ||
       !["name", "username", "bio", "photo", "birthday", "job_title"].includes(

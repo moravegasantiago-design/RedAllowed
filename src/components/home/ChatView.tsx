@@ -30,7 +30,7 @@ const ChatView = () => {
       container.scrollTop = container.scrollHeight;
     }
   }, [mergedMessages, isWriting]);
-  const { users } = useUsers(Number(userId), "ONE");
+  const { users } = useUsers({ userId: Number(userId), amount: "ONE" });
   return (
     <div className="flex-1 flex flex-col bg-zinc-950">
       {/* Chat Header */}

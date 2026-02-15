@@ -1,14 +1,12 @@
-import { useContext, useState } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import MeContext from "../../../context/MeContext";
 import useProfile from "../../../hook/useProfile";
 import Field from "./ProfileField";
 import ProfileCard from "./ProfileCard";
 
 const Profile = () => {
   const navigate = useNavigate();
-  const myCredentials = useContext(MeContext);
-  const { data } = useProfile({ id: myCredentials?.data?.id });
+  const { data } = useProfile();
   const [editing, setEditing] = useState<boolean>(false);
 
   return (
