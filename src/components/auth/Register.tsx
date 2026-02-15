@@ -108,7 +108,7 @@ const Register = () => {
                   type="text"
                   name="name"
                   required
-                  minLength={2}
+                  minLength={6}
                   maxLength={40}
                   pattern="[A-Za-zÁÉÍÓÚáéíóúÑñ ]+"
                   title="Solo letras y espacios (2 a 40 caracteres)"
@@ -146,7 +146,7 @@ const Register = () => {
                   name="username"
                   value={formUser.username}
                   required
-                  minLength={3}
+                  minLength={6}
                   maxLength={15}
                   pattern="[a-zA-Z0-9_]+"
                   title="Solo letras, números y guion bajo (3–15 caracteres)"

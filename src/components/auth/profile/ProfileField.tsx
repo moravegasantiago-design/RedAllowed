@@ -1,4 +1,6 @@
 import { useState, type Dispatch, type SetStateAction } from "react";
+import useError from "./hook/useError";
+import { useFetch } from "../../../hook/useFetch";
 
 const Field = ({
   values,
@@ -13,8 +15,8 @@ const Field = ({
 }) => {
   const title = {
     name: "Nombre",
-    username: "Username",
-    job: "Job",
+    username: "Nombre de usuario",
+    job: "Trabajo",
     birthDay: "Cumpleaños",
     bio: "Biografia",
   };
@@ -23,7 +25,7 @@ const Field = ({
   );
   const [disabled, setDisabled] = useState<boolean>(true);
   const [updated, setUpdated] = useState<boolean>(false);
-  console.log(editing && !disabled);
+  const { handleError, isError, removeError } = useError();
   return (
     <div className="bg-zinc-800/30 rounded-xl p-4 hover:bg-zinc-800/50 transition-colors group">
       <div className="flex items-center gap-4">
@@ -31,16 +33,17 @@ const Field = ({
         <div className="flex-1 min-w-0">
           <p className="text-xs text-zinc-500 mb-0.5">{title[type]}</p>
           <input
-            type="text"
+            type={type !== "birthDay" ? "text" : "date"}
             value={
               !disabled || updated ? text.text : (values ?? "Sin especificar")
             }
             disabled={disabled}
-            className={
+            className={`${
               editing && disabled
-                ? `bg-transparent text-zinc-400 disabled:bg-transparent disabled:opacity-100 disabled:cursor-not-allowed`
-                : `text-white font-medium bg-transparent border-none outline-none w-full cursor-pointer`
+                ? "bg-transparent text-zinc-400 disabled:bg-transparent disabled:opacity-100 disabled:cursor-not-allowed"
+                : "text-white font-medium bg-transparent border-none outline-none w-full cursor-pointer"
             }
+             ${isError && !disabled ? "text-red-400" : ""}`}
             onChange={(e) =>
               setText((prev) => ({
                 text: e.target.value,
@@ -48,6 +51,11 @@ const Field = ({
               }))
             }
           />
+          {isError && !disabled && (
+            <p className="text-xs text-red-400 mt-1 animate-in fade-in slide-in-from-top-1 duration-200">
+              {isError}
+            </p>
+          )}
         </div>
         <Pencil
           type={type}
@@ -58,6 +66,9 @@ const Field = ({
           values={values ?? null}
           setEditing={setEditing}
           editing={editing}
+          handleError={handleError}
+          text={text}
+          removeError={removeError}
         />
       </div>
     </div>
@@ -168,6 +179,9 @@ const Pencil = ({
   setText,
   setEditing,
   editing,
+  handleError,
+  text,
+  removeError,
 }: {
   type: "name" | "username" | "job" | "birthDay" | "bio";
   disabled: boolean;
@@ -179,6 +193,17 @@ const Pencil = ({
   >;
   setEditing: Dispatch<SetStateAction<boolean>>;
   editing: boolean;
+  removeError: () => void;
+  handleError: ({
+    text,
+    type,
+    values,
+  }: {
+    text: { text: string; textUpdate: string | null };
+    type: "text" | "date";
+    values: string | null;
+  }) => boolean;
+  text: { text: string; textUpdate: string | null };
 }) => {
   const className = {
     name: "w-5 h-5 text-zinc-500 group-hover:text-emerald-500 transition-colors",
@@ -189,15 +214,30 @@ const Pencil = ({
       "w-5 h-5 text-zinc-500 group-hover:text-pink-500 transition-colors",
     bio: "w-5 h-5 text-zinc-500 group-hover:text-blue-500 transition-colors",
   };
+
+  const handleConfirm = () => {
+    if (
+      !handleError({
+        text: text,
+        type: type !== "birthDay" ? "text" : "date",
+        values,
+      })
+    )
+      return false;
+    setDisabled(true);
+    setUpdated(true);
+    setEditing(false);
+    setText((prev) => ({ ...prev, textUpdate: prev.text }));
+    return true;
+  };
+
   return !disabled ? (
     <div className="flex items-center gap-2 animate-in fade-in slide-in-from-right-2 duration-200">
       <button
         className="flex-shrink-0 p-1.5 rounded-lg bg-green-500/10 hover:bg-green-500/20 transition-all duration-200 hover:scale-110 active:scale-95"
         onClick={() => {
-          setDisabled(true);
-          setUpdated(true);
-          setEditing(false);
-          setText((prev) => ({ ...prev, textUpdate: prev.text }));
+          if (!handleConfirm()) return;
+          removeError();
         }}
       >
         <svg
@@ -225,6 +265,7 @@ const Pencil = ({
               : { ...prev, text: "" },
           );
           setEditing(false);
+          removeError();
         }}
       >
         <svg
