@@ -19,7 +19,7 @@ export type userProps = {
   chatId?: number;
   amount?: "ALL" | "ONE";
   table?: "users" | "user_profiles";
-  field?: "name" | "username" | "job" | "birthDay" | "bio";
+  field?: "name" | "username" | "job_title" | "birthDay" | "bio";
   value?: string;
 };
 type nameKeys = keyof userProps;

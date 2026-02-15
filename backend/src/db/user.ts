@@ -72,7 +72,7 @@ export const updateProfile = async ({
 }: {
   id: number;
   table: "users" | "user_profiles";
-  field: "name" | "username" | "bio" | "photo";
+  field: "name" | "username" | "bio" | "photo" | "job_title";
   value: string;
 }) => {
   try {

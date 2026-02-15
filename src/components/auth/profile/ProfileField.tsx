@@ -2,17 +2,15 @@ import { useState, type Dispatch, type SetStateAction } from "react";
 import useError from "./hook/useError";
 import { useFetch } from "../../../hook/useFetch";
 import type { userProps } from "../../../Auth/hook/useFromUser";
-type fetchProps = {
-  table: "users" | "user_profiles";
-  field: "name" | "username" | "job" | "birthDay" | "bio";
-  value: string;
-};
+
+
+
 
 type handleProps = {
   href: string;
   method: "GET" | "POST";
   isCredentials: boolean;
-  user?: fetchProps | userProps;
+  user?: userProps;
 };
 
 const Field = ({
@@ -39,7 +37,7 @@ const Field = ({
   const [disabled, setDisabled] = useState<boolean>(true);
   const [updated, setUpdated] = useState<boolean>(false);
   const { handleError, isError, removeError } = useError();
-  const { handleRequest, loading, error } = useFetch<fetchProps>();
+  const { handleRequest, loading, error } = useFetch();
   return (
     <div className="bg-zinc-800/30 rounded-xl p-4 hover:bg-zinc-800/50 transition-colors group">
       <div className="flex items-center gap-4">
@@ -48,7 +46,9 @@ const Field = ({
           <p className="text-xs text-zinc-500 mb-0.5">{title[type]}</p>
           <input
             type={
-              type === "birthDay" && (values || text.textUpdate)
+              type === "birthDay" &&
+              !disabled &&
+              (values || text.textUpdate || editing)
                 ? "date"
                 : "text"
             }
@@ -266,7 +266,7 @@ const Pencil = ({
               isCredentials: true,
               method: "POST",
               user: {
-                field: type,
+                field: type === "job" ? "job_title" : type,
                 table: type === "name" ? "users" : "user_profiles",
                 value: text.text,
               },
