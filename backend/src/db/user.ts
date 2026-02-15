@@ -63,3 +63,26 @@ export const bringProfile = async ({ id }: { id: number }) => {
     return null;
   }
 };
+
+export const updateProfile = async ({
+  id,
+  table,
+  field,
+  value,
+}: {
+  id: number;
+  table: "users" | "user_profiles";
+  field: "name" | "username" | "bio" | "photo";
+  value: string;
+}) => {
+  try {
+    const where = table === "users" ? "id" : "user_id";
+    const query = `UPDATE ${table} SET ${field} = $1 WHERE ${where} = $2`;
+    await pool.query(query, [value, id]);
+    return true;
+  } catch (e) {
+    console.error(e);
+    return null;
+  }
+};
+
