@@ -18,6 +18,9 @@ export type userProps = {
   followers?: number;
   chatId?: number;
   amount?: "ALL" | "ONE";
+  table?: "users" | "user_profiles";
+  field?: "name" | "username" | "job" | "birthDay" | "bio";
+  value?: string;
 };
 type nameKeys = keyof userProps;
 export const useFormUser = () => {

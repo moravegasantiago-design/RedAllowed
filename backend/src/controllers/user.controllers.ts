@@ -44,7 +44,9 @@ export const requestUpdate = async (req: Request, res: Response) => {
         .json({ success: false, error: "No tienes acceso" });
     if (
       !["users", "user_profiles"].includes(table) ||
-      !["name", "username", "bio", "photo", "birthday"].includes(field)
+      !["name", "username", "bio", "photo", "birthday", "job"].includes(
+        (field as string).toLowerCase(),
+      )
     )
       return res
         .status(403)

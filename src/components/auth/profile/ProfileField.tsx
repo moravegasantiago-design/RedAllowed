@@ -1,5 +1,19 @@
 import { useState, type Dispatch, type SetStateAction } from "react";
 import useError from "./hook/useError";
+import { useFetch } from "../../../hook/useFetch";
+import type { userProps } from "../../../Auth/hook/useFromUser";
+type fetchProps = {
+  table: "users" | "user_profiles";
+  field: "name" | "username" | "job" | "birthDay" | "bio";
+  value: string;
+};
+
+type handleProps = {
+  href: string;
+  method: "GET" | "POST";
+  isCredentials: boolean;
+  user?: fetchProps | userProps;
+};
 
 const Field = ({
   values,
@@ -25,6 +39,7 @@ const Field = ({
   const [disabled, setDisabled] = useState<boolean>(true);
   const [updated, setUpdated] = useState<boolean>(false);
   const { handleError, isError, removeError } = useError();
+  const { handleRequest, loading, error } = useFetch<fetchProps>();
   return (
     <div className="bg-zinc-800/30 rounded-xl p-4 hover:bg-zinc-800/50 transition-colors group">
       <div className="flex items-center gap-4">
@@ -32,7 +47,11 @@ const Field = ({
         <div className="flex-1 min-w-0">
           <p className="text-xs text-zinc-500 mb-0.5">{title[type]}</p>
           <input
-            type={type !== "birthDay" ? "text" : "date"}
+            type={
+              type === "birthDay" && (values || text.textUpdate)
+                ? "date"
+                : "text"
+            }
             value={
               !disabled || updated ? text.text : (values ?? "Sin especificar")
             }
@@ -42,7 +61,7 @@ const Field = ({
                 ? "bg-transparent text-zinc-400 disabled:bg-transparent disabled:opacity-100 disabled:cursor-not-allowed"
                 : "text-white font-medium bg-transparent border-none outline-none w-full cursor-pointer"
             }
-             ${isError && !disabled ? "text-red-400" : ""}`}
+             ${(error?.error || isError) && !disabled ? "text-red-400" : ""}`}
             onChange={(e) =>
               setText((prev) => ({
                 text: e.target.value,
@@ -50,9 +69,9 @@ const Field = ({
               }))
             }
           />
-          {isError && !disabled && (
+          {(error?.error || isError) && !disabled && (
             <p className="text-xs text-red-400 mt-1 animate-in fade-in slide-in-from-top-1 duration-200">
-              {isError}
+              {error?.error || isError}
             </p>
           )}
         </div>
@@ -68,6 +87,8 @@ const Field = ({
           handleError={handleError}
           text={text}
           removeError={removeError}
+          handlerRequest={handleRequest}
+          loading={loading}
         />
       </div>
     </div>
@@ -181,6 +202,8 @@ const Pencil = ({
   handleError,
   text,
   removeError,
+  loading,
+  handlerRequest,
 }: {
   type: "name" | "username" | "job" | "birthDay" | "bio";
   disabled: boolean;
@@ -203,6 +226,8 @@ const Pencil = ({
     values: string | null;
   }) => boolean;
   text: { text: string; textUpdate: string | null };
+  handlerRequest: (props: handleProps) => Promise<true | null>;
+  loading: boolean;
 }) => {
   const className = {
     name: "w-5 h-5 text-zinc-500 group-hover:text-emerald-500 transition-colors",
@@ -223,10 +248,7 @@ const Pencil = ({
       })
     )
       return false;
-    setDisabled(true);
-    setUpdated(true);
-    setEditing(false);
-    setText((prev) => ({ ...prev, textUpdate: prev.text }));
+
     return true;
   };
 
@@ -234,24 +256,65 @@ const Pencil = ({
     <div className="flex items-center gap-2 animate-in fade-in slide-in-from-right-2 duration-200">
       <button
         className="flex-shrink-0 p-1.5 rounded-lg bg-green-500/10 hover:bg-green-500/20 transition-all duration-200 hover:scale-110 active:scale-95"
-        onClick={() => {
-          if (!handleConfirm()) return;
+        disabled={loading}
+        onClick={async () => {
+          if (
+            loading ||
+            !handleConfirm() ||
+            !(await handlerRequest({
+              href: "api/user/profile/update",
+              isCredentials: true,
+              method: "POST",
+              user: {
+                field: type,
+                table: type === "name" ? "users" : "user_profiles",
+                value: text.text,
+              },
+            }))
+          )
+            return;
+          setDisabled(true);
+          setUpdated(true);
+          setEditing(false);
+          setText((prev) => ({ ...prev, textUpdate: prev.text }));
           removeError();
         }}
       >
-        <svg
-          className="w-5 h-5 text-green-500"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2}
-            d="M5 13l4 4L19 7"
-          />
-        </svg>
+        {loading ? (
+          <svg
+            className="w-5 h-5 text-green-500 animate-spin"
+            fill="none"
+            viewBox="0 0 24 24"
+          >
+            <circle
+              className="opacity-25"
+              cx="12"
+              cy="12"
+              r="10"
+              stroke="currentColor"
+              strokeWidth="4"
+            />
+            <path
+              className="opacity-75"
+              fill="currentColor"
+              d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+            />
+          </svg>
+        ) : (
+          <svg
+            className="w-5 h-5 text-green-500"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M5 13l4 4L19 7"
+            />
+          </svg>
+        )}
       </button>
 
       <button
