@@ -33,6 +33,6 @@ app.use("/api/auth", authRouter);
 app.use("/api/chat", chatRouter);
 app.use("/api/user", userRouter);
 app.use("/api/follow", followRouter);
-app.use("api/image", imageRouter);
+app.use("/api/image", imageRouter);
 
 export default app;

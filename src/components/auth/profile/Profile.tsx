@@ -3,12 +3,13 @@ import { useNavigate } from "react-router-dom";
 import useProfile from "../../../hook/useProfile";
 import Field from "./ProfileField";
 import ProfileCard from "./ProfileCard";
+import { useFetch } from "../../../hook/useFetch";
 
 const Profile = () => {
   const navigate = useNavigate();
   const { data } = useProfile();
   const [editing, setEditing] = useState<boolean>(false);
-
+  const { handleRequest, data: urlImage, loading } = useFetch();
   return (
     <div className="min-h-screen bg-zinc-950 flex">
       {/* Sidebar con lista de opciones */}
@@ -40,11 +41,57 @@ const Profile = () => {
           {/* Avatar with edit */}
           <div className="relative w-32 h-32 mx-auto mb-6 group">
             <img
-              src={data?.data?.imagen}
+              src={urlImage?.data?.image || data?.data?.imagen}
               alt="Profile"
               className="w-full h-full rounded-full object-cover border-4 border-zinc-800"
             />
-            <button className="absolute inset-0 flex items-center justify-center bg-black/50 rounded-full opacity-0 group-hover:opacity-100 transition-opacity">
+            {loading && (
+              <div className="absolute inset-0 flex items-center justify-center bg-black/70 rounded-full">
+                <svg
+                  className="w-12 h-12 text-emerald-500 animate-spin"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                >
+                  <circle
+                    className="opacity-25"
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    stroke="currentColor"
+                    strokeWidth="4"
+                  />
+                  <path
+                    className="opacity-75"
+                    fill="currentColor"
+                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                  />
+                </svg>
+              </div>
+            )}
+
+            <label
+              htmlFor="profile-picture-upload"
+              className="absolute inset-0 flex items-center justify-center bg-black/50 rounded-full opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"
+            >
+              <input
+                id="profile-picture-upload"
+                type="file"
+                accept="image/png, image/jpeg, image/jpg, image/gif, image/webp"
+                className="hidden"
+                onChange={async (e) => {
+                  const file = e.target.files?.[0];
+                  if (file) {
+                    const formDate = new FormData();
+                    formDate.append("image", file);
+                    await handleRequest({
+                      href: "api/image/update",
+                      method: "POST",
+                      isCredentials: true,
+                      file: formDate,
+                    });
+                  }
+                }}
+              />
               <div className="bg-emerald-500 p-3 rounded-full">
                 <svg
                   className="w-5 h-5 text-white"
@@ -66,7 +113,8 @@ const Profile = () => {
                   />
                 </svg>
               </div>
-            </button>
+            </label>
+
             {/* Online indicator */}
             <div className="absolute bottom-2 right-2 w-5 h-5 bg-emerald-500 rounded-full border-4 border-zinc-900"></div>
           </div>

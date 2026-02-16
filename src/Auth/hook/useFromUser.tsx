@@ -21,6 +21,7 @@ export type userProps = {
   table?: "users" | "user_profiles";
   field?: "name" | "username" | "job_title" | "birthDay" | "bio";
   value?: string;
+  image?: string;
 };
 type nameKeys = keyof userProps;
 export const useFormUser = () => {

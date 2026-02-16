@@ -16,18 +16,24 @@ export const useFetch = <T = userProps,>() => {
       method: "GET" | "POST";
       isCredentials: boolean;
       user?: T | userProps;
+      file?: FormData;
     }) => {
       setLoading(true);
       setError(null);
       setData(null);
       try {
-        const { href, method, isCredentials, user } = props;
+        const { href, method, isCredentials, user, file } = props;
         const req = await fetch(`https://redallowed.onrender.com/${href}`, {
           method: method,
-          headers: { "Content-Type": "application/json" },
+          ...(!file && {
+            headers: { "Content-Type": "application/json" },
+          }),
           ...(user && {
             body: JSON.stringify({
               ...user,
+            }),
+            ...(file && {
+              body: file,
             }),
           }),
           credentials: isCredentials ? "include" : "omit",
@@ -47,7 +53,7 @@ export const useFetch = <T = userProps,>() => {
         setLoading(false);
       }
     },
-    []
+    [],
   );
 
   return { data, loading, error, handleRequest };
