@@ -5,6 +5,7 @@ import authRouter from "./router/auth.route";
 import chatRouter from "./router/chats.route";
 import userRouter from "./router/user.route";
 import followRouter from "./router/follow.route";
+import imageRouter from "./router/image.route";
 const app = express();
 app.use(
   cors({
@@ -24,7 +25,7 @@ app.use(
       }
     },
     credentials: true,
-  })
+  }),
 );
 app.use(cookieParser());
 app.use(express.json());
@@ -32,4 +33,6 @@ app.use("/api/auth", authRouter);
 app.use("/api/chat", chatRouter);
 app.use("/api/user", userRouter);
 app.use("/api/follow", followRouter);
+app.use("api/image", imageRouter);
+
 export default app;

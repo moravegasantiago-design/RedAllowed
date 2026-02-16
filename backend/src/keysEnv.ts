@@ -7,3 +7,6 @@ export const DB_NAME = process.env.DB_NAME;
 export const DB_PORT = process.env.DB_PORT;
 export const JWT_SECRET = process.env.JWT_SECRET!;
 export const PORT: number = Number(process.env.PORT);
+export const CLOUD_NAME = process.env.CLOUD_NAME;
+export const CLOUD_KEY = process.env.CLOUD_KEY;
+export const CLOUD_SECRET = process.env.CLOUD_SECRET;
