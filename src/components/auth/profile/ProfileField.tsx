@@ -14,11 +14,13 @@ const Field = ({
   type,
   setEditing,
   editing,
+  isMe,
 }: {
   type: "name" | "username" | "job" | "birthDay" | "bio";
   values: string | null;
   setEditing: Dispatch<SetStateAction<boolean>>;
   editing: boolean;
+  isMe?: boolean;
 }) => {
   const title = {
     name: "Nombre",
@@ -75,21 +77,25 @@ const Field = ({
             </p>
           )}
         </div>
-        <Pencil
-          type={type}
-          setDisabled={setDisabled}
-          disabled={disabled}
-          setUpdated={setUpdated}
-          setText={setText}
-          values={values ?? null}
-          setEditing={setEditing}
-          editing={editing}
-          handleError={handleError}
-          text={text}
-          removeError={removeError}
-          handlerRequest={handleRequest}
-          loading={loading}
-        />
+        (
+        {isMe && (
+          <Pencil
+            type={type}
+            setDisabled={setDisabled}
+            disabled={disabled}
+            setUpdated={setUpdated}
+            setText={setText}
+            values={values ?? null}
+            setEditing={setEditing}
+            editing={editing}
+            handleError={handleError}
+            text={text}
+            removeError={removeError}
+            handlerRequest={handleRequest}
+            loading={loading}
+          />
+        )}
+        )
       </div>
     </div>
   );

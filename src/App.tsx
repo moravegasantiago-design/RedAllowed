@@ -20,7 +20,8 @@ const App = () => {
           <Route index element={<EmptyScreen />} />
         </Route>
         <Route path="/Search" element={<Search />} />
-        <Route path="/Profile" element={<Profile />} />
+        <Route path="/Profile" element={<Profile isMe={true} />} />
+        <Route path="/Profile/:userId" element={<Profile />} />
       </Route>
     </Routes>
   );

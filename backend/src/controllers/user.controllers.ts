@@ -22,10 +22,11 @@ export const requestUser = async (req: Request, res: Response) => {
 
 export const requestProfile = async (req: Request, res: Response) => {
   const token = req?.cookies?.authToken;
+  const { id } = req.body;
   const credentials = requireAuth({ token, res });
   if (!credentials) return;
   try {
-    const profile = await bringProfile({ id: credentials.id });
+    const profile = await bringProfile({ id: id || credentials.id });
     if (!profile)
       return res
         .status(404)

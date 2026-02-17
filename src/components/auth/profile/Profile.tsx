@@ -1,13 +1,14 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import useProfile from "../../../hook/useProfile";
 import Field from "./ProfileField";
 import ProfileCard from "./ProfileCard";
 import { useFetch } from "../../../hook/useFetch";
 
-const Profile = () => {
+const Profile = ({ isMe }: { isMe?: boolean }) => {
   const navigate = useNavigate();
-  const { data } = useProfile();
+  const { userId } = useParams<{ userId?: string }>();
+  const { data } = useProfile({ userId: Number(userId) });
   const [editing, setEditing] = useState<boolean>(false);
   const { handleRequest, data: urlImage, loading } = useFetch();
   return (
@@ -69,56 +70,58 @@ const Profile = () => {
               </div>
             )}
 
-            <label
-              htmlFor="profile-picture-upload"
-              className="absolute inset-0 flex items-center justify-center bg-black/50 rounded-full opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"
-            >
-              <input
-                id="profile-picture-upload"
-                type="file"
-                accept="image/png, image/jpeg, image/jpg, image/gif, image/webp"
-                className="hidden"
-                onChange={async (e) => {
-                  const file = e.target.files?.[0];
-                  try {
-                    if (file) {
-                      const formDate = new FormData();
-                      formDate.append("image", file);
-                      await handleRequest({
-                        href: "api/image/update",
-                        method: "POST",
-                        isCredentials: true,
-                        file: formDate,
-                      });
+            {isMe && (
+              <label
+                htmlFor="profile-picture-upload"
+                className="absolute inset-0 flex items-center justify-center bg-black/50 rounded-full opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"
+              >
+                <input
+                  id="profile-picture-upload"
+                  type="file"
+                  accept="image/png, image/jpeg, image/jpg, image/gif, image/webp"
+                  className="hidden"
+                  onChange={async (e) => {
+                    const file = e.target.files?.[0];
+                    try {
+                      if (file) {
+                        const formDate = new FormData();
+                        formDate.append("image", file);
+                        await handleRequest({
+                          href: "api/image/update",
+                          method: "POST",
+                          isCredentials: true,
+                          file: formDate,
+                        });
+                      }
+                    } catch (e) {
+                      console.error(e);
+                      return;
                     }
-                  } catch (e) {
-                    console.error(e);
-                    return;
-                  }
-                }}
-              />
-              <div className="bg-emerald-500 p-3 rounded-full">
-                <svg
-                  className="w-5 h-5 text-white"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"
-                  />
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"
-                  />
-                </svg>
-              </div>
-            </label>
+                  }}
+                />
+                <div className="bg-emerald-500 p-3 rounded-full">
+                  <svg
+                    className="w-5 h-5 text-white"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"
+                    />
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"
+                    />
+                  </svg>
+                </div>
+              </label>
+            )}
 
             {/* Online indicator */}
             <div className="absolute bottom-2 right-2 w-5 h-5 bg-emerald-500 rounded-full border-4 border-zinc-900"></div>
@@ -164,6 +167,7 @@ const Profile = () => {
             )
             .map(([key, values], i) => (
               <Field
+                isMe={isMe}
                 key={i}
                 type={key as "name" | "username" | "job" | "birthDay" | "bio"}
                 values={values}
