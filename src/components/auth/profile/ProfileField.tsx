@@ -2,10 +2,6 @@ import { useState, type Dispatch, type SetStateAction } from "react";
 import useError from "./hook/useError";
 import { useFetch } from "../../../hook/useFetch";
 import type { userProps } from "../../../Auth/hook/useFromUser";
-
-
-
-
 type handleProps = {
   href: string;
   method: "GET" | "POST";

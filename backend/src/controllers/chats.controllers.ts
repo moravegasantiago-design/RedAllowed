@@ -7,7 +7,7 @@ import {
 } from "../db/chat";
 import requireAuth from "../middlewares/requireAuth";
 export const requestChat = async (req: Request, res: Response) => {
-  const token = req.cookies.authToken;
+  const token = req?.cookies?.authToken;
   const credentials = requireAuth({ token, res });
   if (!credentials) return;
   try {
@@ -25,7 +25,7 @@ export const requestChat = async (req: Request, res: Response) => {
 
 export const newChat = async (req: Request, res: Response) => {
   const { idP2 } = req.body;
-  const token = req.cookies.authToken;
+  const token = req?.cookies?.authToken;
   const credentials = requireAuth({ token, res });
   if (!credentials) return;
   try {
@@ -57,7 +57,7 @@ export const requestMessage = async (req: Request, res: Response) => {
 };
 
 export const requestLastMessages = async (req: Request, res: Response) => {
-  const token = req.cookies.authToken;
+  const token = req?.cookies?.authToken;
   const credentials = requireAuth({ token, res });
   if (!credentials) return;
   try {

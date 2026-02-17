@@ -3,7 +3,7 @@ import { Response, Request } from "express";
 import requireAuth from "../middlewares/requireAuth";
 export const requestUser = async (req: Request, res: Response) => {
   const { amount, id } = req.body;
-  const token = req.cookies.authToken;
+  const token = req?.cookies?.authToken;
   const credentials = requireAuth({ token, res });
   if (!credentials) return;
   try {
@@ -21,7 +21,7 @@ export const requestUser = async (req: Request, res: Response) => {
 };
 
 export const requestProfile = async (req: Request, res: Response) => {
-  const token = req.cookies.authToken;
+  const token = req?.cookies?.authToken;
   const credentials = requireAuth({ token, res });
   if (!credentials) return;
   try {
@@ -39,7 +39,7 @@ export const requestProfile = async (req: Request, res: Response) => {
 
 export const requestUpdate = async (req: Request, res: Response) => {
   const { table, field, value } = req.body;
-  const token = req.cookies.authToken;
+  const token = req?.cookies?.authToken;
   const credentials = requireAuth({ token, res });
   if (!credentials) return;
   try {

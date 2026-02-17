@@ -32,9 +32,9 @@ export const useFetch = <T = userProps,>() => {
             body: JSON.stringify({
               ...user,
             }),
-            ...(file && {
-              body: file,
-            }),
+          }),
+          ...(file && {
+            body: file,
           }),
           credentials: isCredentials ? "include" : "omit",
         });

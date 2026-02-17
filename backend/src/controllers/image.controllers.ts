@@ -3,15 +3,9 @@ import { uploadCloudinary } from "../cloudinary/cloudinary";
 import requireAuth from "../middlewares/requireAuth";
 import { updateImage } from "../db/image";
 
-export const requestImage = async ({
-  res,
-  req,
-}: {
-  res: Response;
-  req: Request;
-}) => {
-  const file = req.file?.path;
-  const token = req.cookies.authToken;
+export const requestImage = async (req: Request, res: Response) => {
+  const file = req?.file?.buffer;
+  const token = req?.cookies?.authToken;
   const credentials = requireAuth({ token, res });
   if (!credentials) return;
   if (!file) res.status(404).json({ success: false, error: "No hay archivos" });

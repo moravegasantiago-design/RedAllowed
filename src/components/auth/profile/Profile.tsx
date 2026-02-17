@@ -80,15 +80,20 @@ const Profile = () => {
                 className="hidden"
                 onChange={async (e) => {
                   const file = e.target.files?.[0];
-                  if (file) {
-                    const formDate = new FormData();
-                    formDate.append("image", file);
-                    await handleRequest({
-                      href: "api/image/update",
-                      method: "POST",
-                      isCredentials: true,
-                      file: formDate,
-                    });
+                  try {
+                    if (file) {
+                      const formDate = new FormData();
+                      formDate.append("image", file);
+                      await handleRequest({
+                        href: "api/image/update",
+                        method: "POST",
+                        isCredentials: true,
+                        file: formDate,
+                      });
+                    }
+                  } catch (e) {
+                    console.error(e);
+                    return;
                   }
                 }}
               />

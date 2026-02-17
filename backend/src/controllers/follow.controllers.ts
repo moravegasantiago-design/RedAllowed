@@ -4,7 +4,7 @@ import requireAuth from "../middlewares/requireAuth";
 
 export const followHandler = async (req: Request, res: Response) => {
   const { idP2 } = req.body;
-  const token = req.cookies.authToken;
+  const token = req?.cookies?.authToken;
   const credentials = requireAuth({ token, res });
   if (!credentials) return;
   try {
