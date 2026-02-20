@@ -77,7 +77,7 @@ const Field = ({
             </p>
           )}
         </div>
-        (
+
         {isMe && (
           <Pencil
             type={type}
@@ -95,7 +95,6 @@ const Field = ({
             loading={loading}
           />
         )}
-        )
       </div>
     </div>
   );

@@ -2,8 +2,9 @@ import { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import useProfile from "../../../hook/useProfile";
 import Field from "./ProfileField";
-import ProfileCard from "./ProfileCard";
+
 import { useFetch } from "../../../hook/useFetch";
+import { ProfileCardDemo } from "./ProfileCard";
 
 const Profile = ({ isMe }: { isMe?: boolean }) => {
   const navigate = useNavigate();
@@ -177,35 +178,39 @@ const Profile = ({ isMe }: { isMe?: boolean }) => {
             ))}
         </div>
         {/* Logout Button */}
-        <div className="p-4 border-t border-zinc-800">
-          <button className="w-full flex items-center justify-center gap-2 bg-red-500/10 hover:bg-red-500/20 text-red-500 py-3 rounded-xl transition-colors">
-            <svg
-              className="w-5 h-5"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={1.5}
-                d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
-              />
-            </svg>
-            <span className="font-medium">Cerrar sesión</span>
-          </button>
-        </div>
+        {isMe && (
+          <div className="p-4 border-t border-zinc-800">
+            <button className="w-full flex items-center justify-center gap-2 bg-red-500/10 hover:bg-red-500/20 text-red-500 py-3 rounded-xl transition-colors">
+              <svg
+                className="w-5 h-5"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={1.5}
+                  d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
+                />
+              </svg>
+              <span className="font-medium">Cerrar sesión</span>
+            </button>
+          </div>
+        )}
       </div>
 
       {/* Main Content - Profile Preview */}
-      <div className="hidden md:flex flex-1 flex-col items-center justify-center bg-zinc-950 p-8">
-        <div className="max-w-md w-full animate-[fadeIn_0.5s_ease-out]">
-          <ProfileCard data={data?.data} />
-          <p className="text-center text-zinc-600 text-sm mt-6">
-            Así es como otros usuarios ven tu perfil
-          </p>
+      {isMe && (
+        <div className="hidden md:flex flex-1 flex-col items-center justify-center bg-zinc-950 p-8">
+          <div className="max-w-md w-full animate-[fadeIn_0.5s_ease-out]">
+            <ProfileCardDemo data={data?.data} />
+            <p className="text-center text-zinc-600 text-sm mt-6">
+              Así es como otros usuarios ven tu perfil
+            </p>
+          </div>
         </div>
-      </div>
+      )}
 
       {/* Estilos de animación */}
       <style>{`

@@ -139,59 +139,55 @@ const ChatView = () => {
             Hoy
           </span>
         </div>
-        {mergedMessages.map((m, i) => (
-          <div
-            key={i}
-            ref={(el) => {
-              if (
-                !el ||
-                m.userId === credendials?.data?.id ||
-                m.status !== "delivered"
-              )
-                return;
-              isSeen.current?.observe(el);
-            }}
-            id={m.id}
-            className={`flex ${
-              m.userId === credendials?.data?.id
-                ? "justify-end"
-                : "justify-start"
-            } animate-[slideIn_0.1s_ease-out_0.2s_both]`}
-          >
-            <div className="max-w-[90%] sm:max-w-[85%] md:max-w-[70%]">
+        {mergedMessages.map((m, i) => {
+          const isMe = m.userId === credendials?.data?.id;
+
+          return (
+            <div
+              key={i}
+              ref={(el) => {
+                if (!el || isMe || m.status !== "delivered") return;
+                isSeen.current?.observe(el);
+              }}
+              id={m.id}
+              className={`flex w-full px-2 ${isMe ? "justify-end" : "justify-start"} animate-[slideIn_0.1s_ease-out_0.2s_both]`}
+            >
               <div
-                className={`${
-                  m.userId === credendials?.data?.id
-                    ? "bg-emerald-600"
-                    : "bg-zinc-800"
-                } text-white px-3 sm:px-4 py-2 sm:py-2.5 rounded-2xl ${
-                  m.userId === credendials?.data?.id
-                    ? "rounded-br-md"
-                    : "rounded-bl-md"
-                } w-fit ${
-                  m.userId === credendials?.data?.id ? "ml-auto" : "mr-auto"
-                } break-words text-sm sm:text-base`}
+                className={`max-w-[75%] min-w-0 px-3 pt-2 pb-1.5 rounded-2xl ${
+                  isMe
+                    ? "bg-emerald-600 rounded-br-sm"
+                    : "bg-zinc-800 rounded-bl-sm"
+                } text-white text-sm sm:text-base`}
               >
-                <p>{m.content}</p>
-              </div>
-              <div className={`flex items-center justify-end gap-1 mt-0.5`}>
-                <span className="text-xs text-zinc-600">
-                  {new Date(m.date).toLocaleTimeString("es-CO", {
-                    hour: "2-digit",
-                    minute: "2-digit",
-                  })}
-                </span>
-                {m.userId === credendials?.data?.id && (
-                  <>
-                    {m.status === "sent" && <Sent />}
-                    {m.status === "delivered" && <Delivered />}
-                    {m.status === "seen" && <Seen />}
-                  </>
-                )}
+                <p
+                  style={{
+                    wordBreak: "break-word",
+                    overflowWrap: "anywhere",
+                    whiteSpace: "pre-wrap",
+                  }}
+                >
+                  {m.content}
+                </p>
+
+                <div className="flex justify-end items-center gap-0.5 mt-0.5">
+                  <span className="text-[10px] leading-none text-white/60 whitespace-nowrap">
+                    {new Date(m.date).toLocaleTimeString("es-CO", {
+                      hour: "2-digit",
+                      minute: "2-digit",
+                    })}
+                  </span>
+                  {isMe && (
+                    <span className="flex items-center scale-75 origin-left">
+                      {m.status === "sent" && <Sent />}
+                      {m.status === "delivered" && <Delivered />}
+                      {m.status === "seen" && <Seen />}
+                    </span>
+                  )}
+                </div>
               </div>
             </div>
-          </div>
-        ))}
+          );
+        })}
         {isWriting && <Typing imagen={users[0].photo} />}
       </div>
 

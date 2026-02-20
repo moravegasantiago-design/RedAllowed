@@ -1,4 +1,4 @@
-import { useContext } from "react";
+import { useContext, type RefObject } from "react";
 import { useNavigate } from "react-router-dom";
 import UsersOnlineContext from "../../context/UsersOnlineContext";
 import { SocketContext } from "../../context/SocketContext";
@@ -7,7 +7,21 @@ import type { chatProps } from "../home/Home";
 import { Delivered, Seen, Sent } from "../message/Status";
 import useLastMessageSource from "../../socket/hook/useLastMessageSource";
 
-const ChatItems = ({ chat, id }: { chat: chatProps; id?: number }) => {
+const ChatItems = ({
+  chat,
+  id,
+  handleClick,
+  profileRef,
+}: {
+  chat: chatProps;
+  id?: number;
+  handleClick: (
+    e: React.MouseEvent<HTMLImageElement>,
+    id: number,
+    chatId: number,
+  ) => void;
+  profileRef: RefObject<HTMLDivElement[]>;
+}) => {
   const navegate = useNavigate();
   const { usersOnline } = useContext(UsersOnlineContext)!;
   const socketRef = useContext(SocketContext);
@@ -27,6 +41,10 @@ const ChatItems = ({ chat, id }: { chat: chatProps; id?: number }) => {
             : "hover:bg-zinc-800/30 cursor-pointer transition-colors animate-[fadeIn_0.3s_ease-out_0.2s_both]"
         }`}
       key={chat.chat_id}
+      ref={(el) => {
+        if (!el || profileRef.current.includes(el)) return;
+        profileRef.current.push(el);
+      }}
       onClick={() => {
         navegate(`/Chat/${chat.chat_id}/${chat.user_id}`, {
           state: {
@@ -42,6 +60,10 @@ const ChatItems = ({ chat, id }: { chat: chatProps; id?: number }) => {
           src={chat.friendPhoto}
           alt={chat.friend}
           className="w-12 h-12 rounded-full object-cover"
+          onClick={(e) => {
+            e.stopPropagation();
+            handleClick(e, chat.user_id, chat.chat_id);
+          }}
         />
         <div
           className={`absolute bottom-0 right-0 w-3 h-3 ${

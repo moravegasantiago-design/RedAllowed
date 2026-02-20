@@ -3,7 +3,7 @@ import ChatItems from "../app/ChatItems";
 import { Outlet, useLocation } from "react-router-dom";
 import Nav from "../app/Nav";
 import orderChats from "../../socket/logic/ordenChats";
-import { useContext } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import MeContext from "../../context/MeContext";
 import useLastMessages, {
   type lastMessagesProps,
@@ -12,6 +12,7 @@ import useSearch from "../../hook/useSearch";
 import ChatsContext from "../../context/ChatsContext";
 import useClickMenu from "../../hook/useClickMenu";
 import DropdownMenu from "./DropdownMenu";
+import ProfileCard from "../auth/profile/ProfileCard";
 export type chatProps = {
   user_id: number;
   chat_id: number;
@@ -23,6 +24,14 @@ export type chatProps = {
   friendBirthDay: string;
   friendTime: string;
   lastMessages: lastMessagesProps | null;
+};
+
+export type seenProfileProps = {
+  isSeen: boolean;
+  positionX: number | null;
+  positionY: number | null;
+  id: number | null;
+  chatId: number | null;
 };
 const Home = () => {
   const chats = useContext(ChatsContext);
@@ -37,6 +46,45 @@ const Home = () => {
     setOpenMenu: setOpenSuggestions,
     divRef: refSuggestions,
   } = useClickMenu();
+  const [seenProfile, setSeenProfile] = useState<seenProfileProps>({
+    isSeen: false,
+    positionX: null,
+    positionY: null,
+    id: null,
+    chatId: null,
+  });
+
+  const profileRef = useRef<HTMLDivElement[]>([]);
+  const handleClick = (
+    e: React.MouseEvent<HTMLImageElement>,
+    id: number,
+    chatId: number,
+  ) => {
+    setSeenProfile({
+      isSeen: true,
+      positionX: e.clientX,
+      positionY: e.clientY,
+      id: id,
+      chatId: chatId,
+    });
+  };
+
+  useEffect(() => {
+    const handleEvent = (e: MouseEvent) => {
+      if (profileRef.current.some((p) => p.contains(e.target as Node))) return;
+      setSeenProfile({
+        isSeen: false,
+        positionX: null,
+        positionY: null,
+        id: null,
+        chatId: null,
+      });
+    };
+    document.addEventListener("click", handleEvent);
+
+    return () => document.removeEventListener("click", handleEvent);
+  }, []);
+
   return (
     <>
       <div className="h-screen bg-zinc-950 flex overflow-hidden">
@@ -129,9 +177,20 @@ const Home = () => {
             {chatsUser
               .filter((c) => c.lastMessages)
               .map((chat, i) => (
-                <ChatItems key={i} chat={chat} id={credendials?.data?.id} />
+                <ChatItems
+                  key={i}
+                  chat={chat}
+                  handleClick={handleClick}
+                  id={credendials?.data?.id}
+                  profileRef={profileRef}
+                />
               ))}
           </div>
+          <ProfileCard
+            seenProfile={seenProfile}
+            setSeenProfile={setSeenProfile}
+            profileRef={profileRef}
+          />
           <Nav />
         </div>
 
