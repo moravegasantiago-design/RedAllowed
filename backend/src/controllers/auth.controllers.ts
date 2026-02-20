@@ -69,3 +69,18 @@ export const verifyMe = async (req: Request, res: Response) => {
     res.status(401).json({ success: false, error: error });
   }
 };
+
+export const logOut = (req: Request, res: Response) => {
+  const token = req?.cookies?.authToken;
+  const isLogin = convertToken(token);
+  if (!isLogin)
+    return res.status(401).json({ success: false, error: "No tienes acceso" });
+  res
+    .clearCookie("authToken", {
+      httpOnly: true,
+      secure: true,
+      sameSite: "none",
+    })
+    .status(201)
+    .json({ success: true, data: null });
+};

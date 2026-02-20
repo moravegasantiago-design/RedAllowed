@@ -5,8 +5,8 @@ export const chatOnline = (oi: Server) => {
 
   oi.on("connection", (socket: Socket) => {
     const userId = socket.handshake.auth.userId;
-    if (!usersOnline.find((u) => u.socketId === socket.id))
-      usersOnline.push({ userId: userId, socketId: socket.id });
+    if (!usersOnline.find((u) => u.userId === Number(userId)))
+      usersOnline.push({ userId: Number(userId), socketId: socket.id });
     socket.on("online_users", () => oi.emit("online_users", usersOnline));
 
     socket.on("join_chat", (chat_id: number) => socket.join(String(chat_id)));
@@ -75,9 +75,10 @@ export const chatOnline = (oi: Server) => {
       socket.leave(String(chat_id));
     });
     socket.on("disconnect", () => {
-      const index = usersOnline.findIndex((u) => u.userId === userId);
+      const index = usersOnline.findIndex((u) => u.userId === Number(userId));
       if (index === -1) return;
-      socket.on("online_users", () => oi.emit("online_users", usersOnline));
+      usersOnline.splice(index, 1);
+      oi.emit("online_users", usersOnline);
     });
   });
 };

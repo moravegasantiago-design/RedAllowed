@@ -8,9 +8,9 @@ const MeProvider = ({ children }: { children: ReactNode }) => {
     if (loading)
       return { data: null, isLogin: false, loading: true, fetchMe: fetchMe };
     if (!isLogin)
-      return { data: null, isLogin: false, loading: loading, fetchMe: fetchMe };
+      return { data: null, isLogin: false, loading: false, fetchMe: fetchMe };
     if (me)
-      return { data: me, isLogin: isLogin, loading: loading, fetchMe: fetchMe };
+      return { data: me, isLogin: isLogin, loading: false, fetchMe: fetchMe };
     return null;
   }, [me, isLogin, loading, fetchMe]);
 

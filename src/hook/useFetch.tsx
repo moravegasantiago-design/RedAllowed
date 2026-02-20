@@ -20,6 +20,7 @@ export const useFetch = <T = userProps,>() => {
     }) => {
       setError(null);
       setData(null);
+      setLoading(true);
       try {
         const { href, method, isCredentials, user, file } = props;
         const req = await fetch(`https://redallowed.onrender.com/${href}`, {

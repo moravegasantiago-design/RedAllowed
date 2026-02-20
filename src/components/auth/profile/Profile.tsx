@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import useProfile from "../../../hook/useProfile";
 import Field from "./ProfileField";
@@ -12,6 +12,20 @@ const Profile = ({ isMe }: { isMe?: boolean }) => {
   const { data } = useProfile({ userId: Number(userId) });
   const [editing, setEditing] = useState<boolean>(false);
   const { handleRequest, data: urlImage, loading } = useFetch();
+  const {
+    handleRequest: handleLogOut,
+    data: closedSection,
+    loading: authLoading,
+  } = useFetch();
+
+  useEffect(() => {
+    console.log(closedSection);
+    if (closedSection?.success) {
+      navigate("/Login");
+    }
+  }, [closedSection, navigate]);
+
+  useEffect(() => console.log(authLoading), [authLoading]);
   return (
     <div className="min-h-screen bg-zinc-950 flex">
       {/* Sidebar con lista de opciones */}
@@ -180,7 +194,17 @@ const Profile = ({ isMe }: { isMe?: boolean }) => {
         {/* Logout Button */}
         {isMe && (
           <div className="p-4 border-t border-zinc-800">
-            <button className="w-full flex items-center justify-center gap-2 bg-red-500/10 hover:bg-red-500/20 text-red-500 py-3 rounded-xl transition-colors">
+            <button
+              className="w-full flex items-center justify-center gap-2 bg-red-500/10 hover:bg-red-500/20 text-red-500 py-3 rounded-xl transition-colors"
+              disabled={closedSection?.success || authLoading}
+              onClick={() =>
+                handleLogOut({
+                  href: "api/auth/logOut",
+                  method: "GET",
+                  isCredentials: true,
+                })
+              }
+            >
               <svg
                 className="w-5 h-5"
                 fill="none"
@@ -194,7 +218,9 @@ const Profile = ({ isMe }: { isMe?: boolean }) => {
                   d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
                 />
               </svg>
-              <span className="font-medium">Cerrar sesión</span>
+              <span className="font-medium">
+                {authLoading ? "Cargando..." : "Cerrar sesión"}
+              </span>
             </button>
           </div>
         )}
