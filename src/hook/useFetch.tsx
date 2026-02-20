@@ -7,7 +7,7 @@ export const useFetch = <T = userProps,>() => {
     success: boolean;
     data: T | null;
   } | null>(null);
-  const [loading, setLoading] = useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<{ error: string } | null>(null);
 
   const handleRequest = useCallback(
@@ -18,7 +18,6 @@ export const useFetch = <T = userProps,>() => {
       user?: T | userProps;
       file?: FormData;
     }) => {
-      setLoading(true);
       setError(null);
       setData(null);
       try {

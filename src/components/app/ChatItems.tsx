@@ -113,6 +113,42 @@ const ChatItems = ({
     </div>
   );
 };
+export const ChatItemsSkeleton = () => {
+  return (
+    <>
+      {Array.from({ length: 7 }).map((_, i) => (
+        <div
+          key={i}
+          className="flex items-center gap-3 p-4"
+          style={{ animationDelay: `${i * 60}ms` }}
+        >
+          {/* Avatar */}
+          <div className="relative shrink-0">
+            <div className="w-12 h-12 rounded-full bg-zinc-700/60 animate-pulse" />
+            <div className="absolute bottom-0 right-0 w-3 h-3 rounded-full bg-zinc-700/60 border-2 border-zinc-900 animate-pulse" />
+          </div>
+
+          {/* Content */}
+          <div className="flex-1 min-w-0 flex flex-col gap-2">
+            <div className="flex items-center justify-between">
+              <div
+                className="h-3.5 rounded-full bg-zinc-700/60 animate-pulse"
+                style={{ width: `${90 + (i % 3) * 30}px` }}
+              />
+              <div className="h-2.5 w-8 rounded-full bg-zinc-700/60 animate-pulse" />
+            </div>
+            <div className="flex items-center justify-between gap-2">
+              <div
+                className="h-2.5 rounded-full bg-zinc-700/40 animate-pulse"
+                style={{ width: `${120 + (i % 4) * 25}px` }}
+              />
+            </div>
+          </div>
+        </div>
+      ))}
+    </>
+  );
+};
 
 // hour : <span className="text-xs text-emerald-500">12:45</span>
 //ChatSelect: flex items-center gap-3 p-4

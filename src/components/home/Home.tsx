@@ -1,5 +1,5 @@
 import Suggestions from "../app/Suggestions";
-import ChatItems from "../app/ChatItems";
+import ChatItems, { ChatItemsSkeleton } from "../app/ChatItems";
 import { Outlet, useLocation } from "react-router-dom";
 import Nav from "../app/Nav";
 import orderChats from "../../socket/logic/ordenChats";
@@ -37,7 +37,10 @@ const Home = () => {
   const chats = useContext(ChatsContext);
   const credendials = useContext(MeContext);
   const { lastMessages } = useLastMessages();
-  const chatsUser = orderChats({ chats: chats, lastMessages: lastMessages });
+  const chatsUser = orderChats({
+    chats: chats,
+    lastMessages: lastMessages,
+  });
   const { search, handleSearch } = useSearch<chatProps>(["friend"]);
   const location = useLocation();
   const { openMenu, setOpenMenu, divRef } = useClickMenu();
@@ -174,17 +177,21 @@ const Home = () => {
 
           {/* Chat List */}
           <div className="flex-1 overflow-y-auto">
-            {chatsUser
-              .filter((c) => c.lastMessages)
-              .map((chat, i) => (
-                <ChatItems
-                  key={i}
-                  chat={chat}
-                  handleClick={handleClick}
-                  id={credendials?.data?.id}
-                  profileRef={profileRef}
-                />
-              ))}
+            {!chats ? (
+              <ChatItemsSkeleton />
+            ) : (
+              chatsUser
+                .filter((c) => c.lastMessages)
+                .map((chat, i) => (
+                  <ChatItems
+                    key={i}
+                    chat={chat}
+                    handleClick={handleClick}
+                    id={credendials?.data?.id}
+                    profileRef={profileRef}
+                  />
+                ))
+            )}
           </div>
           <ProfileCard
             seenProfile={seenProfile}
