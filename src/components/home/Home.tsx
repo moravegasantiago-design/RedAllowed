@@ -68,21 +68,6 @@ const Home = () => {
             <div className="flex items-center justify-between mb-3 sm:mb-4">
               <h1 className="text-lg sm:text-xl font-bold text-white">Chats</h1>
               <div className="flex items-center gap-1 sm:gap-2">
-                <button className="p-1.5 sm:p-2 text-zinc-400 hover:text-white hover:bg-zinc-800 rounded-lg sm:rounded-xl transition-all">
-                  <svg
-                    className="w-4 h-4 sm:w-5 sm:h-5"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={1.5}
-                      d="M12 4v16m8-8H4"
-                    />
-                  </svg>
-                </button>
                 <div
                   className="relative"
                   ref={(el) => {

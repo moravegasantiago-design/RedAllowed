@@ -10,6 +10,7 @@ import Suggestions from "../app/Suggestions";
 import useClickMenu from "../../hook/useClickMenu";
 import useAppearProfile from "../../hook/useAppearProfile";
 import ProfileCard from "../auth/profile/ProfileCard";
+import DropdownMenu from "../home/DropdownMenu";
 interface FollowingStatus {
   [key: number]: { followers: number; iFollow: boolean };
 }
@@ -53,6 +54,7 @@ const Search = () => {
   } = useClickMenu();
   const { handleClick, seenProfile, setSeenProfile, profileRef } =
     useAppearProfile();
+  const { divRef: menuRef, openMenu, setOpenMenu } = useClickMenu();
   return (
     <div className="h-screen bg-zinc-950 flex overflow-hidden">
       <div
@@ -66,23 +68,17 @@ const Search = () => {
           <div className="p-4 border-b border-zinc-800">
             <div className="flex items-center justify-between mb-4">
               <h1 className="text-xl font-bold text-white">Contactos</h1>
-              <div className="flex items-center gap-2">
-                <button className="p-2 text-zinc-400 hover:text-white hover:bg-zinc-800 rounded-xl transition-all">
-                  <svg
-                    className="w-5 h-5"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={1.5}
-                      d="M12 4v16m8-8H4"
-                    />
-                  </svg>
-                </button>
-                <button className="p-2 text-zinc-400 hover:text-white hover:bg-zinc-800 rounded-xl transition-all">
+              <div
+                className="relative flex items-center gap-2"
+                ref={(el) => {
+                  if (!el || menuRef?.current.includes(el)) return;
+                  menuRef.current.push(el);
+                }}
+              >
+                <button
+                  className="p-2 text-zinc-400 hover:text-white hover:bg-zinc-800 rounded-xl transition-all"
+                  onClick={() => setOpenMenu((prev) => !prev)}
+                >
                   <svg
                     className="w-5 h-5"
                     fill="none"
@@ -97,6 +93,7 @@ const Search = () => {
                     />
                   </svg>
                 </button>
+                {openMenu && <DropdownMenu />}
               </div>
             </div>
             <div
