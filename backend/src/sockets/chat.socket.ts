@@ -76,9 +76,12 @@ export const chatOnline = (oi: Server) => {
       socket.leave(String(chat_id));
     });
     socket.on("disconnect", () => {
-      const index = usersOnline.findIndex((u) => u.socketId === socket.id);
+      const index = usersOnline.findIndex((u) => u.userId === userId);
+      console.log(index);
       if (index === -1) return;
       usersOnline.splice(index, 1);
+      console.log(usersOnline);
+      socket.on("online_users", () => oi.emit("online_users", usersOnline));
     });
   });
 };

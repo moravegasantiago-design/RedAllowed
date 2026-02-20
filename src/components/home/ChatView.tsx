@@ -9,6 +9,7 @@ import MeContext from "../../context/MeContext";
 import { Delivered, Seen, Sent } from "../message/Status";
 import useMergedMessages from "../../socket/hook/useMergedMessages";
 import useUsers from "../../hook/useUsers";
+import UsersOnlineContext from "../../context/UsersOnlineContext";
 
 const ChatView = () => {
   const navegate = useNavigate();
@@ -31,6 +32,9 @@ const ChatView = () => {
     }
   }, [mergedMessages, isWriting]);
   const { users } = useUsers({ userId: Number(userId), amount: "ONE" });
+  const { usersOnline } = useContext(UsersOnlineContext)!;
+  const isOnline =
+    usersOnline.find((u) => u.userId === Number(userId)) ?? false;
   return (
     <div className="flex-1 flex flex-col bg-zinc-950">
       {/* Chat Header */}
@@ -61,7 +65,7 @@ const ChatView = () => {
             alt={users[0]?.name}
             className="w-9 h-9 sm:w-10 sm:h-10 rounded-full object-cover"
           />
-          {users[0] && (
+          {isOnline && (
             <div className="absolute bottom-0 right-0 w-2.5 h-2.5 sm:w-3 sm:h-3 bg-emerald-500 rounded-full border-2 border-zinc-900"></div>
           )}
         </div>
@@ -71,7 +75,7 @@ const ChatView = () => {
             {users[0]?.name}
           </h2>
           <p className="text-emerald-500 text-xs sm:text-sm">
-            {isWriting ? "Escribiendo..." : users[0] ? "Online" : ""}
+            {isWriting ? "Escribiendo..." : isOnline ? "Online" : ""}
           </p>
         </div>
 

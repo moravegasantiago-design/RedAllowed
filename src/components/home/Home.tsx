@@ -3,7 +3,7 @@ import ChatItems, { ChatItemsSkeleton } from "../app/ChatItems";
 import { Outlet, useLocation } from "react-router-dom";
 import Nav from "../app/Nav";
 import orderChats from "../../socket/logic/ordenChats";
-import React, { useContext, useEffect, useRef, useState } from "react";
+import { useContext } from "react";
 import MeContext from "../../context/MeContext";
 import useLastMessages, {
   type lastMessagesProps,
@@ -13,6 +13,7 @@ import ChatsContext from "../../context/ChatsContext";
 import useClickMenu from "../../hook/useClickMenu";
 import DropdownMenu from "./DropdownMenu";
 import ProfileCard from "../auth/profile/ProfileCard";
+import useAppearProfile from "../../hook/useAppearProfile";
 export type chatProps = {
   user_id: number;
   chat_id: number;
@@ -49,45 +50,9 @@ const Home = () => {
     setOpenMenu: setOpenSuggestions,
     divRef: refSuggestions,
   } = useClickMenu();
-  const [seenProfile, setSeenProfile] = useState<seenProfileProps>({
-    isSeen: false,
-    positionX: null,
-    positionY: null,
-    id: null,
-    chatId: null,
-  });
 
-  const profileRef = useRef<HTMLDivElement[]>([]);
-  const handleClick = (
-    e: React.MouseEvent<HTMLImageElement>,
-    id: number,
-    chatId: number,
-  ) => {
-    setSeenProfile({
-      isSeen: true,
-      positionX: e.clientX,
-      positionY: e.clientY,
-      id: id,
-      chatId: chatId,
-    });
-  };
-
-  useEffect(() => {
-    const handleEvent = (e: MouseEvent) => {
-      if (profileRef.current.some((p) => p.contains(e.target as Node))) return;
-      setSeenProfile({
-        isSeen: false,
-        positionX: null,
-        positionY: null,
-        id: null,
-        chatId: null,
-      });
-    };
-    document.addEventListener("click", handleEvent);
-
-    return () => document.removeEventListener("click", handleEvent);
-  }, []);
-
+  const { seenProfile, setSeenProfile, handleClick, profileRef } =
+    useAppearProfile();
   return (
     <>
       <div className="h-screen bg-zinc-950 flex overflow-hidden">
@@ -118,7 +83,13 @@ const Home = () => {
                     />
                   </svg>
                 </button>
-                <div className="relative" ref={divRef}>
+                <div
+                  className="relative"
+                  ref={(el) => {
+                    if (!el || divRef?.current.includes(el)) return;
+                    divRef.current.push(el);
+                  }}
+                >
                   <button
                     className="p-1.5 sm:p-2 text-zinc-400 hover:text-white hover:bg-zinc-800 rounded-lg sm:rounded-xl transition-all"
                     onClick={() => setOpenMenu((prev) => !prev)}
@@ -144,7 +115,13 @@ const Home = () => {
             </div>
 
             {/* Search */}
-            <div className="relative" ref={refSuggestions}>
+            <div
+              className="relative"
+              ref={(el) => {
+                if (!el || refSuggestions?.current.includes(el)) return;
+                refSuggestions.current.push(el);
+              }}
+            >
               <div className="absolute inset-y-0 left-0 pl-2.5 sm:pl-3 flex items-center pointer-events-none">
                 <svg
                   className="w-4 h-4 sm:w-5 sm:h-5 text-zinc-500"
@@ -171,7 +148,12 @@ const Home = () => {
             </div>
 
             {search.value && openSuggestions && search.filter.length > 0 && (
-              <Suggestions chat={search.filter} />
+              <Suggestions
+                chat={search.filter}
+                handleClick={handleClick}
+                divRef={refSuggestions}
+                profileRef={profileRef}
+              />
             )}
           </div>
 
@@ -194,6 +176,7 @@ const Home = () => {
             )}
           </div>
           <ProfileCard
+            messages={true}
             seenProfile={seenProfile}
             setSeenProfile={setSeenProfile}
             profileRef={profileRef}

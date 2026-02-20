@@ -7,7 +7,7 @@ export const useFetch = <T = userProps,>() => {
     success: boolean;
     data: T | null;
   } | null>(null);
-  const [loading, setLoading] = useState<boolean>(true);
+  const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<{ error: string } | null>(null);
 
   const handleRequest = useCallback(

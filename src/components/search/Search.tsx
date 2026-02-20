@@ -1,15 +1,19 @@
 import { useContext,  useEffect,  useState } from "react";
 import Nav from "../app/Nav";
-import useUsers from "../../hook/useUsers";
+import useUsers, { type usersType } from "../../hook/useUsers";
 import { useFetch } from "../../hook/useFetch";
 import UsersOnlineContext from "../../context/UsersOnlineContext";
 import useFollow from "../../hook/useFollow";
 import LoadingUsers from "./LoadingUsers";
+import useSearch from "../../hook/useSearch";
+import Suggestions from "../app/Suggestions";
+import useClickMenu from "../../hook/useClickMenu";
+import useAppearProfile from "../../hook/useAppearProfile";
+import ProfileCard from "../auth/profile/ProfileCard";
 interface FollowingStatus {
   [key: number]: { followers: number; iFollow: boolean };
 }
 const Search = () => {
-  const [searchQuery, setSearchQuery] = useState<string>("");
   const { handleRequest } = useFetch<{ idP2: number }>();
   const { usersOnline } = useContext(UsersOnlineContext) ?? { usersOnline: [] };
   const handleFollowing = (id: number) => {
@@ -32,6 +36,7 @@ const Search = () => {
   const { handlerFollow } = useFollow();
   const { users, loading } = useUsers({ amount: "ALL" });
   const [followingStatus, setFollowingStatus] = useState<FollowingStatus>({});
+  const { search, handleSearch } = useSearch<usersType>(["name", "username"]);
   useEffect(() => {
     const dbFollowing: FollowingStatus = Object.fromEntries(
       users.map((u) => [
@@ -41,6 +46,13 @@ const Search = () => {
     );
     setFollowingStatus((prev) => ({ ...prev, ...dbFollowing }));
   }, [users]);
+  const {
+    divRef,
+    openMenu: openSuggestions,
+    setOpenMenu: setOpenSuggestions,
+  } = useClickMenu();
+  const { handleClick, seenProfile, setSeenProfile, profileRef } =
+    useAppearProfile();
   return (
     <div className="h-screen bg-zinc-950 flex overflow-hidden">
       <div
@@ -87,30 +99,44 @@ const Search = () => {
                 </button>
               </div>
             </div>
-
-            <div className="relative animate-[fadeIn_0.3s_ease-out]">
-              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none animate-[fadeIn_0.3s_ease-out]">
-                <svg
-                  className="w-5 h-5 text-zinc-500"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={1.5}
-                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-                  />
-                </svg>
+            <div
+              ref={(el) => {
+                if (!el || divRef.current.includes(el)) return;
+                divRef.current.push(el);
+              }}
+            >
+              <div className="relative animate-[fadeIn_0.3s_ease-out]">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none animate-[fadeIn_0.3s_ease-out]">
+                  <svg
+                    className="w-5 h-5 text-zinc-500"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={1.5}
+                      d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                    />
+                  </svg>
+                </div>
+                <input
+                  type="text"
+                  placeholder="Buscar personas"
+                  value={search.value}
+                  onChange={(e) => handleSearch({ e, list: users })}
+                  onFocus={() => setOpenSuggestions(true)}
+                  className="w-full bg-zinc-800 border border-zinc-700 text-white placeholder-zinc-500 rounded-xl py-2.5 pl-10 pr-4 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500 transition-all duration-200 text-sm"
+                />
               </div>
-              <input
-                type="text"
-                placeholder="Buscar personas"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full bg-zinc-800 border border-zinc-700 text-white placeholder-zinc-500 rounded-xl py-2.5 pl-10 pr-4 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500 transition-all duration-200 text-sm"
-              />
+              {search.value && openSuggestions && search.filter.length > 0 && (
+                <Suggestions
+                  chat={search.filter}
+                  handleClick={handleClick}
+                  divRef={profileRef}
+                />
+              )}
             </div>
           </div>
 
@@ -136,6 +162,10 @@ const Search = () => {
                               src={user.photo}
                               alt={user.name}
                               className="w-full h-full object-cover"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleClick(e, user.id);
+                              }}
                             />
                           </div>
                           {usersOnline
@@ -221,6 +251,12 @@ const Search = () => {
             </div>
           </div>
         </div>
+        <ProfileCard
+          seenProfile={seenProfile}
+          setSeenProfile={setSeenProfile}
+          profileRef={profileRef}
+          messages={false}
+        />
         <Nav />
       </div>
     </div>

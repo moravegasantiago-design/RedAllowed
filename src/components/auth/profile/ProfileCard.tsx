@@ -1,22 +1,31 @@
-import type { Dispatch, RefObject, SetStateAction } from "react";
+import {
+  useContext,
+  type Dispatch,
+  type RefObject,
+  type SetStateAction,
+} from "react";
 import type { profileProps } from "../../../hook/useProfile";
 import useUsers from "../../../hook/useUsers";
 import type { seenProfileProps } from "../../home/Home";
 import { useNavigate } from "react-router-dom";
+import UsersOnlineContext from "../../../context/UsersOnlineContext";
 const ProfileCard = ({
   seenProfile,
   setSeenProfile,
   profileRef,
+  messages,
 }: {
   seenProfile: seenProfileProps;
   setSeenProfile: Dispatch<SetStateAction<seenProfileProps>>;
   profileRef: RefObject<HTMLDivElement[]>;
+  messages: boolean;
 }) => {
   const { users, loading } = useUsers({
     userId: seenProfile.id ?? undefined,
     amount: "ONE",
   });
-
+  const { usersOnline } = useContext(UsersOnlineContext)!;
+  const isOnline = usersOnline.find((u) => u.userId === seenProfile.id);
   const navegate = useNavigate();
   return loading && seenProfile.isSeen ? (
     <ProfileCardLoading
@@ -79,7 +88,9 @@ const ProfileCard = ({
               alt={users[0]?.name}
               className="w-14 h-14 rounded-full object-cover border-2 border-zinc-900"
             />
-            <div className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-emerald-500 rounded-full border-2 border-zinc-900"></div>
+            {isOnline && (
+              <div className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-emerald-500 rounded-full border-2 border-zinc-900"></div>
+            )}
           </div>
         </div>
 
@@ -93,17 +104,19 @@ const ProfileCard = ({
             </p>
           </div>
 
-          <div className="flex gap-2 pt-1">
-            <button
-              className="flex-1 h-7 bg-emerald-500 hover:bg-emerald-600 text-white rounded-lg text-xs font-medium transition-colors flex items-center justify-center"
-              onClick={(e) => {
-                e.stopPropagation();
-                navegate(`/Chat/${seenProfile.chatId}/${seenProfile.id}`);
-              }}
-            >
-              Mensaje
-            </button>
-          </div>
+          {messages && (
+            <div className="flex gap-2 pt-1">
+              <button
+                className="flex-1 h-7 bg-emerald-500 hover:bg-emerald-600 text-white rounded-lg text-xs font-medium transition-colors flex items-center justify-center"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  navegate(`/Chat/${seenProfile.chatId}/${seenProfile.id}`);
+                }}
+              >
+                Mensaje
+              </button>
+            </div>
+          )}
         </div>
       </div>
 
